@@ -67,7 +67,7 @@
           <span>设置</span>
         </span>
       </template>
-      <div v-if="tabsName" class="content">Setter</div>
+      <div v-if="tabsName" class="content"><setter/></div>
     </el-tab-pane>
     <el-tab-pane name="关于我们" :disabled="loginelse">
       <template #label>
@@ -100,6 +100,7 @@ import home from "./menuComponents/home.vue";
 import guides from "./menuComponents/guides.vue";
 import help from "./menuComponents/help.vue";
 import about from "./menuComponents/about.vue";
+import setter from "./menuComponents/setter.vue";
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 // 左导航
 let tabsName = ref<string | undefined>(undefined);

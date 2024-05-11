@@ -5,6 +5,7 @@
       <div class="icon"></div>
       <span style="font-size: 20px; color: #333333; font-weight: 600">教程</span>
     </div>
+    <!-- 内容 -->
     <a-row v-for="(item, index) in guides" :key="index">
       <a-col>
         {{ item.promop }}

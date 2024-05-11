@@ -26,3 +26,4 @@ const aboutList = [
         "data":"感谢所有的反馈、讨论和贡献。"
     }
 ]
+export default aboutList
