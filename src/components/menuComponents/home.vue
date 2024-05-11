@@ -110,7 +110,7 @@ import { useStore } from "vuex";
 const store = useStore();
 //点击展示节点关系
 const labelShow = (value: any) => {
-  store.commit("increment", value);
+  store.commit("increment", { type: "add", value });
 };
 // 断开连接
 const disconnect = ()=>{

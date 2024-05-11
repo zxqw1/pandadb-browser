@@ -8,18 +8,27 @@ const store: StoreOptions<any> = {
     }),
     mutations: {
         increment(state: any, value) {
-            // console.log(value)
-            store.state.list.unshift(value)
-            // console.log(store.state.list,12)
-            console.log(store.state.list.length)
-            if(store.state.list.length === 30){
-                store.state.list.pop()
+            // console.log(value,"11")
+            if(value.type === "remove"){
+                store.state.list = store.state.list.filter((item: any) => {
+                    // console.log(item,"14")
+                    // console.log(value.value,"15")
+                    // return item === value.value;
+                    return item !== value.value
+                });
+            }else{
+                // 添加到数组的最前
+                store.state.list.unshift(value.value)
+                if(store.state.list.length === 30){
+                    // 删除最下方
+                    store.state.list.pop()
+                }
             }
         }
     },
     actions: {
         increment({ commit }, value) {
-            commit('increment', value);
+            // commit('increment', value);
             // console.log(value,"53")
         }
     },

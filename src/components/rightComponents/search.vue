@@ -48,28 +48,6 @@
             width: 100%;
           "
         />
-        <StarOutlined
-        v-show="!isFullscreen"
-          style="
-            position: absolute;
-            top: 5%;
-            right: 28px;
-            z-index: 1;
-            font-size: 16px;
-            color: #666666;
-          "
-        />
-        <StarOutlined
-        v-show="isFullscreen"
-          style="
-            position: absolute;
-            top:15px;
-            right: 28px;
-            z-index: 1;
-            font-size: 16px;
-            color: #666666;
-          "
-        />
         <CaretRightOutlined
         v-show="!isFullscreen"
           style="
@@ -104,7 +82,13 @@
         v-else
         @click="toggleFullScreen"
       />
-      <CloseOutlined style="font-size: 20px; color: #666666;position: absolute; top: 5%; right: 50px;" @click="clear" v-show="!isFullscreen"/>
+      <CloseOutlined style="
+      font-size: 20px; 
+      color: #666666;
+      position: absolute; 
+      top: 5%; right: 50px;" 
+      @click="clear" 
+      v-show="!isFullscreen"/>
       <CloseOutlined style="font-size: 20px; color: #666666;position: absolute; top: 1%; right: 2%;" @click="clear" v-show="isFullscreen"/>
 
     </div>
@@ -137,6 +121,10 @@ const clear = () => {
 </script>
 
 <style scoped>
+.CloseOutlined:hover{
+  color: #6a8322;
+  background-color: #f8ffe3;
+}
 .search {
   width: 100%;
   background-color: #ffffff;

@@ -21,6 +21,7 @@ declare module 'vue' {
     ATag: typeof import('ant-design-vue/es')['Tag']
     ATextarea: typeof import('ant-design-vue/es')['Textarea']
     Block: typeof import('./src/components/rightComponents/block.vue')['default']
+    Graph: typeof import('./src/components/rightComponents/graph.vue')['default']
     Guides: typeof import('./src/components/menuComponents/guides.vue')['default']
     Header: typeof import('./src/components/header.vue')['default']
     Help: typeof import('./src/components/menuComponents/help.vue')['default']
