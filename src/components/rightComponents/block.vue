@@ -1,14 +1,14 @@
 <template>
-  <div
-    :class="name"
-    v-for="(item, index) in store.state.list"
-    :key="index"
-  >
+  <div :class="name" v-for="(item, index) in list" :key="index" style="display: flex;flex-direction: column;">
     <!-- 右上 -->
     <div class="topIcon">
       <PushpinOutlined style="margin-left: 16px" />
-      <UpOutlined style="margin-left: 16px"  @click="retract"v-if="!islaunch"/>
-      <DownOutlined style="margin-left: 16px"  @click="retract"  v-else />
+      <UpOutlined
+        style="margin-left: 16px"
+        @click="retract(item)"
+        v-if="!islaunch"
+      />
+      <DownOutlined style="margin-left: 16px" @click="retract" v-else />
       <ExpandAltOutlined
         style="margin-left: 16px"
         @click="toggleFullScreen"
@@ -19,12 +19,10 @@
         @click="toggleFullScreen"
         v-else
       />
-     
-     
       <CloseOutlined style="margin-left: 16px" @click="removeModule(item)" />
     </div>
     <!-- 输入框 -->
-    <div class="search" >
+    <div class="search">
       <div class="bgSearch">
         <img
           src="../../assets/img/logos.png"
@@ -56,13 +54,18 @@
       <VerticalAlignBottomOutlined style="font-size: 24px" />
     </div>
     <!-- 关系图 -->
-    <div v-if="!islaunch">{{ item }}</div>
+    <div v-if="!islaunch" style="flex: 3;">
+      {{ item }}
+      <node :data="{item}"/>  
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+// import nodeGraph from "./graph/nodeGraph.vue";
+import node from "./graph/node.vue";
 import { useStore } from "vuex";
-import { ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 // 导入icon
 import {
   PushpinOutlined,
@@ -73,51 +76,57 @@ import {
   CaretRightOutlined,
   VerticalAlignBottomOutlined,
   ShrinkOutlined,
-  UpOutlined
+  UpOutlined,
 } from "@ant-design/icons-vue";
 const store = useStore();
+const list = store.state.list
+// console.log(list,83)
 // 输入框数据
 const value1 = ref<string>("");
 const isFullscreen = ref<boolean>(false);
-const islaunch = ref<boolean>(false)
-const name = ref<string>('block') //默认效果
+const islaunch = ref<boolean>(false);
+const name = ref<string>("block"); //默认效果
+
+watch(store.state.list, (newValue, oldValue) => {
+  // console.log(list,"85") ;
+   list.value = store.state.list
+});
 // 收起
-const retract = ()=>{
-  console.log('收起')
-  islaunch.value = !islaunch.value
-  if(islaunch.value === true){
-    name.value = 'launch' //收起后类名变成这个
-  }else{
-    name.value = 'block'
+const retract = (value: any) => {
+  console.log("收起", value);
+  islaunch.value = !islaunch.value;
+  if (islaunch.value === true) {
+    name.value = "launch"; //收起后类名变成这个
+  } else {
+    name.value = "block";
   }
-}
+};
 // 放大
 const toggleFullScreen = () => {
   isFullscreen.value = !isFullscreen.value;
-  // console.log(name,'94')
-  if(isFullscreen.value === true){
-    name.value = 'FullScreen' //全屏后类名变成这个
-  }else{
-    name.value = 'block'
+  if (isFullscreen.value === true) {
+    name.value = "FullScreen"; //全屏后类名变成这个
+  } else {
+    name.value = "block";
   }
 };
 // 删除
 // 有问题待解决（同类型删除）
 const removeModule = (value: any) => {
-  console.log(value, "38");
+  // console.log(value, "38");
   store.commit("increment", { type: "remove", value });
 };
 </script>
 <style scoped>
-.launch{
+.launch {
   width: 100%;
   max-height: 424px;
   height: 100px;
   background-color: #ffffff;
   position: relative;
-  margin-top:24px;
+  margin-top: 24px;
 }
-.FullScreen{
+.FullScreen {
   background-color: #ffffff;
   width: 100vw;
   height: 100vh;
@@ -132,7 +141,7 @@ const removeModule = (value: any) => {
   width: 100%;
   background-color: #ffffff;
   position: relative;
-  margin-top:24px;
+  margin-top: 24px;
 }
 .CaretRightOutlined {
   width: 50px;

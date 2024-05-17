@@ -8,18 +8,16 @@ const store: StoreOptions<any> = {
     }),
     mutations: {
         increment(state: any, value) {
-            // console.log(value,"11")
-            if(value.type === "remove"){
+            // 删除
+            if (value.type === "remove") {
                 store.state.list = store.state.list.filter((item: any) => {
-                    // console.log(item,"14")
-                    // console.log(value.value,"15")
-                    // return item === value.value;
-                    return item !== value.value
+                    return item.id !== value.value.id
                 });
-            }else{
+                // console.log(store.state.list,"19") 
+            } else {
                 // 添加到数组的最前
-                store.state.list.unshift(value.value)
-                if(store.state.list.length === 30){
+                store.state.list.unshift(value)
+                if (store.state.list.length === 30) {
                     // 删除最下方
                     store.state.list.pop()
                 }

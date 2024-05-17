@@ -13,15 +13,19 @@ const homeList = [
         "class": [
             {
                 "name": "第一类",
-                "color": "pink"
+                "color": "pink",
+                "key":"1"
             },
             {
                 "name": "第二类",
-                "color": "red"
+                "color": "red",
+                "key":"2"
+
             },
             {
                 "name": "第三类",
-                "color": "red"
+                "color": "red",
+                "key":"3"
             },
         ]
     },
