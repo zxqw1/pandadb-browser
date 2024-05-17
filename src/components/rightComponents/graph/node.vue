@@ -5,7 +5,7 @@
         border: #efefef solid 1px;
         height: 100%;
         width: 100%;
-        overflow: scroll;
+        overflow-y: scroll;
       "
     >
       <relation-graph ref="graphRef$" :options="options" />
@@ -23,12 +23,13 @@ import { defineProps, toRefs,toRaw } from "vue";
 const props = defineProps({
   data: Object,
 });
-const arr = ref([]);
+// console.log(props,26)
+const arr:any = ref([]);
 watch(props, () => {
   if (props.data.item.type === "node") {
     // props.data.item.item.lines = arr
     // console.log(props.data.item.item.lines)
-    // console.log(props.data.item.item.lines)
+    // console.log(props.data.item.item.liness)
   }
   graphRef$.value.setJsonData(props.data.item.item);
 });

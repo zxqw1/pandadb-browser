@@ -3,7 +3,7 @@
     <a-row>
       <search></search>
       <div style="display: flex; flex-flow: row wrap !important;width: 100%;height: 868px; overflow-y: scroll;">
-        <block></block>
+        <block style="margin-bottom: 16px;"></block>
         <login></login>
         <!-- <relationGraphVue/> -->
       </div>
@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import search from "./rightComponents/search.vue";
 import login from "./rightComponents/login.vue";
-import block from "./rightComponents/block.vue";
+import block from "./rightComponents/block.vue"; 
 // import relationGraphVue from "./rightComponents/relation-graph.vue";
 </script>
 

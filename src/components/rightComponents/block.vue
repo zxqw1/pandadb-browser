@@ -56,7 +56,7 @@
     <!-- 关系图 -->
     <div v-if="!islaunch" style="flex: 3;">
       {{ item }}
-      <node :data="{item}"/>  
+      <node :data="{item}" style="height:100% ;"/>  
     </div>
   </div>
 </template>

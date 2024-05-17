@@ -9,7 +9,7 @@ const setterList = [
     },
     {
         "title":"结果展示",
-        "type": "resuit"
+        "type": "result"
     },
     {
         "title":"图形可视化",
