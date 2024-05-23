@@ -10,7 +10,8 @@
   ],
   "compilerOptions": {
     "types": [
-      "vuex/types/index"
+      "vuex/types/index",
+      "nodes"
     ]
   }
 }

@@ -1,42 +1,34 @@
-import axios from 'axios'//导入axios
-import type { AxiosInstance } from 'axios';
-import { ElMessage } from 'element-plus';
+// 引入Neo4j驱动
+const neo4j = require('neo4j-driver');
 
-const request: AxiosInstance = axios.create({
-    baseURL: 'http://localhost',
-    timeout: 60000,
-})
-// 添加请求拦截器
-request.interceptors.request.use(
-    function (config) {
-        if (config.url !== "/admin/login") {
-            // config.headers.token = store.state.userInfo.token;
-            // 请求是否需要token？
-            // config.headers.token = window.localStorage.getItem('token')
-        }
+// Neo4j数据库连接信息
+const uri = 'bolt://10.0.82.146:7688';
+const user = 'neo4j';
+const password = 'bigdata';
 
-        return config;
-    },
-    function (error) {
-        return Promise.reject(error);
-    }
-);
-//添加响应拦截器
-request.interceptors.response.use(
-    (res:any) => {
-        //抓举核心响应式数据
-        if (res.data.code === 0) {
-            return res
-        }
-        //处理业务失败（给提示抛出错误）
-        ElMessage.error(res.data.messsage || '服务异常')
-        return Promise.reject(res.data)
-    },
-    //默认错误情况，只需要给提示
-    (err)=>{
-        ElMessage.error(err.response.data.messsage || '服务异常')
-        return Promise.reject(err)
-    }
+// 创建一个Neo4j驱动实例
+const driver = neo4j.driver(uri, neo4j.auth.basic(user, password));
 
-);
-export default request
+// 创建一个Neo4j会话
+const session = driver.session();
+
+// 执行查询
+const query = 'MATCH (n:Person) RETURN n LIMIT 10';
+session
+    .run(query)
+    .then(result => {
+        // 处理查询结果
+        result.records.forEach(record => {
+            console.log(record.get('n').properties);
+        });
+    })
+    .catch(error => {
+        console.error('Neo4j查询错误:', error);
+    })
+    .finally(() => {
+        // 关闭会话
+        session.close();
+        // 关闭驱动
+        driver.close();
+
+    });

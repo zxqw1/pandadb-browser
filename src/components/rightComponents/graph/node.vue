@@ -1,55 +1,98 @@
 <template>
-  <div style="width: 100%; height: 100%">
-    <div
-      style="
-        border: #efefef solid 1px;
-        height: 100%;
-        width: 100%;
-        overflow-y: scroll;
-      "
-    >
-      <relation-graph ref="graphRef$" :options="options" />
-      <div>
-        <!-- {{ data }} -->
-      </div>
-    </div>
-  </div>
+  <el-tabs :tab-position="tabPosition" style="height: 200px" class="demo-tabs graphMenu">
+    <el-tab-pane label="graph">
+      <!-- graph标题 -->
+      <template #label>
+        <span style="display: flex; flex-direction: column;align-items: center">
+          <img src="../../../assets/img/图谱.png" alt="" 
+          style="
+          width: 24px; 
+          height: 24px;">
+        <span style="font-weight:600;color: #666666;" class="graph">图谱</span>
+        </span>
+      </template>
+      <!-- 图 -->
+      <graph :data="{data}"/>
+      <!-- {{ data }} -->
+    </el-tab-pane>
+    <el-tab-pane label="table">
+      <!-- table标题 -->
+      <template #label>
+        <div>
+          <img src="../../../assets/img/表格.png" alt="" 
+          style="
+          width: 24px; 
+          height: 24px;">
+        <div style="font-weight:600;color: #666666;">表格</div>
+        </div>
+      </template>
+      <!-- 表 -->
+      <Ttable :data="{data}"/>
+    </el-tab-pane>
+    <el-tab-pane label="text">
+      <!-- text标题 -->
+      <template #label>
+        <div>
+          <img src="../../../assets/img/文字.png" alt="" 
+          style="
+          width: 24px; 
+          height: 24px;">
+        <div style="font-weight:600;color: #666666;">文字</div>
+        </div>
+      </template>
+      <Ttext/>
+    </el-tab-pane>
+    <el-tab-pane label="code">
+      <template #label>
+        <div>
+          <img src="../../../assets/img/代码.png" alt="" 
+          style="
+          width: 24px; 
+          height: 24px;">
+        <div style="font-weight:600;color: #666666;">编码</div>
+        </div>
+      </template>
+      <h1>code</h1>
+    </el-tab-pane>
+  </el-tabs>
+  <!-- graph -->
 </template>
-  
-  <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from "vue";
-import RelationGraph from "relation-graph/vue3";
-import { defineProps, toRefs,toRaw } from "vue";
+<script setup lang="ts">
+// 引入组件
+import graph from "./components/graph.vue";
+import Ttable from "./components/Ttable.vue";
+import Ttext from "./components/Ttext.vue";
+import {  ref } from "vue";
+import { defineProps } from "vue";
+import type { TabsInstance } from "element-plus";
+import Table from "ant-design-vue/es/table/Table";
+const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 const props = defineProps({
   data: Object,
 });
-// console.log(props,26)
-const arr:any = ref([]);
-watch(props, () => {
-  if (props.data.item.type === "node") {
-    // props.data.item.item.lines = arr
-    // console.log(props.data.item.item.lines)
-    // console.log(props.data.item.item.liness)
-  }
-  graphRef$.value.setJsonData(props.data.item.item);
-});
-const graphRef$ = ref<RelationGraph>();
-const options = {
-  defaultExpandHolderPosition: "right",
-};
-onMounted(() => {
-  if (props.data.item.type === "node") {
-    props.data.item.item.lines = [];
-  }
-  // console.log(props.data.item,32)
-  graphRef$.value.setJsonData(props.data.item.item); //重要
-  // The graphRef$.value.setJsonData(jsonData, callback) method is a convenient method that is equivalent to the following code:
-  //  const graphInstance = graphRef$.value.getInstance();
-  //  graphInstance.addNodes(jsonData.nodes);
-  //  graphInstance.addLines(jsonData.lines);
-  //  graphInstance.rootNode = graphInstance.getNodeById(jsonData.rootId);
-  //  await graphInstance.doLayout(); // Layout using the layouter set in graphOptions
-  //  await graphInstance.moveToCenter(); // Find the center based on node distribution and center the view
-  //  await graphInstance.zoomToFit(); // Zoom to fit, so that all nodes can be displayed in the visible area
-});
 </script>
+<style  scoped>
+
+
+</style>
+<style>
+.graphMenu .el-tabs__item{
+  height: 72px;
+}
+.graphMenu .el-tabs__item.is-active{
+  color: #6a8322 !important;
+
+}
+.graphMenu .el-tabs__active-bar{
+  --el-tabs-header-height: 72px;
+  background-color: #6a8322;
+}
+.graphMenu .el-tabs__content{
+  height: 100%;
+}
+.graphMenu .el-tab-pane{
+  height: 100%;
+}
+
+
+</style>

@@ -20,12 +20,6 @@ const dataBase = [
                                 text: '语文',
                                 color: "red",
                                 borderColor: 'yellow',
-                                // fontColor: 'yellow',
-                                data: {
-                                    "isGoodMan": true,
-                                    "sexType": "male",
-                                    // "icon": "https://dss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=2308340537,462224207&fm=58&app=83&f=JPEG?w=250&h=250&s=EC708F46DA96B89CB69D5DDA0300D014&n=侯亮平"
-                                }
                             },
                             {
                                 id: '2',

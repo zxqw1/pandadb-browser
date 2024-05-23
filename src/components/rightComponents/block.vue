@@ -1,14 +1,16 @@
 <template>
-  <div :class="name" v-for="(item, index) in list" :key="index" style="display: flex;flex-direction: column;">
+  <div :class="name" v-for="(item, index) in list" :key="index" style="display: flex; flex-direction: column;">
     <!-- 右上 -->
+    {{ item.isShowFlag }}
     <div class="topIcon">
       <PushpinOutlined style="margin-left: 16px" />
       <UpOutlined
+        :key="index"
         style="margin-left: 16px"
         @click="retract(item)"
         v-if="!islaunch"
       />
-      <DownOutlined style="margin-left: 16px" @click="retract" v-else />
+      <DownOutlined style="margin-left: 16px" @click="retract(item)" v-else/>
       <ExpandAltOutlined
         style="margin-left: 16px"
         @click="toggleFullScreen"
@@ -55,8 +57,8 @@
     </div>
     <!-- 关系图 -->
     <div v-if="!islaunch" style="flex: 3;">
-      {{ item }}
-      <node :data="{item}" style="height:100% ;"/>  
+      <!-- {{ item }} -->
+      <node :data="{ item }" style="height:100% ;"/>  
     </div>
   </div>
 </template>
@@ -65,7 +67,7 @@
 // import nodeGraph from "./graph/nodeGraph.vue";
 import node from "./graph/node.vue";
 import { useStore } from "vuex";
-import { onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 // 导入icon
 import {
   PushpinOutlined,
@@ -86,16 +88,19 @@ const value1 = ref<string>("");
 const isFullscreen = ref<boolean>(false);
 const islaunch = ref<boolean>(false);
 const name = ref<string>("block"); //默认效果
-
+// 
 watch(store.state.list, (newValue, oldValue) => {
-  // console.log(list,"85") ;
+  // console.log(newValue,91)
+  // console.log(oldValue,92)
    list.value = store.state.list
 });
 // 收起
 const retract = (value: any) => {
-  console.log("收起", value);
-  islaunch.value = !islaunch.value;
-  if (islaunch.value === true) {
+  value.isShowFlag = !value.isShowFlag
+  if(value.isShowFlag === true){
+    islaunch.value = !islaunch.value;
+  }
+  if ( islaunch.value === true) {
     name.value = "launch"; //收起后类名变成这个
   } else {
     name.value = "block";
@@ -114,13 +119,13 @@ const toggleFullScreen = () => {
 // 有问题待解决（同类型删除）
 const removeModule = (value: any) => {
   // console.log(value, "38");
-  store.commit("increment", { type: "remove", value });
+  store.commit("increment", { type: "remove", value })
+
 };
 </script>
 <style scoped>
 .launch {
   width: 100%;
-  max-height: 424px;
   height: 100px;
   background-color: #ffffff;
   position: relative;

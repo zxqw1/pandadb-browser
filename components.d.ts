@@ -27,7 +27,7 @@ declare module 'vue' {
     ATextarea: typeof import('ant-design-vue/es')['Textarea']
     Block: typeof import('./src/components/rightComponents/block.vue')['default']
     Favorate: typeof import('./src/components/menuComponents/Favorate.vue')['default']
-    Graph: typeof import('./src/components/rightComponents/graph.vue')['default']
+    Graph: typeof import('./src/components/rightComponents/graph/components/graph.vue')['default']
     Guides: typeof import('./src/components/menuComponents/guides.vue')['default']
     Header: typeof import('./src/components/header.vue')['default']
     Help: typeof import('./src/components/menuComponents/help.vue')['default']
@@ -43,5 +43,9 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Search: typeof import('./src/components/rightComponents/search.vue')['default']
     Setter: typeof import('./src/components/menuComponents/setter.vue')['default']
+    Table: typeof import('./src/components/rightComponents/graph/components/table.vue')['default']
+    Text: typeof import('./src/components/rightComponents/graph/components/text.vue')['default']
+    Ttable: typeof import('./src/components/rightComponents/graph/components/Ttable.vue')['default']
+    Ttext: typeof import('./src/components/rightComponents/graph/components/Ttext.vue')['default']
   }
 }

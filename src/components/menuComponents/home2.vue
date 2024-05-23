@@ -39,7 +39,7 @@
       <a-col style="margin-top: 24px; cursor: pointer;">
         <a-tag color="green" @click="labelShow(list[0].nodes[0])" > *({{ list[0].nodes[0].nodes.length }})</a-tag>
         <a-tag color="pink" v-for="(item,index) in list[0].nodes[0].nodes " :key="index" style="margin-left: 10px;"
-        @click="labelShow({type:'node',item})"
+        @click="labelShow({type:'node',item,isShowFlag: false})"
        >
           {{ item.category }}
         </a-tag>
@@ -103,7 +103,7 @@ let list = ref(dataBase.filter((item) => {
 // 关系列表
 // const lineList = list.value[0].nodes[0].lines
 const value1 = ref("database");
-// 默认数据库为dataBase
+// 默认数据库为dataBase 
 onMounted(() => {
   list.value = dataBase.filter((item) => {
     return item.name === "dataBase";
