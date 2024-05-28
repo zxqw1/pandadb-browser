@@ -12,7 +12,7 @@
         </span>
       </template>
       <!-- 图 -->
-      <graph :data="{data}"/>
+      <!-- <graph :data="{data}"/> -->
       <!-- {{ data }} -->
     </el-tab-pane>
     <el-tab-pane label="table">
@@ -59,7 +59,7 @@
 </template>
 <script setup lang="ts">
 // 引入组件
-import graph from "./components/graph.vue";
+// import graph from "./components/graph.vue";
 import Ttable from "./components/Ttable.vue";
 import Ttext from "./components/Ttext.vue";
 import {  ref } from "vue";

@@ -1,7 +1,6 @@
 <template>
   <div :class="name" v-for="(item, index) in list" :key="index" style="display: flex; flex-direction: column;">
     <!-- 右上 -->
-    {{ item.isShowFlag }}
     <div class="topIcon">
       <PushpinOutlined style="margin-left: 16px" />
       <UpOutlined
@@ -56,7 +55,7 @@
       <VerticalAlignBottomOutlined style="font-size: 24px" />
     </div>
     <!-- 关系图 -->
-    <div v-if="!islaunch" style="flex: 3;">
+    <div  style="flex: 3;">
       <!-- {{ item }} -->
       <node :data="{ item }" style="height:100% ;"/>  
     </div>
@@ -64,7 +63,6 @@
 </template>
 
 <script setup lang="ts">
-// import nodeGraph from "./graph/nodeGraph.vue";
 import node from "./graph/node.vue";
 import { useStore } from "vuex";
 import { ref, watch } from "vue";
@@ -88,17 +86,19 @@ const value1 = ref<string>("");
 const isFullscreen = ref<boolean>(false);
 const islaunch = ref<boolean>(false);
 const name = ref<string>("block"); //默认效果
-// 
+
+//
 watch(store.state.list, (newValue, oldValue) => {
   // console.log(newValue,91)
   // console.log(oldValue,92)
    list.value = store.state.list
+   value1.value = 'MATCH (n) RETURN n LIMIT 10'
 });
 // 收起
 const retract = (value: any) => {
   value.isShowFlag = !value.isShowFlag
   if(value.isShowFlag === true){
-    islaunch.value = !islaunch.value;
+  islaunch.value = !islaunch.value;
   }
   if ( islaunch.value === true) {
     name.value = "launch"; //收起后类名变成这个
@@ -112,14 +112,14 @@ const toggleFullScreen = () => {
   if (isFullscreen.value === true) {
     name.value = "FullScreen"; //全屏后类名变成这个
   } else {
-    name.value = "block";
+    name.value = "block";s
   }
 };
 // 删除
 // 有问题待解决（同类型删除）
 const removeModule = (value: any) => {
   // console.log(value, "38");
-  store.commit("increment", { type: "remove", value })
+  store.commit("increment", { type: "remove", value })  
 
 };
 </script>

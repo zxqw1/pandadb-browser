@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <a-row>
-      <search></search>
+      <search2></search2>
       <div style="display: flex; flex-direction: column; width: 100%;height: 868px; overflow-y: scroll;">
         <block style="margin-bottom: 16px;"></block>
         <login></login>
@@ -12,7 +12,8 @@
 </template>
 
 <script setup lang="ts">
-import search from "./rightComponents/search.vue";
+// import search from "./rightComponents/search.vue";
+import search2 from "./rightComponents/search2.vue"
 import login from "./rightComponents/login.vue";
 import block from "./rightComponents/block.vue"; 
 // import relationGraphVue from "./rightComponents/relation-graph.vue";

@@ -18,7 +18,8 @@
       <!--首页内容  -->
       <div v-if="tabsName" class="content">
         <!-- <home /> -->
-        <home2/>
+        <!-- <home2/> -->
+        <home3/>
       </div>
     </el-tab-pane>
     <el-tab-pane name="偏好" :disabled="loginelse">
@@ -100,12 +101,14 @@ import {
   CustomerServiceFilled,
 } from "@ant-design/icons-vue";
 // import home from "./menuComponents/home.vue";
-import home2 from "./menuComponents/home2.vue";
+// import home2 from "./menuComponents/home2.vue";
+import home3 from "./menuComponents/home3.vue"
 import guides from "./menuComponents/guides.vue";
 import help from "./menuComponents/help.vue";
 import about from "./menuComponents/about.vue";
 import setter from "./menuComponents/setter.vue";
 import favorate from "./menuComponents/Favorate.vue"
+import home3Vue from "./menuComponents/home3.vue";
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 // 左导航
 let tabsName = ref<string | undefined>(undefined);

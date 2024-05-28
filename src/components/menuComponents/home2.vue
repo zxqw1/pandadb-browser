@@ -38,10 +38,8 @@
       </a-col>
       <a-col style="margin-top: 24px; cursor: pointer;">
         <a-tag color="green" @click="labelShow(list[0].nodes[0])" > *({{ list[0].nodes[0].nodes.length }})</a-tag>
-        <a-tag color="pink" v-for="(item,index) in list[0].nodes[0].nodes " :key="index" style="margin-left: 10px;"
-        @click="labelShow({type:'node',item,isShowFlag: false})"
-       >
-          {{ item.category }}
+        <a-tag color="pink"  @click="labelShow" >
+          comment
         </a-tag>
       </a-col>
       <!-- 关系类型 -->
@@ -96,12 +94,12 @@ import { onMounted, reactive, ref } from "vue";
 import dataBase from "../../data/dataBase";
 import { useStore } from "vuex";import { ElMessage, ElMessageBox } from 'element-plus'
 import type { Action } from 'element-plus'
+import request from "../../utils/request.js"
 let list = ref(dataBase.filter((item) => {
     return item.name === "dataBase";
   }) )
 
 // 关系列表
-// const lineList = list.value[0].nodes[0].lines
 const value1 = ref("database");
 // 默认数据库为dataBase 
 onMounted(() => {
@@ -123,8 +121,15 @@ const handleChange = (value: string) => {
 };
 const store = useStore();
 // 点击展示节点关系
-const labelShow = (value: any) => {
-  store.commit("increment", value);
+const labelShow = () => {
+  // store.commit("increment", value);
+ let promiseData = request.fetchData('neo4j', 'bigdata','MATCH (n) RETURN n LIMIT 10')
+ promiseData.then((result: any)=>{
+  const data = result
+   store.commit("increment", data);
+ }).catch((error: any)=>{
+  console.log(error)
+ })
 };
 // 断开连接
 const disconnect = ()=>{

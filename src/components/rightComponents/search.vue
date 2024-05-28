@@ -24,7 +24,7 @@
           alt=""
           style="position: absolute; z-index: 1; top: 10px; width: 46px; height: 30px"
         />
-        <a-textarea
+        <!-- <a-textarea
           v-show="!isFullscreen"
           v-model:value="value1"
           placeholder="请输入"
@@ -35,7 +35,11 @@
             padding:  0 38px;
             width: 100%;
           "
-        />
+        /> -->
+        <div contenteditable="true" style="background-color: aquamarine; width: 100%;
+        height: 100%;">
+
+        </div>
         <a-textarea
           v-show="isFullscreen"
           v-model:value="value1"
@@ -128,7 +132,7 @@ const clear = () => {
 .search {
   width: 100%;
   background-color: #ffffff;
-  padding: 18px 18px;
+  padding: 14x 18px;
   display: flex;
   justify-content: space-between;
   align-items: center;
