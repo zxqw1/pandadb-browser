@@ -1,14 +1,7 @@
 <template>
   <div
     class="search"
-    :style="{
-      width: isFullscreen ? '100vw' : '100%',
-      height: isFullscreen ? '100vh' : '100%',
-      position: isFullscreen ? 'fixed' : 'static',
-      top: isFullscreen ? '0' : 'auto',
-      left: isFullscreen ? '0' : 'auto',
-      zIndex: isFullscreen ? '9999' : 'auto',
-    }"
+  
   >
     <el-row>
       <!-- position: relative; -->
@@ -23,38 +16,27 @@
             border: 1px dashed #d2dabb;
             min-height: 32px;
           "
-          :style="{
-            height: isFullscreen ? '98vh' : 'auto',
-            position: isFullscreen ? 'relative' : 'static',
-          }"
+          
           @keydown.enter.prevent="handleEnter"
         >
           <!-- logo -->
           <img
             src="../../assets/img/logos.png"
             style="width: 44px; height: 30px"
-            :style="{
-              position: isFullscreen ? 'absolute' : 'static',
-              top: isFullscreen ? '10px' : '',
-            }"
+           
             alt=""
           />
           <!-- 真实输入 -->
           <div
             contenteditable="true"
-            style="width: 90%;"
-            :style="{
-              position: isFullscreen ? 'absolute' : 'static',
-              top: isFullscreen ? '10px' : '',
-            }"
+            style="width: 96%;"
             class="searchText"
-          ></div>
+            @blur="handleBlur"
+          >{{ context }}</div>
           <!-- 展示 -->
           <CaretRightOutlined
             style="color: #6a8322; font-size: 28px"
-            :style="{ position: isFullscreen ? 'absolute' : 'static',
-              top: isFullscreen ? '10px' : '',
-              right:isFullscreen ? '10px' : ''}"
+            @click="nodeShow"
           />
         </div>
       </el-col>
@@ -75,19 +57,12 @@
         <ShrinkOutlined
           style="font-size: 20px"
           @click="toggleFullScreen"
-          :style="{
-            position: isFullscreen ? 'absolute' : 'static',
-            top: isFullscreen ? '10px' : '',
-          }"
+         
           v-else
         />
         <CloseOutlined
           style="font-size: 20px"
-          :style="{
-            position: isFullscreen ? 'absolute' : 'static',
-            top: isFullscreen ? '10px' : '',
-            right: isFullscreen ? '10px' : '',
-          }"
+         
         />
       </el-col>
     </el-row>
@@ -102,16 +77,39 @@ import {
   CloseOutlined,
   ShrinkOutlined,
 } from "@ant-design/icons-vue";
+import request from "../../utils/request.js";
+import { useStore } from "vuex";
+const store = useStore();
 const isFullscreen = ref<boolean>(false);
+const context = ref('')
 // 全屏
 const toggleFullScreen = () => {
   isFullscreen.value = !isFullscreen.value;
 };
-// import { ref, onMounted, computed } from 'vue';
-// import cypher from "../../assets/cypher.js"
-// import hljs from 'highlight.js';
-// 注册 Cypher 语言
-// hljs.registerLanguage('cypher', cypher);
+// 拿到输入数据
+const handleBlur = (event)=>{
+  context.value = event.target.innerText;
+  // console.log(context.value);
+}
+// const nodeShow = ()=>{
+//   // console.log(context.value,92)
+  
+//   let promiseData = request.fetchData(
+//         "neo4j",
+//         "bigdata",
+//         context.value
+//       );
+//       promiseData
+//         .then((result: any) => {
+//           console.log(result,102)
+//           store.commit("increment", result);
+//         })
+//         .catch((error: any) => {
+//           console.log(error,106);
+//           store.commit("increment", {type:"error",error});
+//         });
+//       context.value = '';
+// }
 </script>
 
 <style scoped>

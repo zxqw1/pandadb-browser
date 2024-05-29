@@ -33,8 +33,18 @@
         <div class="name">节点标签</div>
       </a-col>
       <a-col style="margin-top: 20px">
-        <a-tag color="green"> *(123)</a-tag>
-        <a-tag color="pink" style="margin-left: 10px"> comment </a-tag>
+        <a-tag color="rgb(145, 149, 160)" style="cursor: pointer" @click="labelShow">
+          *(3,181,724)</a-tag
+        >
+        <a-tag
+          :color=item.color
+          style="margin-left: 10px; margin-top: 10px; cursor: pointer"
+         
+          v-for="(item, index) in dataBase[0].nodes"
+          :key="index"
+        >
+          {{ item.text }}
+        </a-tag>
       </a-col>
       <!-- 关系类型 -->
       <a-col style="margin-top: 20px; display: flex; align-items: center">
@@ -51,7 +61,7 @@
         <div class="name">属性值</div>
       </a-col>
       <a-col style="margin-top: 20px">
-      <a-tag>`1234`</a-tag>
+        <a-tag>`1234`</a-tag>
       </a-col>
       <!-- 连接库信息 -->
       <a-col style="margin-top: 30px; display: flex; align-items: center">
@@ -62,27 +72,47 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from "vue";
-const value = ref("");
+<script lang="ts" setup>
+import {  ref } from "vue";
+import dataBase from "@/data/dataBase";
+import request from "../../utils/request.js";
+import { useStore } from "vuex";
+    // 展示节点
+    const store = useStore();
+    const value = ref("");
+    const options = [
+      {
+        value: "Option1",
+        label: "Option1",
+      },
+      {
+        value: "Option2",
+        label: "Option2",
+      },
+    ];
+  const labelShow = () => {
+      let promiseData = request.fetchData(
+        "neo4j",
+        "bigdata",
+        "MATCH (n) RETURN n LIMIT 25"
+      );
+      promiseData
+        .then((result: any) => {
+          store.commit("increment", result);
+        })
+        .catch((error: any) => {
+          console.log(error);
+        });
+    }
+  
 
-const options = [
-  {
-    value: "Option1",
-    label: "Option1",
-  },
-  {
-    value: "Option2",
-    label: "Option2",
-  },
-];
 </script>
 
 <style scoped>
-.Property:hover{
-    background-color: #aaaaaa;
-    color: #000;
-    cursor: pointer;
+.Property:hover {
+  background-color: #aaaaaa;
+  color: #000;
+  cursor: pointer;
 }
 </style>
 <style>

@@ -1,0 +1,1 @@
+MATCH p=(n:City)-[r]->() RETURN p LIMIT 25

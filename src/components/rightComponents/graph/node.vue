@@ -1,5 +1,5 @@
 <template>
-  <el-tabs :tab-position="tabPosition" style="height: 200px" class="demo-tabs graphMenu">
+  <el-tabs :tab-position="tabPosition" style="height: 200px;" class="demo-tabs graphMenu">
     <el-tab-pane label="graph">
       <!-- graph标题 -->
       <template #label>
@@ -12,7 +12,7 @@
         </span>
       </template>
       <!-- 图 -->
-      <!-- <graph :data="{data}"/> -->
+      <graph :graphData ="{data}"/>
       <!-- {{ data }} -->
     </el-tab-pane>
     <el-tab-pane label="table">
@@ -27,7 +27,8 @@
         </div>
       </template>
       <!-- 表 -->
-      <Ttable :data="{data}"/>
+      <Ttable :tableData="{data}"/> 
+      <!-- <div>{{ data }}</div> -->
     </el-tab-pane>
     <el-tab-pane label="text">
       <!-- text标题 -->
@@ -40,7 +41,7 @@
         <div style="font-weight:600;color: #666666;">文字</div>
         </div>
       </template>
-      <Ttext/>
+      <!-- <Ttext/> -->
     </el-tab-pane>
     <el-tab-pane label="code">
       <template #label>
@@ -52,7 +53,7 @@
         <div style="font-weight:600;color: #666666;">编码</div>
         </div>
       </template>
-      <h1>code</h1>
+      <!-- <h1>code</h1> -->
     </el-tab-pane>
   </el-tabs>
   <!-- graph -->

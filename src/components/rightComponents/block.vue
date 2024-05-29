@@ -1,5 +1,5 @@
 <template>
-  <div :class="name" v-for="(item, index) in list" :key="index" style="display: flex; flex-direction: column;">
+  <div :class="name"  v-for="(item, index) in list" :key="index" style="display: flex; flex-direction: column;">
     <!-- 右上 -->
     <div class="topIcon">
       <PushpinOutlined style="margin-left: 16px" />
@@ -57,7 +57,7 @@
     <!-- 关系图 -->
     <div  style="flex: 3;">
       <!-- {{ item }} -->
-      <node :data="{ item }" style="height:100% ;"/>  
+      <node :data=" item.result " style="height:100% ;" :v-if="item.type === 'result'"/>  
     </div>
   </div>
 </template>
@@ -65,7 +65,7 @@
 <script setup lang="ts">
 import node from "./graph/node.vue";
 import { useStore } from "vuex";
-import { ref, watch } from "vue";
+import { ref, computed,watch } from "vue";
 // 导入icon
 import {
   PushpinOutlined,
@@ -79,40 +79,41 @@ import {
   UpOutlined,
 } from "@ant-design/icons-vue";
 const store = useStore();
-const list = store.state.list
+// const list = computed(() => store.state.list)
+const list = ref(store.state.list)
+const value1 = ref<string>("");
+value1.value = 'MATCH (n) RETURN n LIMIT 10'
 // console.log(list,83)
 // 输入框数据
-const value1 = ref<string>("");
 const isFullscreen = ref<boolean>(false);
 const islaunch = ref<boolean>(false);
 const name = ref<string>("block"); //默认效果
 
-//
+
 watch(store.state.list, (newValue, oldValue) => {
-  // console.log(newValue,91)
-  // console.log(oldValue,92)
    list.value = store.state.list
    value1.value = 'MATCH (n) RETURN n LIMIT 10'
 });
+
 // 收起
-const retract = (value: any) => {
-  value.isShowFlag = !value.isShowFlag
-  if(value.isShowFlag === true){
-  islaunch.value = !islaunch.value;
-  }
-  if ( islaunch.value === true) {
-    name.value = "launch"; //收起后类名变成这个
-  } else {
-    name.value = "block";
-  }
-};
+// const retract = (value: any) => {
+//   value.isShowFlag = !value.isShowFlag
+//   if(value.isShowFlag === true){
+//   islaunch.value = !islaunch.value;
+//   }
+//   if ( islaunch.value === true) {
+//     name.value = "launch"; //收起后类名变成这个
+//   } else {
+//     name.value = "block";
+//   }
+// };
 // 放大
 const toggleFullScreen = () => {
   isFullscreen.value = !isFullscreen.value;
   if (isFullscreen.value === true) {
     name.value = "FullScreen"; //全屏后类名变成这个
   } else {
-    name.value = "block";s
+    name.value = "block";
   }
 };
 // 删除

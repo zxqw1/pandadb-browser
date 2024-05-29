@@ -17,8 +17,8 @@ const request = {
       const result = await session.run(Cypher);
       // console.log(result,18)
       // 获取结果并存储在nodes数组中s
-     nodes = result.records.map((record) => record.get(0));
-      return nodes
+    //  nodes = result.records.map((record) => record.get(0));
+      return result
     } finally {
       // 关闭会话
       await session.close();

@@ -3,7 +3,8 @@
     <!-- {{ data }} -->
     <div style="height: 100%;width: 100%; display: flex;position: relative;">
       <!-- 图 -->
-      <relation-graph ref="graphRef$" :options="options" />
+      <!-- <relation-graph ref="graphRef$" :options="options" /> -->
+      <!-- {{ graphData }} -->
       <!-- overview按钮 -->
       <el-button type="primary" :icon="ArrowLeftBold" 
       style="position: absolute; 
@@ -47,8 +48,23 @@ import RelationGraph from 'relation-graph/vue3'
 import { ArrowRightBold,ArrowLeftBold} from '@element-plus/icons-vue'
 const graphRef$ = ref<RelationGraph>()
 const props = defineProps({
-  data: Object,
+  graphData: Object,
 });
+const records = props.graphData.data.item.records
+console.log(records,54)
+const graphList = ref({
+  nodes:[],
+  lines:[]
+})
+records.forEach(item=>{
+  console.log(item._fields[0],57)
+  graphList.value.nodes.push(
+    {
+      id:item._fields[0].elementId,
+      text:item._fields[0].properties.browserUsed
+    }
+  )
+})
 const overview:Ref<boolean> = ref(false)
 // 节点数据 
 const options = {
@@ -57,17 +73,15 @@ const options = {
 const expandOverview = ()=>{
   overview.value = !overview.value
 }
-// console.log(props.data.data.item,23)
-if(props.data.data.item.type === "node"){
-}
-watch(props,(oldValue,newValue)=>{
-  graphRef$.value.setJsonData(props.data.data.item.item)
-})
-onMounted(() => {
-  graphRef$.value.setJsonData(props.data.data.item.item)
+
+// watch(props,(oldValue,newValue)=>{
+//   graphRef$.value.setJsonData(props.data.data.item.item)
+// })
+// onMounted(() => {
+//   graphRef$.value.setJsonData(props.data.data.item.item)
 
   
-})
+// })
 </script>
 
 <style scoped>
