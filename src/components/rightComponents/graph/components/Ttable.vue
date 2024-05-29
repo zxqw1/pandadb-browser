@@ -29,11 +29,15 @@
 import 'highlight.js/styles/stackoverflow-light.css';// 可以切换其它样式风格，例如黑色主题
 import 'highlight.js/lib/common';
 import hljsVuePlugin from "@highlightjs/vue-plugin";
-import { onMounted,  ref,toRaw } from 'vue';
+import { onMounted,  ref,toRaw,watch } from 'vue';
  const props = defineProps({
   tableData: Object,
 });
-const list = toRaw(props.tableData.data.item.records)
+let list = ref(toRaw(props.tableData.data.item.records))
+watch(props, (newValue, oldValue) => {
+   list.value = toRaw(props.tableData.data.item.records)
+});
+
 // console.log(list)
 let jsonCode = JSON.stringify(list, null, 2);
 

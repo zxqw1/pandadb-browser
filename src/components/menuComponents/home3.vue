@@ -39,9 +39,9 @@
         <a-tag
           :color=item.color
           style="margin-left: 10px; margin-top: 10px; cursor: pointer"
-         
           v-for="(item, index) in dataBase[0].nodes"
           :key="index"
+          @click="graphShow"
         >
           {{ item.text }}
         </a-tag>
@@ -90,11 +90,28 @@ import { useStore } from "vuex";
         label: "Option2",
       },
     ];
+    // 节点展示全局
   const labelShow = () => {
       let promiseData = request.fetchData(
         "neo4j",
         "bigdata",
         "MATCH (n) RETURN n LIMIT 25"
+      );
+      promiseData
+        .then((result: any) => {
+          store.commit("increment", result);
+        })
+        .catch((error: any) => {
+          console.log(error);
+        });
+    }
+    // 节点展示部分
+    const graphShow = (event)=>{
+      console.log(event.target.getAttribute(':color'),110) 
+      let promiseData = request.fetchData(
+        "neo4j",
+        "bigdata",
+        `MATCH(n:${event.target.innerText})RETURN n LIMIT 25`
       );
       promiseData
         .then((result: any) => {

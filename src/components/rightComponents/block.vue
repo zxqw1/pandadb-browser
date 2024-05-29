@@ -56,8 +56,8 @@
     </div>
     <!-- 关系图 -->
     <div  style="flex: 3;">
-      <!-- {{ item }} -->
-      <node :data=" item.result " style="height:100% ;" :v-if="item.type === 'result'"/>  
+      <!-- {{ item.result }} -->
+      <node :data=" { item } " style="height:100% ;" :v-if="item.type === 'result'"/>  
     </div>
   </div>
 </template>
@@ -83,7 +83,6 @@ const store = useStore();
 const list = ref(store.state.list)
 const value1 = ref<string>("");
 value1.value = 'MATCH (n) RETURN n LIMIT 10'
-// console.log(list,83)
 // 输入框数据
 const isFullscreen = ref<boolean>(false);
 const islaunch = ref<boolean>(false);
@@ -93,7 +92,9 @@ const name = ref<string>("block"); //默认效果
 watch(store.state.list, (newValue, oldValue) => {
    list.value = store.state.list
    value1.value = 'MATCH (n) RETURN n LIMIT 10'
+  //  console.log(store.state.list)
 });
+// console.log(list.value,96)
 
 // 收起
 // const retract = (value: any) => {

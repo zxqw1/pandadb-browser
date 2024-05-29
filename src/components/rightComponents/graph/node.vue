@@ -63,7 +63,7 @@
 // import graph from "./components/graph.vue";
 import Ttable from "./components/Ttable.vue";
 import Ttext from "./components/Ttext.vue";
-import {  ref } from "vue";
+import {  ref,watch } from "vue";
 import { defineProps } from "vue";
 import type { TabsInstance } from "element-plus";
 import Table from "ant-design-vue/es/table/Table";
@@ -71,6 +71,10 @@ const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 const props = defineProps({
   data: Object,
 });
+watch(props, (newValue, oldValue) => {
+console.log(props.data,75)
+});
+
 </script>
 <style  scoped>
 

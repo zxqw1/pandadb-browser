@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="search"
-  
-  >
+  <div class="search">
     <el-row>
       <!-- position: relative; -->
       <el-col :span="22" style="display: flex; align-items: center">
@@ -16,23 +13,23 @@
             border: 1px dashed #d2dabb;
             min-height: 32px;
           "
-          
           @keydown.enter.prevent="handleEnter"
         >
           <!-- logo -->
           <img
             src="../../assets/img/logos.png"
             style="width: 44px; height: 30px"
-           
             alt=""
           />
           <!-- 真实输入 -->
           <div
             contenteditable="true"
-            style="width: 96%;"
+            style="width: 96%"
             class="searchText"
             @blur="handleBlur"
-          >{{ context }}</div>
+          >
+            {{ context }}
+          </div>
           <!-- 展示 -->
           <CaretRightOutlined
             style="color: #6a8322; font-size: 28px"
@@ -57,13 +54,9 @@
         <ShrinkOutlined
           style="font-size: 20px"
           @click="toggleFullScreen"
-         
           v-else
         />
-        <CloseOutlined
-          style="font-size: 20px"
-         
-        />
+        <CloseOutlined style="font-size: 20px" />
       </el-col>
     </el-row>
   </div>
@@ -77,39 +70,42 @@ import {
   CloseOutlined,
   ShrinkOutlined,
 } from "@ant-design/icons-vue";
+import { ElMessage, ElMessageBox } from "element-plus";
 import request from "../../utils/request.js";
 import { useStore } from "vuex";
 const store = useStore();
 const isFullscreen = ref<boolean>(false);
-const context = ref('')
+const context = ref("");
 // 全屏
 const toggleFullScreen = () => {
   isFullscreen.value = !isFullscreen.value;
 };
 // 拿到输入数据
-const handleBlur = (event)=>{
+const handleBlur = (event) => {
   context.value = event.target.innerText;
   // console.log(context.value);
-}
-// const nodeShow = ()=>{
-//   // console.log(context.value,92)
+};
+const nodeShow = () => {
+  console.log(context.value, 92);
+  if(context.value === ''){
+
+  }else{
+    let promiseData = request.fetchData("neo4j", "bigdata", context.value);
+  promiseData
+    .then((result: any) => {
+      console.log(result,96)
+      store.commit("increment", result);
+    })
+    .catch((error: any) => {
+      console.log(error, 106);
+      ElMessageBox.alert(error, "错误提示", {
+        confirmButtonText: "好的",
+      });
+    });
+  context.value = "";
+  }
   
-//   let promiseData = request.fetchData(
-//         "neo4j",
-//         "bigdata",
-//         context.value
-//       );
-//       promiseData
-//         .then((result: any) => {
-//           console.log(result,102)
-//           store.commit("increment", result);
-//         })
-//         .catch((error: any) => {
-//           console.log(error,106);
-//           store.commit("increment", {type:"error",error});
-//         });
-//       context.value = '';
-// }
+};
 </script>
 
 <style scoped>
