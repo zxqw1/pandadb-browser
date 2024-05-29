@@ -16,7 +16,7 @@
  
   <el-col style="height: 306px; overflow-y: scroll;">
     <div v-for="(item, index) in list" :key="index" style="margin-bottom: 10px; background-color: #f5f5f5;">
-      {{ item._fields }}
+      {{ dataJson }}
      </div>
   </el-col>
   
@@ -34,9 +34,14 @@ import { onMounted,  ref,toRaw,watch } from 'vue';
   tableData: Object,
 });
 let list = ref(toRaw(props.tableData.data.item.records))
+const dataJson = ref('')
 watch(props, (newValue, oldValue) => {
    list.value = toRaw(props.tableData.data.item.records)
 });
+list.value.forEach(item=>{
+  console.log(item._fields,42)
+   dataJson.value = JSON.stringify(item._fields,null,3)
+})
 
 // console.log(list)
 let jsonCode = JSON.stringify(list, null, 2);

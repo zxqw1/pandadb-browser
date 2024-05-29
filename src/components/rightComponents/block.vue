@@ -82,7 +82,7 @@ const store = useStore();
 // const list = computed(() => store.state.list)
 const list = ref(store.state.list)
 const value1 = ref<string>("");
-value1.value = 'MATCH (n) RETURN n LIMIT 10'
+value1.value = 'MATCH (n) RETURN n LIMIT 25'
 // 输入框数据
 const isFullscreen = ref<boolean>(false);
 const islaunch = ref<boolean>(false);
@@ -91,7 +91,7 @@ const name = ref<string>("block"); //默认效果
 
 watch(store.state.list, (newValue, oldValue) => {
    list.value = store.state.list
-   value1.value = 'MATCH (n) RETURN n LIMIT 10'
+   value1.value = 'MATCH (n) RETURN n LIMIT 25'
   //  console.log(store.state.list)
 });
 // console.log(list.value,96)

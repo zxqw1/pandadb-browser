@@ -70,6 +70,7 @@ const graphRef$ = ref<RelationGraph>();
 const props = defineProps({
   graphData: Object,
 });
+console.log(props.graphData,73)
 const graphList = ref({
   nodes: [],
   lines: [],
@@ -81,6 +82,7 @@ watch(props, (oldValue, newValue) => {
       graphList.value.nodes.push({
       id: item._fields[0].elementId,
       text: item._fields[0].properties.browserUsed,
+      color:'red'
     });
     }else{
       graphList.value.nodes.push({
