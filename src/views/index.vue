@@ -1,5 +1,5 @@
 <template>
-  <div >
+  <div style="overflow: hidden;">
   <a-row>
     <!-- 顶部 -->
     <a-col :span="24">

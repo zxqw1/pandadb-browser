@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100%">
+  <div style="height: 322px">
     <!-- {{ data }} -->
     <div style="height: 100%; width: 100%; display: flex; position: relative">
       <!-- 图 -->
@@ -70,28 +70,31 @@ const graphRef$ = ref<RelationGraph>();
 const props = defineProps({
   graphData: Object,
 });
-console.log(props.graphData,73)
 const graphList = ref({
   nodes: [],
   lines: [],
 });
 watch(props, (oldValue, newValue) => {
   const records = props.graphData.data.item.records;
-  records.forEach((item) => {
-    if(item._fields[0].properties.browserUsed){
-      graphList.value.nodes.push({
-      id: item._fields[0].elementId,
-      text: item._fields[0].properties.browserUsed,
-      color:'red'
+  let colorObj = sessionStorage.getItem("tagColor")
+  let color = JSON.parse(colorObj).color
+  if (records[0]._fields[0].properties.browserUsed) {
+    graphList.value.nodes = records.map((item) => {
+      return {
+        id: item._fields[0].elementId,
+        text: item._fields[0].properties.browserUsed,
+        color: 'red',
+      };
     });
-    }else{
-      graphList.value.nodes.push({
-      id: item._fields[0].elementId,
-      text: item._fields[0].properties.name,
+  } else if (records[0]._fields[0].properties.name) {
+    graphList.value.nodes = records.map((item) => {
+      return {
+        id: item._fields[0].elementId,
+        text: item._fields[0].properties.name,
+        color: 'blue',
+      };
     });
-    }
-   
-  });
+  }
   graphRef$.value.setJsonData(graphList.value);
 });
 
@@ -112,7 +115,7 @@ onMounted(() => {
 
 <style scoped>
 .relation-graph .rel-toolbar-v-center {
-    top: calc((100% - 240px) / 2) !important;
+  top: calc((100% - 240px) / 2) !important;
 }
 </style>
 

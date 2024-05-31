@@ -28,7 +28,6 @@
       </template>
       <!-- 表 -->
       <Ttable :tableData="{data}"/> 
-      <!-- <div>{{ data }}</div> -->
     </el-tab-pane>
     <el-tab-pane label="text">
       <!-- text标题 -->
@@ -41,7 +40,7 @@
         <div style="font-weight:600;color: #666666;">文字</div>
         </div>
       </template>
-      <!-- <Ttext/> -->
+      <Ttext :textData="{data}"/>
     </el-tab-pane>
     <el-tab-pane label="code">
       <template #label>
@@ -53,16 +52,16 @@
         <div style="font-weight:600;color: #666666;">编码</div>
         </div>
       </template>
-      <!-- <h1>code</h1> -->
+    <Tcode :codeData="{data}"/>
     </el-tab-pane>
   </el-tabs>
-  <!-- graph -->
 </template>
 <script setup lang="ts">
 // 引入组件
 // import graph from "./components/graph.vue";
 import Ttable from "./components/Ttable.vue";
 import Ttext from "./components/Ttext.vue";
+import Tcode from "./components/Tcode.vue"
 import {  ref,watch } from "vue";
 import { defineProps } from "vue";
 import type { TabsInstance } from "element-plus";
@@ -72,7 +71,7 @@ const props = defineProps({
   data: Object,
 });
 watch(props, (newValue, oldValue) => {
-console.log(props.data,75)
+// console.log(props.data,75)
 });
 
 </script>

@@ -1,38 +1,38 @@
 <template>
-  <div> 
-     <el-table :data="tableData" border style="width: 100%">
-    <el-table-column prop="date" label="Date" width="180" />
-    <el-table-column prop="name" label="Name" width="180" />
-    <el-table-column prop="address" label="Address" />
-  </el-table>
+  <div style="padding: 10px; height: 338px; overflow-y: scroll;"> 
+   <el-row style="border: 1px dashed #666666">
+    <el-col class="td">
+      {{ textList[0].keys[0] }}
+    </el-col>
+    <el-col v-for="(item,index) in textList" :key="index" class="td"> 
+    {{ item._fields[0].labels[0 ] }}{{ item._fields[0].properties }}
+    </el-col>
+   </el-row>
   </div>
 </template>
 
 <script setup lang="ts">
-const tableData = [
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-02',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-04',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-01',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-]
+import { ref,toRaw, watch } from 'vue';
+const props = defineProps({
+  textData: Object, 
+});
+const textList = ref(props.textData.data.item.records)
+watch(props, (newValue, oldValue) => {
+   textList.value = props.textData.data.item.records
+});
 </script>
 
-<style>
-
+<style scoped>
+table{
+				border: 1px solid black;
+        height: 306px;
+        overflow-y: scroll;
+			}
+			
+			.td{
+				border-bottom: 1px dashed black;
+        font-size: 14px;
+        color: #666666;
+        padding: 10px;
+			}
 </style>

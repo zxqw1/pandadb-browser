@@ -1,6 +1,8 @@
 <template>
-  <div :class="name"  v-for="(item, index) in list" :key="index" style="display: flex; flex-direction: column;">
+  <div :class="name"  v-for="(item, index) in store.state.list" :key="index" style="display: flex; flex-direction: column;">
     <!-- 右上 -->
+    <el-row>
+      <el-col>
     <div class="topIcon">
       <PushpinOutlined style="margin-left: 16px" />
       <UpOutlined
@@ -22,8 +24,10 @@
       />
       <CloseOutlined style="margin-left: 16px" @click="removeModule(item)" />
     </div>
+  </el-col>
     <!-- 输入框 -->
-    <div class="search">
+    <el-col>
+      <div class="search">
       <div class="bgSearch">
         <img
           src="../../assets/img/logos.png"
@@ -54,11 +58,16 @@
       <StarOutlined style="font-size: 20px; color: #666666" />
       <VerticalAlignBottomOutlined style="font-size: 24px" />
     </div>
+
+  </el-col>
     <!-- 关系图 -->
+    <el-col>
     <div  style="flex: 3;">
       <!-- {{ item.result }} -->
       <node :data=" { item } " style="height:100% ;" :v-if="item.type === 'result'"/>  
     </div>
+  </el-col>
+  </el-row>
   </div>
 </template>
 
@@ -81,18 +90,18 @@ import {
 const store = useStore();
 // const list = computed(() => store.state.list)
 const list = ref(store.state.list)
+
 const value1 = ref<string>("");
-value1.value = 'MATCH (n) RETURN n LIMIT 25'
 // 输入框数据
 const isFullscreen = ref<boolean>(false);
 const islaunch = ref<boolean>(false);
 const name = ref<string>("block"); //默认效果
 
-
 watch(store.state.list, (newValue, oldValue) => {
    list.value = store.state.list
-   value1.value = 'MATCH (n) RETURN n LIMIT 25'
-  //  console.log(store.state.list)
+   value1.value = store.state.list[0].summary.query.text
+   console.log(list.value,99)
+
 });
 // console.log(list.value,96)
 

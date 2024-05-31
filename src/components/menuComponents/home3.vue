@@ -41,7 +41,7 @@
           style="margin-left: 10px; margin-top: 10px; cursor: pointer"
           v-for="(item, index) in dataBase[0].nodes"
           :key="index"
-          @click="graphShow"
+          @click="graphShow($event, item.color)"
         >
           {{ item.text }}
         </a-tag>
@@ -106,8 +106,9 @@ import { useStore } from "vuex";
         });
     }
     // 节点展示部分
-    const graphShow = (event)=>{
-      console.log(event.target.getAttribute(':color'),110) 
+    const graphShow = (event, color)=>{
+      sessionStorage.setItem("tagColor", JSON.stringify({color}))
+      // console.log(event.target.getAttribute(':color'),110) 
       let promiseData = request.fetchData(
         "neo4j",
         "bigdata",
