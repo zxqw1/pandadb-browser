@@ -68,37 +68,47 @@ import RelationGraph from "relation-graph/vue3";
 import { ArrowRightBold, ArrowLeftBold } from "@element-plus/icons-vue";
 const graphRef$ = ref<RelationGraph>();
 const props = defineProps({
-  graphData: Object,
+  graphData: Object, 
 });
+console.log(props.graphData,"73")
 const graphList = ref({
+  id:'a',
   nodes: [],
   lines: [],
 });
 watch(props, (oldValue, newValue) => {
-  const records = props.graphData.data.item.records;
-  let colorObj = sessionStorage.getItem("tagColor")
-  let color = JSON.parse(colorObj).color
-  if (records[0]._fields[0].properties.browserUsed) {
-    graphList.value.nodes = records.map((item) => {
-      return {
-        id: item._fields[0].elementId,
-        text: item._fields[0].properties.browserUsed,
-        color: 'red',
-      };
-    });
-  } else if (records[0]._fields[0].properties.name) {
-    graphList.value.nodes = records.map((item) => {
-      return {
-        id: item._fields[0].elementId,
-        text: item._fields[0].properties.name,
-        color: 'blue',
-      };
-    });
-  }
+  // console.log(oldValue,"80")
+  // console.log(newValue,"81")
+  const records = props.graphData.item.result.records;
+  let color = props.graphData.item.color
+  console.log(records,"83")
+  // console.log(color,"84")
+  // if(records[0]._fields[0].start && records[0]._fields[0].end){
+  //   // 关系类型处理数据逻辑
+  //   console.log(records,"8787")
+  // }else{
+    // 节点标签处理数据逻辑
+    if (records[0]._fields[0].properties.browserUsed) {
+      graphList.value.nodes = records.map((item) => {
+        return {
+          id: item._fields[0].elementId,
+          text: item._fields[0].properties.browserUsed,
+          color: color,
+        };
+      });
+    } else if (records[0]._fields[0].properties.name) {
+      graphList.value.nodes = records.map((item) => {
+        return {
+          id: item._fields[0].elementId,
+          text: item._fields[0].properties.name,
+          color: color,
+        };
+      });
+    }
+  // }
   graphRef$.value.setJsonData(graphList.value);
 });
 
-// console.log(graphList.value,67)
 const overview: Ref<boolean> = ref(false);
 // 节点数据
 const options = {
@@ -107,7 +117,6 @@ const options = {
 const expandOverview = () => {
   overview.value = !overview.value;
 };
-// options.allowAutoLayoutIfSupport = false
 onMounted(() => {
   graphRef$.value.setJsonData(graphList.value);
 });

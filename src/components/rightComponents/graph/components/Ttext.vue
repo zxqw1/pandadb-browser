@@ -16,9 +16,10 @@ import { ref,toRaw, watch } from 'vue';
 const props = defineProps({
   textData: Object, 
 });
-const textList = ref(props.textData.data.item.records)
+// console.log(props.textData.data.uten,19)
+const textList = ref(props.textData.data.item.result.records)
 watch(props, (newValue, oldValue) => {
-   textList.value = props.textData.data.item.records
+   textList.value = props.textData.data.item.result.records
 });
 </script>
 

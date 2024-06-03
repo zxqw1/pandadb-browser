@@ -88,7 +88,6 @@ import {
   UpOutlined,
 } from "@ant-design/icons-vue";
 const store = useStore();
-// const list = computed(() => store.state.list)
 const list = ref(store.state.list)
 
 const value1 = ref<string>("");
@@ -96,12 +95,11 @@ const value1 = ref<string>("");
 const isFullscreen = ref<boolean>(false);
 const islaunch = ref<boolean>(false);
 const name = ref<string>("block"); //默认效果
-
+// console.log(store.state.list[],98)
 watch(store.state.list, (newValue, oldValue) => {
+  // console.log(list.value,100)
    list.value = store.state.list
-   value1.value = store.state.list[0].summary.query.text
-   console.log(list.value,99)
-
+   value1.value = store.state.list[0].result.summary.query.text
 });
 // console.log(list.value,96)
 

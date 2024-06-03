@@ -1,6 +1,7 @@
 <template>
   <el-tabs :tab-position="tabPosition" style="height: 200px;" class="demo-tabs graphMenu">
     <el-tab-pane label="graph">
+      <!-- {{ data.item.result.records[0]._fields }} -->
       <!-- graph标题 -->
       <template #label>
         <span style="display: flex; flex-direction: column;align-items: center">
@@ -8,11 +9,11 @@
           style="
           width: 24px; 
           height: 24px;">
-        <span style="font-weight:600;color: #666666;" class="graph">图谱</span>
+        <span style="font-weight:600;color: #666666;" class="graph">graph</span>
         </span>
       </template>
       <!-- 图 -->
-      <graph :graphData ="{data}"/>
+      <graph :graphData="data" ref="graphRef"/>
       <!-- {{ data }} -->
     </el-tab-pane>
     <el-tab-pane label="table">
@@ -23,11 +24,11 @@
           style="
           width: 24px; 
           height: 24px;">
-        <div style="font-weight:600;color: #666666;">表格</div>
+        <div style="font-weight:600;color: #666666;">table</div>
         </div>
       </template>
       <!-- 表 -->
-      <Ttable :tableData="{data}"/> 
+      <Ttable :tableData="{ data }"/> 
     </el-tab-pane>
     <el-tab-pane label="text">
       <!-- text标题 -->
@@ -37,7 +38,7 @@
           style="
           width: 24px; 
           height: 24px;">
-        <div style="font-weight:600;color: #666666;">文字</div>
+        <div style="font-weight:600;color: #666666;">text</div>
         </div>
       </template>
       <Ttext :textData="{data}"/>
@@ -49,7 +50,7 @@
           style="
           width: 24px; 
           height: 24px;">
-        <div style="font-weight:600;color: #666666;">编码</div>
+        <div style="font-weight:600;color: #666666;">code</div>
         </div>
       </template>
     <Tcode :codeData="{data}"/>
@@ -62,7 +63,7 @@
 import Ttable from "./components/Ttable.vue";
 import Ttext from "./components/Ttext.vue";
 import Tcode from "./components/Tcode.vue"
-import {  ref,watch } from "vue";
+import { ref, watch } from "vue";
 import { defineProps } from "vue";
 import type { TabsInstance } from "element-plus";
 import Table from "ant-design-vue/es/table/Table";
@@ -70,12 +71,15 @@ const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 const props = defineProps({
   data: Object,
 });
+console.log(props.data.item.result.records[0]._fields,73)
 watch(props, (newValue, oldValue) => {
-// console.log(props.data,75)
+// console.log(graphRef.value,75)
+  // this.$refs.graph.graphChange(props.data)
+  // graphRef.value.graphChange(666);
 });
 
 </script>
-<style  scoped>
+<style scoped>
 
 
 </style>

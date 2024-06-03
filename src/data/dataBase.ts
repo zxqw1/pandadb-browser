@@ -101,7 +101,7 @@ const dataBase = [
             {
                 color: 'rgb(255, 196, 84)',
                 text: 'City',
-                
+
             },
             {
                 color: 'rgb(96, 74, 14)',
@@ -155,6 +155,14 @@ const dataBase = [
                 color: 'rgb(217, 200, 174)',
                 text: 'University'
             }
+        ],
+        Relationship: [
+            'CONTAINER_OF', 'HAS_CREATOR', 'HAS_INTEREST', 'HAS_MEMBER', 'HAS_MODERATOR', 'HAS_TAG', 'HAS_TYPE', 'IS_LOCATED_IN', 'IS_PART_OF', 'IS_SUBCLASS_OF', 'KNOWS',
+            'LIKES', 'REPLY_OF', 'STUDY_AT', 'WORK_AT'
+        ],
+        Property: [
+            'birthday', 'browserUsed', 'classYear', 'content', 'creationDate', 'email', 'firstName', 'gender', 'id', 'imageFile', 'joinDate', 'language', 'lastName', 'length', 'locationIP', 'name',
+            'speaks', 'title', 'url', 'workFrom'
         ]
 
     }

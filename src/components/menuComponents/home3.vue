@@ -52,8 +52,14 @@
         <div class="name">关系类型</div>
       </a-col>
       <a-col style="margin-top: 20px">
-        <a-tag>*(1234)</a-tag>
-        <a-tag>CONTAINER_OF</a-tag>
+        <a-tag 
+        style=""
+        @click="relationShow()">*(17,256,038)</a-tag>
+        <a-tag 
+        style="margin-left: 10px; margin-top: 10px; cursor: pointer"
+        v-for="(item, index) in dataBase[0].Relationship"
+        :key="index"
+        >{{ item }}</a-tag>
       </a-col>
       <!-- 属性值 -->
       <a-col style="margin-top: 20px; display: flex; align-items: center">
@@ -61,7 +67,9 @@
         <div class="name">属性值</div>
       </a-col>
       <a-col style="margin-top: 20px">
-        <a-tag>`1234`</a-tag>
+        <a-tag 
+        style="margin-left: 10px; margin-top: 10px; cursor: pointer"
+        v-for="(item,index) in  dataBase[0].Property" :key="index">{{ item }}</a-tag>
       </a-col>
       <!-- 连接库信息 -->
       <a-col style="margin-top: 30px; display: flex; align-items: center">
@@ -91,7 +99,7 @@ import { useStore } from "vuex";
       },
     ];
     // 节点展示全局
-  const labelShow = () => {
+  const labelShow = (color) => {
       let promiseData = request.fetchData(
         "neo4j",
         "bigdata",
@@ -99,7 +107,8 @@ import { useStore } from "vuex";
       );
       promiseData
         .then((result: any) => {
-          store.commit("increment", result);
+          console.log(result,"节点的数据")
+          store.commit("increment", {color,result});
         })
         .catch((error: any) => {
           console.log(error);
@@ -107,8 +116,6 @@ import { useStore } from "vuex";
     }
     // 节点展示部分
     const graphShow = (event, color)=>{
-      sessionStorage.setItem("tagColor", JSON.stringify({color}))
-      // console.log(event.target.getAttribute(':color'),110) 
       let promiseData = request.fetchData(
         "neo4j",
         "bigdata",
@@ -116,7 +123,25 @@ import { useStore } from "vuex";
       );
       promiseData
         .then((result: any) => {
-          store.commit("increment", result);
+          console.log(result,124)
+          store.commit("increment", {color,result});
+        })
+        .catch((error: any) => {
+          console.log(error);
+        });
+    }
+    // 关系
+    const relationShow = ()=>{
+      let promiseData = request.fetchData(
+        "neo4j",
+        "bigdata",
+        // `MATCH p=()-->() RETURN p LIMIT 25`
+        `MATCH p=(Message)-->(Person) RETURN p LIMIT 1`
+      );
+      promiseData
+        .then((result: any) => {
+          console.log(result,"关系的数据")
+          store.commit("increment", {color: "red", result});
         })
         .catch((error: any) => {
           console.log(error);
