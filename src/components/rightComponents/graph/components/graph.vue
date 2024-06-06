@@ -1,9 +1,12 @@
 <template>
   <div style="height: 322px">
     <!-- {{ data }} -->
-    <div style="height: 100%; width: 100%; display: flex; position: relative">
+    <!-- <div style="height: 100%; width: 100%; display: flex; position: relative"> -->
+    <div style="height: 100%; width: 100%; position: relative">
       <!-- 图 -->
-      <relation-graph ref="graphRef$" :options="options" />
+      <!-- <div v-for="(item, index) in store.state.list" :key="index" style="width: 100%; height: 322px;"> -->
+        <relation-graph ref="graphRef$" :options="options" />
+      <!-- </div> -->
       <!-- {{ graphData }} -->
       <!-- overview按钮 -->
       <el-button
@@ -67,6 +70,8 @@ import { onMounted, ref, toRaw, watch } from "vue";
 import RelationGraph from "relation-graph/vue3";
 import { ArrowRightBold, ArrowLeftBold } from "@element-plus/icons-vue";
 const graphRef$ = ref<RelationGraph>();
+import { useStore } from "vuex";
+const store = useStore() 
 const props = defineProps({
   graphData: Object, 
 });
@@ -81,13 +86,6 @@ watch(props, (oldValue, newValue) => {
   // console.log(newValue,"81")
   const records = props.graphData.item.result.records;
   let color = props.graphData.item.color
-  console.log(records,"83")
-  // console.log(color,"84")
-  // if(records[0]._fields[0].start && records[0]._fields[0].end){
-  //   // 关系类型处理数据逻辑
-  //   console.log(records,"8787")
-  // }else{
-    // 节点标签处理数据逻辑
     if (records[0]._fields[0].properties.browserUsed) {
       graphList.value.nodes = records.map((item) => {
         return {
@@ -118,6 +116,7 @@ const expandOverview = () => {
   overview.value = !overview.value;
 };
 onMounted(() => {
+  console.log(graphRef$,"121")
   graphRef$.value.setJsonData(graphList.value);
 });
 </script>

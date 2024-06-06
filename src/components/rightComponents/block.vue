@@ -1,8 +1,9 @@
 <template>
   <div :class="name"  v-for="(item, index) in store.state.list" :key="index" style="display: flex; flex-direction: column;">
+  <!-- <div :class="name" style="display: flex; flex-direction: column;"> -->
     <!-- 右上 -->
     <el-row>
-      <el-col>
+      <!-- <el-col>
     <div class="topIcon">
       <PushpinOutlined style="margin-left: 16px" />
       <UpOutlined
@@ -24,57 +25,60 @@
       />
       <CloseOutlined style="margin-left: 16px" @click="removeModule(item)" />
     </div>
-  </el-col>
+  </el-col> -->
     <!-- 输入框 -->
-    <el-col>
-      <div class="search">
-      <div class="bgSearch">
-        <img
-          src="../../assets/img/logos.png"
-          alt=""
-          style="
-            position: absolute;
-            z-index: 1;
-            width: 46px;
-            height: 30px;
-            top: 1%;
-          "
-        />
-        <a-textarea
-          v-model:value="value1"
-          placeholder="请输入"
-          auto-size
-          style="
-            background-color: #f6f6f6;
-            border: 1px #d2dabb dashed;
-            padding: 0 38px;
-            width: 100%;
-          "
-        />
-        <CaretRightOutlined
-          style="font-size: 24px; color: #6a8322; position: absolute; right: 1%"
-        />
-      </div>
-      <StarOutlined style="font-size: 20px; color: #666666" />
-      <VerticalAlignBottomOutlined style="font-size: 24px" />
-    </div>
-
-  </el-col>
-    <!-- 关系图 -->
-    <el-col>
-    <div  style="flex: 3;">
-      <!-- {{ item.result }} -->
-      <node :data=" { item } " style="height:100% ;" :v-if="item.type === 'result'"/>  
-    </div>
-  </el-col>
-  </el-row>
+      <!-- <el-col>
+        <div class="search">
+          <div class="bgSearch">
+            <img
+              src="../../assets/img/logos.png"
+              alt=""
+              style="
+                position: absolute;
+                z-index: 1;
+                width: 46px;
+                height: 30px;
+                top: 1%;
+              "
+            />
+            <a-textarea
+              v-model:value="value1"
+              placeholder="请输入"
+              auto-size
+              style="
+                background-color: #f6f6f6;
+                border: 1px #d2dabb dashed;
+                padding: 0 38px;
+                width: 100%;
+              "
+            />
+            <CaretRightOutlined
+              style="font-size: 24px; color: #6a8322; position: absolute; right: 1%"
+            />
+          </div>
+          <StarOutlined style="font-size: 20px; color: #666666" />
+          <VerticalAlignBottomOutlined style="font-size: 24px" />
+        </div>
+      </el-col> -->
+      <!-- 关系图 -->
+      <el-col>
+        <div  style="flex: 3;">
+          <!-- {{ item.result }} -->
+          <!-- <node :data=" { item } " style="height:100% ;" :v-if="item.type === 'result'"/>   -->
+          <node :data="{item}" style="height:100%;" />
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script setup lang="ts">
 import node from "./graph/node.vue";
 import { useStore } from "vuex";
-import { ref, computed,watch } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
+import RelationGraph from "relation-graph/vue3";
+const graphRef$ = ref<RelationGraph>();
+console.log(graphRef$,"81")
 // 导入icon
 import {
   PushpinOutlined,
@@ -96,7 +100,9 @@ const isFullscreen = ref<boolean>(false);
 const islaunch = ref<boolean>(false);
 const name = ref<string>("block"); //默认效果
 // console.log(store.state.list[],98)
-watch(store.state.list, (newValue, oldValue) => {
+watch(store.state.list, async (newValue, oldValue) => {
+  await nextTick()
+  console.log(graphRef$,"81")
   // console.log(list.value,100)
    list.value = store.state.list
    value1.value = store.state.list[0].result.summary.query.text

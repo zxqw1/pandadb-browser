@@ -123,7 +123,7 @@ import { useStore } from "vuex";
       );
       promiseData
         .then((result: any) => {
-          console.log(result,124)
+          console.log(result, "部分节点数据")
           store.commit("increment", {color,result});
         })
         .catch((error: any) => {
@@ -140,7 +140,7 @@ import { useStore } from "vuex";
       );
       promiseData
         .then((result: any) => {
-          console.log(result,"关系的数据")
+          // console.log(result,"关系的数据")
           store.commit("increment", {color: "red", result});
         })
         .catch((error: any) => {

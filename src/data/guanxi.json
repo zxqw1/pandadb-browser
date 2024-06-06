@@ -1,0 +1,234 @@
+{
+    "color": "red",
+    "result": {
+        "records": [
+            {
+                "keys": [
+                    "p"
+                ],
+                "length": 1,
+                "_fields": [
+                    {
+                        "start": {
+                            "identity": {
+                                "low": 0,
+                                "high": 0
+                            },
+                            "labels": [
+                                "Comment",
+                                "Message"
+                            ],
+                            "properties": {
+                                "browserUsed": "Chrome",
+                                "length": {
+                                    "low": 3,
+                                    "high": 0
+                                },
+                                "locationIP": "92.39.58.88",
+                                "id": {
+                                    "low": 1,
+                                    "high": 288
+                                },
+                                "creationDate": {
+                                    "low": -668772615,
+                                    "high": 305
+                                },
+                                "content": "yes"
+                            },
+                            "elementId": "0"
+                        },
+                        "end": {
+                            "identity": {
+                                "low": 1997227,
+                                "high": 0
+                            },
+                            "labels": [
+                                "Person"
+                            ],
+                            "properties": {
+                                "birthday": {
+                                    "low": -623289344,
+                                    "high": 88
+                                },
+                                "firstName": "Andrei",
+                                "lastName": "Condariuc",
+                                "gender": "male",
+                                "speaks": [
+                                    "ru",
+                                    "en"
+                                ],
+                                "browserUsed": "Chrome",
+                                "locationIP": "92.39.58.88",
+                                "id": {
+                                    "low": 7048,
+                                    "high": 2560
+                                },
+                                "creationDate": {
+                                    "low": 589280553,
+                                    "high": 301
+                                },
+                                "email": [
+                                    "Andrei10995116284808@gmail.com",
+                                    "Andrei10995116284808@gmx.com",
+                                    "Andrei10995116284808@yahoo.com"
+                                ]
+                            },
+                            "elementId": "1997227"
+                        },
+                        "segments": [
+                            {
+                                "start": {
+                                    "identity": {
+                                        "low": 0,
+                                        "high": 0
+                                    },
+                                    "labels": [
+                                        "Comment",
+                                        "Message"
+                                    ],
+                                    "properties": {
+                                        "browserUsed": "Chrome",
+                                        "length": {
+                                            "low": 3,
+                                            "high": 0
+                                        },
+                                        "locationIP": "92.39.58.88",
+                                        "id": {
+                                            "low": 1,
+                                            "high": 288
+                                        },
+                                        "creationDate": {
+                                            "low": -668772615,
+                                            "high": 305
+                                        },
+                                        "content": "yes"
+                                    },
+                                    "elementId": "0"
+                                },
+                                "relationship": {
+                                    "identity": {
+                                        "low": 9069840,
+                                        "high": 0
+                                    },
+                                    "start": {
+                                        "low": 0,
+                                        "high": 0
+                                    },
+                                    "end": {
+                                        "low": 1997227,
+                                        "high": 0
+                                    },
+                                    "type": "HAS_CREATOR",
+                                    "properties": {},
+                                    "elementId": "9069840",
+                                    "startNodeElementId": "0",
+                                    "endNodeElementId": "1997227"
+                                },
+                                "end": {
+                                    "identity": {
+                                        "low": 1997227,
+                                        "high": 0
+                                    },
+                                    "labels": [
+                                        "Person"
+                                    ],
+                                    "properties": {
+                                        "birthday": {
+                                            "low": -623289344,
+                                            "high": 88
+                                        },
+                                        "firstName": "Andrei",
+                                        "lastName": "Condariuc",
+                                        "gender": "male",
+                                        "speaks": [
+                                            "ru",
+                                            "en"
+                                        ],
+                                        "browserUsed": "Chrome",
+                                        "locationIP": "92.39.58.88",
+                                        "id": {
+                                            "low": 7048,
+                                            "high": 2560
+                                        },
+                                        "creationDate": {
+                                            "low": 589280553,
+                                            "high": 301
+                                        },
+                                        "email": [
+                                            "Andrei10995116284808@gmail.com",
+                                            "Andrei10995116284808@gmx.com",
+                                            "Andrei10995116284808@yahoo.com"
+                                        ]
+                                    },
+                                    "elementId": "1997227"
+                                }
+                            }
+                        ],
+                        "length": 1
+                    }
+                ],
+                "_fieldLookup": {
+                    "p": 0
+                }
+            }
+        ],
+        "summary": {
+            "query": {
+                "text": "MATCH p=(Message)-->(Person) RETURN p LIMIT 1",
+                "parameters": {}
+            },
+            "queryType": "r",
+            "counters": {
+                "_stats": {
+                    "nodesCreated": 0,
+                    "nodesDeleted": 0,
+                    "relationshipsCreated": 0,
+                    "relationshipsDeleted": 0,
+                    "propertiesSet": 0,
+                    "labelsAdded": 0,
+                    "labelsRemoved": 0,
+                    "indexesAdded": 0,
+                    "indexesRemoved": 0,
+                    "constraintsAdded": 0,
+                    "constraintsRemoved": 0
+                },
+                "_systemUpdates": 0
+            },
+            "updateStatistics": {
+                "_stats": {
+                    "nodesCreated": 0,
+                    "nodesDeleted": 0,
+                    "relationshipsCreated": 0,
+                    "relationshipsDeleted": 0,
+                    "propertiesSet": 0,
+                    "labelsAdded": 0,
+                    "labelsRemoved": 0,
+                    "indexesAdded": 0,
+                    "indexesRemoved": 0,
+                    "constraintsAdded": 0,
+                    "constraintsRemoved": 0
+                },
+                "_systemUpdates": 0
+            },
+            "plan": false,
+            "profile": false,
+            "notifications": [],
+            "server": {
+                "address": "10.0.82.146:7687",
+                "agent": "Neo4j/4.4.26",
+                "protocolVersion": 4.4
+            },
+            "resultConsumedAfter": {
+                "low": 1,
+                "high": 0
+            },
+            "resultAvailableAfter": {
+                "low": 0,
+                "high": 0
+            },
+            "database": {
+                "name": "neo4j"
+            }
+        }
+    }
+}

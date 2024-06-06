@@ -1,5 +1,8 @@
 <template>
-  <div class="search">
+  <div class="search" :style="{
+    height: isFullscreen ? '100vh' : 'auto',
+    padding:isFullscreen ? '20px' : 'auto',
+  }">
     <el-row>
       <!-- position: relative; -->
       <el-col :span="22" style="display: flex; align-items: center">
@@ -13,12 +16,21 @@
             border: 1px dashed #d2dabb;
             min-height: 32px;
           "
+          :style="{
+            height: isFullscreen ? '100vh' : 'auto',  
+            position:isFullscreen ?'relative' :'static'
+          }"
+         
           @keydown.enter.prevent="handleEnter"
         >
           <!-- logo -->
           <img
             src="../../assets/img/logos.png"
             style="width: 44px; height: 30px"
+            :style="{
+              position:isFullscreen ? 'absolute' : 'static',
+              top:isFullscreen ? '10px' : 'auto',
+            }"
             alt=""
           />
           <!-- 真实输入 -->
@@ -27,12 +39,22 @@
             style="width: 96%"
             class="searchText"
             @blur="handleBlur"
+            :style="{
+              position:isFullscreen ? 'absolute' : 'static',
+              top:isFullscreen ? '10px' : 'auto',
+              right:isFullscreen ? '10px' : 'auto',
+            }"
           >
             {{ context }}
           </div>
           <!-- 展示 -->
           <CaretRightOutlined
             style="color: #6a8322; font-size: 28px"
+            :style="{
+              position:isFullscreen ? 'absolute' : 'static',
+              top:isFullscreen ? '10px' : 'auto',
+              right:isFullscreen ? '10px' : 'auto',
+            }"
             @click="nodeShow"
           />
         </div>
@@ -52,11 +74,15 @@
           v-if="!isFullscreen"
         />
         <ShrinkOutlined
-          style="font-size: 20px"
+          style="font-size: 20px;position: absolute; top: 10px;"
           @click="toggleFullScreen"
           v-else
         />
-        <CloseOutlined style="font-size: 20px" />
+        <CloseOutlined style="font-size: 20px"
+        :style="{ position:isFullscreen ? 'absolute' : 'static',
+              top:isFullscreen ? '10px' : 'auto',
+              right:isFullscreen ? '10px' : 'auto',}"
+        />
       </el-col>
     </el-row>
   </div>
@@ -73,6 +99,8 @@ import {
 import { ElMessage, ElMessageBox } from "element-plus";
 import request from "../../utils/request.js";
 import { useStore } from "vuex";
+import type { he } from "element-plus/es/locale/index.mjs";
+import { autoCompleteProps } from "ant-design-vue/es/auto-complete/index.js";
 const store = useStore();
 const isFullscreen = ref<boolean>(false);
 const context = ref("");
@@ -83,7 +111,6 @@ const toggleFullScreen = () => {
 // 拿到输入数据
 const handleBlur = (event) => {
   context.value = event.target.innerText;
-  // console.log(context.value);
 };
 const nodeShow = () => {
   console.log(context.value, 92);
@@ -93,7 +120,6 @@ const nodeShow = () => {
     let promiseData = request.fetchData("neo4j", "bigdata", context.value);
   promiseData
     .then((result: any) => {
-      console.log(result,96)
       store.commit("increment", result);
     })
     .catch((error: any) => {
@@ -112,7 +138,7 @@ const nodeShow = () => {
 .search {
   width: 100%;
   background-color: #ffffff;
-  padding: 14px 16px 24px;
+  padding: 14px 16px ;
 }
 .searchBlock {
   display: flex;

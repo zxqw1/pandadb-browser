@@ -1,7 +1,6 @@
 <template>
   <el-tabs :tab-position="tabPosition" style="height: 200px;" class="demo-tabs graphMenu">
     <el-tab-pane label="graph">
-      <!-- {{ data.item.result.records[0]._fields }} -->
       <!-- graph标题 -->
       <template #label>
         <span style="display: flex; flex-direction: column;align-items: center">
@@ -28,7 +27,7 @@
         </div>
       </template>
       <!-- 表 -->
-      <Ttable :tableData="{ data }"/> 
+      <!-- <Ttable :tableData="{ data }"/>  -->
     </el-tab-pane>
     <el-tab-pane label="text">
       <!-- text标题 -->
@@ -41,7 +40,7 @@
         <div style="font-weight:600;color: #666666;">text</div>
         </div>
       </template>
-      <Ttext :textData="{data}"/>
+      <!-- <Ttext :textData="{data}"/> -->
     </el-tab-pane>
     <el-tab-pane label="code">
       <template #label>
@@ -53,7 +52,7 @@
         <div style="font-weight:600;color: #666666;">code</div>
         </div>
       </template>
-    <Tcode :codeData="{data}"/>
+    <!-- <Tcode :codeData="{data}"/> -->
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -71,7 +70,7 @@ const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 const props = defineProps({
   data: Object,
 });
-console.log(props.data.item.result.records[0]._fields,73)
+// console.log(props.data.item.result.records[0]._fields,73)
 watch(props, (newValue, oldValue) => {
 // console.log(graphRef.value,75)
   // this.$refs.graph.graphChange(props.data)
