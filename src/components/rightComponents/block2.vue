@@ -95,7 +95,10 @@
         </div>
       </el-col>
       <!-- 展示 node -->
-      <el-col style="background-color: #ffffff"  v-if="item.result.records[0].keys[0] === 'n'">
+      <el-col
+        style="background-color: #ffffff"
+        v-if="item.result.records[0].keys[0] === 'n'"
+      >
         <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu">
           <el-tab-pane label="graph">
             <!-- graph-标题 -->
@@ -261,7 +264,10 @@
         </el-tabs>
       </el-col>
       <!-- 展示 relation -->
-      <el-col style="background-color: #ffffff"  v-if="item.result.records[0].keys[0] === 'p'">
+      <el-col
+        style="background-color: #ffffff"
+        v-if="item.result.records[0].keys[0] === 'p'"
+      >
         <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu">
           <el-tab-pane label="graph">
             <!-- graph-标题 -->
@@ -355,9 +361,11 @@
                   v-for="(item3, index3) in item.result.records"
                   :key="index3"
                 >
-                {{ item3._fields[0].segments[0].start }} -
-              [ : {{ item3._fields[0].segments[0].relationship.type }}]
-              (:{{ item3._fields[0].segments[0].end.labels[0] }} {{ item3._fields[0].segments[0].end.properties }})
+                  {{ item3._fields[0].segments[0].start }} - [ :
+                  {{ item3._fields[0].segments[0].relationship.type }}] (:{{
+                    item3._fields[0].segments[0].end.labels[0]
+                  }}
+                  {{ item3._fields[0].segments[0].end.properties }})
                   <!-- {{ item3._fields[0].labels[0]
                   }}{{ item3._fields[0].properties }} -->
                 </el-col>
@@ -430,7 +438,10 @@
         </el-tabs>
       </el-col>
       <!-- 展示keys -->
-      <el-col style="background-color: #ffffff"  v-if="item === ''">
+      <el-col
+        style="background-color: #ffffff"
+        v-if="item.result.records[0].length === 2"
+      >
         <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu">
           <el-tab-pane label="table">
             <!-- table-标题 -->
@@ -445,34 +456,50 @@
               </div>
             </template>
             <!-- table-详情 -->
-            <!-- <div style="height: 324px; overflow-y: scroll">
-              <div
+            <el-row
+              style="
+                font-size: 16px;
+                font-weight: 500;
+                color: #666666;
+                height: 32px;
+                background-color: #ffffff;
+                border-bottom: 1px #999999 dashed;
+                padding-left: 16px;
+                position: sticky;
+                top: 0;
+              "
+            >
+              <el-col
+                :span="12"
+                style="font-size: 16px; font-weight: 500; color: #666666"
+                v-for="(item4, index4) in item.result.records[0].keys"
+                :key="index4"
+              >
+                {{ item4 }}
+              </el-col>
+            </el-row>
+            <div style="height: 292px; overflow-y: scroll">
+              <el-row
                 style="
                   font-size: 16px;
+                  font-weight: 500;
                   color: #666666;
                   height: 32px;
                   background-color: #ffffff;
                   border-bottom: 1px #999999 dashed;
                   padding-left: 16px;
-                  position: sticky;
-                  top: 0;
                 "
+                v-for="(item5, index5) in item.result.records"
+                :key="index5"
               >
-                {{ item.result.records[0].keys[0] }}
-              </div>
-              <pre
-                v-for="(item2, index2) in item.result.records"
-                :key="index2"
-                style="
-                  margin-bottom: 10px;
-                  padding: 10px;
-                  margin-top: 10px;
-                  background-color: rgb(239, 239, 239);
-                  border-bottom: 1px solid #000000;
-                "
-                >{{ JSON.stringify(item2._fields, null, 2) }}</pre
-              >
-            </div> -->
+                <el-col :span="12">
+                  {{ item5._fields[0] }}
+                </el-col>
+                <el-col :span="12">
+                  {{ item5._fields[1] }}
+                </el-col>
+              </el-row>
+            </div>
           </el-tab-pane>
           <el-tab-pane label="text">
             <!-- text-标题 -->
@@ -487,23 +514,31 @@
               </div>
             </template>
             <!-- text-详情 -->
-            <h1>text详情</h1>
-            <!-- <div style="padding: 10px; height: 324px; overflow-y: scroll">
-              <el-row style="border: 1px dashed #666666">
-                <el-col class="td">
-                  {{ item.result.records[0].keys[0] }}
+            <el-row>
+              <el-col
+                :span="4"
+                class="text"
+                style="border-bottom: none; font-weight: 500"
+                v-for="(item5, index5) in item.result.records[0].keys"
+                :key="index5"
+              >
+                {{ item5 }}
+              </el-col>
+            </el-row>
+            <div style="height: 292px; overflow-y: scroll">
+              <el-row
+                style=""
+                v-for="(item5, index5) in item.result.records"
+                :key="index5"
+              >
+                <el-col :span="4" class="text">
+                  {{ item5._fields[0] }}
                 </el-col>
-                <el-col
-                  class="td"
-                  v-for="(item3, index3) in item.result.records"
-                  :key="index3"
-                >
-                {{ item3._fields[0].segments[0].start }} -
-              [ : {{ item3._fields[0].segments[0].relationship.type }}]
-              (:{{ item3._fields[0].segments[0].end.labels[0] }} {{ item3._fields[0].segments[0].end.properties }})
+                <el-col :span="4" class="text">
+                  {{ item5._fields[1] }}
                 </el-col>
               </el-row>
-            </div> -->
+            </div>
           </el-tab-pane>
           <el-tab-pane label="code">
             <!-- code-标题 -->
@@ -607,47 +642,46 @@ const graphList = ref([]); // 定义个数组
 watch(store.state.list, async () => {
   list.value = store.state.list; // 获取vuex的数据
   await nextTick(); // 因为要获取dom，放在nextTick之后，要等dom加载完成
-  console.log(list.value,301)
-  list.value.map(item=>{
-    console.log(item.result.records[0].keys,304)
+  console.log(list.value, 301);
+  list.value.map((item) => {
+    console.log(item.result.records[0].keys, 304);
     //判断数据为节点的数据
-    if(item.result.records[0].keys[0] === "n"){
-        // graphList.value[num.value] = {
-        //   // 第一遍，num肯定是0，正好对应数组的下标0，给数组的下标0赋值，给个对象
-        //   rootId: num.value, // 唯一id，就拿num就行
-        //   nodes: [], // 必有的
-        //   lines: [], // 必有的
-        // };
-        // console.log(list.value, "305")
-        // if (list.value[0].result.records[0]._fields[0].properties.browserUsed) {
-        //   list.value[0].result.records.map((item, index) => {
-        //     // 循环取到的vuex的数据
-        //     graphList.value[num.value].nodes.unshift({
-        //       id: item._fields[0].elementId,
-        //       text: item._fields[0].properties.browserUsed,
-        //       color: list.value[0].color,
-        //     });
-        //   });
-        // } else {
-        //   list.value[0].result.records.map((item, index) => {
-        //     // 循环取到的vuex的数据
-        //     graphList.value[num.value].nodes.unshift({
-        //       id: item._fields[0].elementId,
-        //       text: item._fields[0].properties.name,
-        //       color: list.value[0].color,
-        //     });
-        //   });
-        // }
-        // graphRef$.value[num.value].setJsonData(graphList.value[num.value]);
-        // num.value = ++num.value;
-        console.log('n')
-    } else if( item.result.records[0].keys[0] === "p"){
-      console.log('p')  
-    } else{
-      console.log('keys')
+    if (item.result.records[0].keys[0] === "n") {
+      // graphList.value[num.value] = {
+      //   // 第一遍，num肯定是0，正好对应数组的下标0，给数组的下标0赋值，给个对象
+      //   rootId: num.value, // 唯一id，就拿num就行
+      //   nodes: [], // 必有的
+      //   lines: [], // 必有的
+      // };
+      // console.log(list.value, "305")
+      // if (list.value[0].result.records[0]._fields[0].properties.browserUsed) {
+      //   list.value[0].result.records.map((item, index) => {
+      //     // 循环取到的vuex的数据
+      //     graphList.value[num.value].nodes.unshift({
+      //       id: item._fields[0].elementId,
+      //       text: item._fields[0].properties.browserUsed,
+      //       color: list.value[0].color,
+      //     });
+      //   });
+      // } else {
+      //   list.value[0].result.records.map((item, index) => {
+      //     // 循环取到的vuex的数据
+      //     graphList.value[num.value].nodes.unshift({
+      //       id: item._fields[0].elementId,
+      //       text: item._fields[0].properties.name,
+      //       color: list.value[0].color,
+      //     });
+      //   });
+      // }
+      // graphRef$.value[num.value].setJsonData(graphList.value[num.value]);
+      // num.value = ++num.value;
+      console.log("n");
+    } else if (item.result.records[0].keys[0] === "p") {
+      console.log("p");
+    } else {
+      console.log("keys");
     }
-  })
- 
+  });
 });
 onMounted(async () => {});
 //code
@@ -662,6 +696,13 @@ const resClick = () => {
 </script>
 
 <style scoped>
+.text {
+  font-size: 16px;
+  color: #666666;
+  border: 1px dashed #999999;
+  display: flex;
+  justify-content: center;
+}
 .topIcon {
   padding: 0 16px;
 }

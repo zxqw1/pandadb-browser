@@ -37,7 +37,7 @@
         <div class="name">关系类型</div>
       </a-col>
       <a-col style="margin-top: 20px">
-        <a-tag style="" @click="relationShow()">*(17,256,038)</a-tag>
+        <a-tag style="cursor: pointer" @click="relationShow()">*(17,256,038)</a-tag>
         <a-tag style="margin-left: 10px; margin-top: 10px; cursor: pointer"
           v-for="(item, index) in dataBase[0].Relationship" :key="index" @click="relationClick($event)">{{ item
           }}</a-tag>
@@ -144,24 +144,23 @@ const relationClick = (event) => {
 };
 //属性
 const keysClick = (event) => {
-  store.commit("increment", '')
-  // let promiseData = request.fetchData(
-  //   "neo4j",
-  //   "bigdata",
-  //   `MATCH (n) WHERE (n.birthday) IS NOT NULL 
-  //   RETURN DISTINCT "node" as entity, n.birthday AS birthday LIMIT 25 
-  //   UNION ALL 
-  //   MATCH ()-[r]-() WHERE (r.birthday) IS NOT NULL 
-  //   RETURN DISTINCT "relationship" AS entity, r.birthday AS birthday LIMIT 25`
-  // );
-  // promiseData
-  //   .then((result: any) => {
-  //     console.log(result, "属性数据");
-  //     // store.commit("increment", { color: "blue", result });
-  //   })
-  //   .catch((error: any) => {
-  //     console.log(error);
-  //   });
+  let promiseData = request.fetchData(
+    "neo4j",
+    "admin",
+    `MATCH (n) WHERE (n.birthday) IS NOT NULL 
+      RETURN DISTINCT "node" as entity, n.birthday AS birthday LIMIT 25 
+      UNION ALL 
+      MATCH ()-[r]-() WHERE (r.birthday) IS NOT NULL 
+      RETURN DISTINCT "relationship" AS entity, r.birthday AS birthday LIMIT 25`
+  );
+  promiseData
+    .then((result: any) => {
+      console.log(result, "属性数据");
+      store.commit("increment", { color: "blue", result });
+    })
+    .catch((error: any) => {
+      console.log(error);
+    });
 };
 </script>
 
