@@ -100,65 +100,41 @@ const dataBase = [
         nodes: [
             {
                 color: 'rgb(255, 196, 84)',
-                text: 'City',
+                text: 'comment',
 
             },
             {
                 color: 'rgb(96, 74, 14)',
-                text: 'Comment'
+                text: 'forum'
             },
             {
                 color: 'rgb(201, 144, 192)',
-                text: 'Company'
+                text: 'organisation'
             },
             {
                 color: 'rgb(247, 151, 103)',
-                text: 'Continent'
+                text: 'person'
             },
             {
                 color: 'rgb(87, 199, 227)',
-                text: 'Country'
+                text: 'place'
             },
             {
                 color: 'rgb(241, 102, 103)',
-                text: 'Forum'
+                text: 'post'
             },
             {
                 color: 'rgb(217, 200, 174)',
-                text: 'Message'
+                text: 'tag'
             },
             {
                 color: 'rgb(141, 204, 147)',
-                text: 'Organisation'
-            },
-            {
-                color: 'rgb(236, 181, 201)',
-                text: 'Person'
-            },
-            {
-                color: 'rgb(76, 142, 218)',
-                text: 'Place'
-            },
-            {
-                color: 'rgb(255, 196, 84)',
-                text: 'Post'
-            },
-            {
-                color: 'rgb(218, 113, 148)',
-                text: 'Tag'
-            },
-            {
-                color: 'rgb(217, 200, 174)',
-                text: 'TagClass'
-            },
-            {
-                color: 'rgb(217, 200, 174)',
-                text: 'University'
+                text: 'tagclass'
             }
         ],
         Relationship: [
-            'CONTAINER_OF', 'HAS_CREATOR', 'HAS_INTEREST', 'HAS_MEMBER', 'HAS_MODERATOR', 'HAS_TAG', 'HAS_TYPE', 'IS_LOCATED_IN', 'IS_PART_OF', 'IS_SUBCLASS_OF', 'KNOWS',
-            'LIKES', 'REPLY_OF', 'STUDY_AT', 'WORK_AT'
+            'containerOf', 'hasCreator', 'hasInterest', 'hasMember', 'hasModerator', 'hasTag', 'hasType', 'isLocatedIn', 'isPartOf', 'isSubclassOf', 'knows',
+            'likes', 'replyOf', 'studyAt', 'workAt'
         ],
         Property: [
             'birthday', 'browserUsed', 'classYear', 'content', 'creationDate', 'email', 'firstName', 'gender', 'id', 'imageFile', 'joinDate', 'language', 'lastName', 'length', 'locationIP', 'name',

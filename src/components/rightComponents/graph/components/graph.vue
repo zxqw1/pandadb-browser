@@ -82,8 +82,6 @@ const graphList = ref({
   lines: [],
 });
 watch(props, (oldValue, newValue) => {
-  // console.log(oldValue,"80")
-  // console.log(newValue,"81")
   const records = props.graphData.item.result.records;
   let color = props.graphData.item.color
     if (records[0]._fields[0].properties.browserUsed) {

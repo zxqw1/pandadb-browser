@@ -94,8 +94,8 @@
           </el-row>
         </div>
       </el-col>
-      <!-- 展示 -->
-      <el-col style="background-color: #ffffff">
+      <!-- 展示 node -->
+      <el-col style="background-color: #ffffff"  v-if="item.result.records[0].keys[0] === 'n'">
         <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu">
           <el-tab-pane label="graph">
             <!-- graph-标题 -->
@@ -136,8 +136,6 @@
               </div>
             </template>
             <!-- table-详情 -->
-            <!-- <h1>table详情</h1> -->
-            <!-- {{ item.result.records }} -->
             <div style="height: 324px; overflow-y: scroll">
               <div
                 style="
@@ -248,7 +246,8 @@
                 <el-col class="severTitle" :span="8">
                   Response
                   <CaretRightOutlined v-if="!isres" @click="resClick" />
-                  <CaretDownOutlined v-else @click="resClick"/></el-col>
+                  <CaretDownOutlined v-else @click="resClick"
+                /></el-col>
                 <el-col
                   :span="16"
                   :style="{ height: isres ? '100%' : '30px' }"
@@ -258,6 +257,316 @@
                 </el-col>
               </el-row>
             </div>
+          </el-tab-pane>
+        </el-tabs>
+      </el-col>
+      <!-- 展示 relation -->
+      <el-col style="background-color: #ffffff"  v-if="item.result.records[0].keys[0] === 'p'">
+        <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu">
+          <el-tab-pane label="graph">
+            <!-- graph-标题 -->
+            <template #label>
+              <span
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                "
+              >
+                <img
+                  src="../../assets/img/图谱.png"
+                  alt=""
+                  style="width: 24px; height: 24px"
+                />
+                <span style="font-weight: 600; color: #666666" class="graph"
+                  >graph</span
+                >
+              </span>
+            </template>
+            <!-- graph-详情 -->
+            <!-- <h1>graph详情</h1> -->
+            <div style="border: #efefef solid 1px; height: 324px; width: 100%">
+              <!-- <relation-graph ref="graphRef$" :options="options" /> -->
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="table">
+            <!-- table-标题 -->
+            <template #label>
+              <div>
+                <img
+                  src="../../assets/img/表格.png"
+                  alt=""
+                  style="width: 24px; height: 24px"
+                />
+                <div style="font-weight: 600; color: #666666">table</div>
+              </div>
+            </template>
+            <!-- table-详情 -->
+            <div style="height: 324px; overflow-y: scroll">
+              <div
+                style="
+                  font-size: 16px;
+                  color: #666666;
+                  height: 32px;
+                  background-color: #ffffff;
+                  border-bottom: 1px #999999 dashed;
+                  padding-left: 16px;
+                  position: sticky;
+                  top: 0;
+                "
+              >
+                {{ item.result.records[0].keys[0] }}
+              </div>
+              <pre
+                v-for="(item2, index2) in item.result.records"
+                :key="index2"
+                style="
+                  margin-bottom: 10px;
+                  padding: 10px;
+                  margin-top: 10px;
+                  background-color: rgb(239, 239, 239);
+                  border-bottom: 1px solid #000000;
+                "
+                >{{ JSON.stringify(item2._fields, null, 2) }}</pre
+              >
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="text">
+            <!-- text-标题 -->
+            <template #label>
+              <div>
+                <img
+                  src="../../assets/img/文字.png"
+                  alt=""
+                  style="width: 24px; height: 24px"
+                />
+                <div style="font-weight: 600; color: #666666">text</div>
+              </div>
+            </template>
+            <!-- text-详情 -->
+            <!-- <h1>text详情</h1> -->
+            <div style="padding: 10px; height: 324px; overflow-y: scroll">
+              <el-row style="border: 1px dashed #666666">
+                <el-col class="td">
+                  {{ item.result.records[0].keys[0] }}
+                </el-col>
+                <el-col
+                  class="td"
+                  v-for="(item3, index3) in item.result.records"
+                  :key="index3"
+                >
+                {{ item3._fields[0].segments[0].start }} -
+              [ : {{ item3._fields[0].segments[0].relationship.type }}]
+              (:{{ item3._fields[0].segments[0].end.labels[0] }} {{ item3._fields[0].segments[0].end.properties }})
+                  <!-- {{ item3._fields[0].labels[0]
+                  }}{{ item3._fields[0].properties }} -->
+                </el-col>
+              </el-row>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="code">
+            <!-- code-标题 -->
+            <template #label>
+              <div>
+                <img
+                  src="../../assets/img/代码.png"
+                  alt=""
+                  style="width: 24px; height: 24px"
+                />
+                <div style="font-weight: 600; color: #666666">code</div>
+              </div>
+            </template>
+            <!-- code-详情 -->
+            <!-- <h1>code详情</h1> -->
+            <div style="padding: 10px; height: 324px; overflow-y: scroll">
+              <el-row>
+                <el-col class="severTitle" :span="8"> Server version</el-col>
+                <el-col :span="16" class="severContent">
+                  {{ item.result.summary.server.agent }}
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col class="severTitle" :span="8"> Server address</el-col>
+                <el-col :span="16" class="severContent">
+                  {{ item.result.summary.server.address }}
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col class="severTitle" :span="8"> Query </el-col>
+                <el-col :span="16" class="severContent">
+                  {{ item.result.summary.query.text }}
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col class="severTitle" :span="8">
+                  Summary
+                  <CaretRightOutlined v-if="!isunfold" @click="unfoldClick" />
+                  <CaretDownOutlined v-else @click="unfoldClick" />
+                </el-col>
+                <el-col
+                  :span="16"
+                  :style="{ height: isunfold ? '100%' : '30px' }"
+                  style="font-size: 16px; color: #666666; overflow: hidden"
+                >
+                  {{ item.result.summary }}
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col class="severTitle" :span="8">
+                  Response
+                  <CaretRightOutlined v-if="!isres" @click="resClick" />
+                  <CaretDownOutlined v-else @click="resClick"
+                /></el-col>
+                <el-col
+                  :span="16"
+                  :style="{ height: isres ? '100%' : '30px' }"
+                  style="font-size: 16px; color: #666666; overflow: hidden"
+                >
+                  {{ item.result.records }}
+                </el-col>
+              </el-row>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
+      </el-col>
+      <!-- 展示keys -->
+      <el-col style="background-color: #ffffff"  v-if="item === ''">
+        <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu">
+          <el-tab-pane label="table">
+            <!-- table-标题 -->
+            <template #label>
+              <div>
+                <img
+                  src="../../assets/img/表格.png"
+                  alt=""
+                  style="width: 24px; height: 24px"
+                />
+                <div style="font-weight: 600; color: #666666">table</div>
+              </div>
+            </template>
+            <!-- table-详情 -->
+            <!-- <div style="height: 324px; overflow-y: scroll">
+              <div
+                style="
+                  font-size: 16px;
+                  color: #666666;
+                  height: 32px;
+                  background-color: #ffffff;
+                  border-bottom: 1px #999999 dashed;
+                  padding-left: 16px;
+                  position: sticky;
+                  top: 0;
+                "
+              >
+                {{ item.result.records[0].keys[0] }}
+              </div>
+              <pre
+                v-for="(item2, index2) in item.result.records"
+                :key="index2"
+                style="
+                  margin-bottom: 10px;
+                  padding: 10px;
+                  margin-top: 10px;
+                  background-color: rgb(239, 239, 239);
+                  border-bottom: 1px solid #000000;
+                "
+                >{{ JSON.stringify(item2._fields, null, 2) }}</pre
+              >
+            </div> -->
+          </el-tab-pane>
+          <el-tab-pane label="text">
+            <!-- text-标题 -->
+            <template #label>
+              <div>
+                <img
+                  src="../../assets/img/文字.png"
+                  alt=""
+                  style="width: 24px; height: 24px"
+                />
+                <div style="font-weight: 600; color: #666666">text</div>
+              </div>
+            </template>
+            <!-- text-详情 -->
+            <h1>text详情</h1>
+            <!-- <div style="padding: 10px; height: 324px; overflow-y: scroll">
+              <el-row style="border: 1px dashed #666666">
+                <el-col class="td">
+                  {{ item.result.records[0].keys[0] }}
+                </el-col>
+                <el-col
+                  class="td"
+                  v-for="(item3, index3) in item.result.records"
+                  :key="index3"
+                >
+                {{ item3._fields[0].segments[0].start }} -
+              [ : {{ item3._fields[0].segments[0].relationship.type }}]
+              (:{{ item3._fields[0].segments[0].end.labels[0] }} {{ item3._fields[0].segments[0].end.properties }})
+                </el-col>
+              </el-row>
+            </div> -->
+          </el-tab-pane>
+          <el-tab-pane label="code">
+            <!-- code-标题 -->
+            <template #label>
+              <div>
+                <img
+                  src="../../assets/img/代码.png"
+                  alt=""
+                  style="width: 24px; height: 24px"
+                />
+                <div style="font-weight: 600; color: #666666">code</div>
+              </div>
+            </template>
+            <!-- code-详情 -->
+            <h1>code详情</h1>
+            <!-- <div style="padding: 10px; height: 324px; overflow-y: scroll">
+              <el-row>
+                <el-col class="severTitle" :span="8"> Server version</el-col>
+                <el-col :span="16" class="severContent">
+                  {{ item.result.summary.server.agent }}
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col class="severTitle" :span="8"> Server address</el-col>
+                <el-col :span="16" class="severContent">
+                  {{ item.result.summary.server.address }}
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col class="severTitle" :span="8"> Query </el-col>
+                <el-col :span="16" class="severContent">
+                  {{ item.result.summary.query.text }}
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col class="severTitle" :span="8">
+                  Summary
+                  <CaretRightOutlined v-if="!isunfold" @click="unfoldClick" />
+                  <CaretDownOutlined v-else @click="unfoldClick" />
+                </el-col>
+                <el-col
+                  :span="16"
+                  :style="{ height: isunfold ? '100%' : '30px' }"
+                  style="font-size: 16px; color: #666666; overflow: hidden"
+                >
+                  {{ item.result.summary }}
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col class="severTitle" :span="8">
+                  Response
+                  <CaretRightOutlined v-if="!isres" @click="resClick" />
+                  <CaretDownOutlined v-else @click="resClick"
+                /></el-col>
+                <el-col
+                  :span="16"
+                  :style="{ height: isres ? '100%' : '30px' }"
+                  style="font-size: 16px; color: #666666; overflow: hidden"
+                >
+                  {{ item.result.records }}
+                </el-col>
+              </el-row>
+            </div> -->
           </el-tab-pane>
         </el-tabs>
       </el-col>
@@ -282,61 +591,74 @@ import {
   ShrinkOutlined,
   UpOutlined,
 } from "@ant-design/icons-vue";
+import { keysOf } from "element-plus/es/utils/objects.mjs";
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 const store = useStore();
 //list数据
-let list = ref(store.state.list);
+// let list = ref(store.state.list);
+let list = ref([]);
 //graph
 const graphRef$ = ref<RelationGraph>();
-// console.log(graphRef$.value,291)
 const options = {
   defaultExpandHolderPosition: "right",
 };
 let num = ref(0); // 定义一个从0开始的num
 const graphList = ref([]); // 定义个数组
 watch(store.state.list, async () => {
-  await nextTick(); // 因为要获取dom，放在nextTick之后，要等dom加载完成
   list.value = store.state.list; // 获取vuex的数据
-  graphList.value[num.value] = {
-    // 第一遍，num肯定是0，正好对应数组的下标0，给数组的下标0赋值，给个对象
-    rootId: num.value, // 唯一id，就拿num就行
-    nodes: [], // 必有的
-    lines: [], // 必有的
-  };
-  if (list.value[0].result.records[0]._fields[0].properties.browserUsed) {
-    list.value[0].result.records.map((item, index) => {
-      // 循环取到的vuex的数据
-      graphList.value[num.value].nodes.unshift({
-        id: item._fields[0].elementId,
-        text: item._fields[0].properties.browserUsed,
-        color: list.value[0].color,
-      });
-    });
-  } else {
-    list.value[0].result.records.map((item, index) => {
-      // 循环取到的vuex的数据
-      graphList.value[num.value].nodes.unshift({
-        id: item._fields[0].elementId,
-        text: item._fields[0].properties.name,
-        color: list.value[0].color,
-      });
-    });
-  }
-  
-
-  graphRef$.value[num.value].setJsonData(graphList.value[num.value]);
-  num.value = ++num.value;
+  await nextTick(); // 因为要获取dom，放在nextTick之后，要等dom加载完成
+  console.log(list.value,301)
+  list.value.map(item=>{
+    console.log(item.result.records[0].keys,304)
+    //判断数据为节点的数据
+    if(item.result.records[0].keys[0] === "n"){
+        // graphList.value[num.value] = {
+        //   // 第一遍，num肯定是0，正好对应数组的下标0，给数组的下标0赋值，给个对象
+        //   rootId: num.value, // 唯一id，就拿num就行
+        //   nodes: [], // 必有的
+        //   lines: [], // 必有的
+        // };
+        // console.log(list.value, "305")
+        // if (list.value[0].result.records[0]._fields[0].properties.browserUsed) {
+        //   list.value[0].result.records.map((item, index) => {
+        //     // 循环取到的vuex的数据
+        //     graphList.value[num.value].nodes.unshift({
+        //       id: item._fields[0].elementId,
+        //       text: item._fields[0].properties.browserUsed,
+        //       color: list.value[0].color,
+        //     });
+        //   });
+        // } else {
+        //   list.value[0].result.records.map((item, index) => {
+        //     // 循环取到的vuex的数据
+        //     graphList.value[num.value].nodes.unshift({
+        //       id: item._fields[0].elementId,
+        //       text: item._fields[0].properties.name,
+        //       color: list.value[0].color,
+        //     });
+        //   });
+        // }
+        // graphRef$.value[num.value].setJsonData(graphList.value[num.value]);
+        // num.value = ++num.value;
+        console.log('n')
+    } else if( item.result.records[0].keys[0] === "p"){
+      console.log('p')  
+    } else{
+      console.log('keys')
+    }
+  })
+ 
 });
 onMounted(async () => {});
 //code
 const isunfold = ref(false);
-const isres = ref(false)
+const isres = ref(false);
 const unfoldClick = () => {
   isunfold.value = !isunfold.value;
 };
-const resClick = ()=>{
-  isres.value = !isres.value
-}
+const resClick = () => {
+  isres.value = !isres.value;
+};
 </script>
 
 <style scoped>

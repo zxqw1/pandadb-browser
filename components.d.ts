@@ -37,6 +37,7 @@ declare module 'vue' {
     Search: typeof import('./src/components/rightComponents/search.vue')['default']
     Setter: typeof import('./src/components/menuComponents/setter.vue')['default']
     Tcode: typeof import('./src/components/rightComponents/graph/components/Tcode.vue')['default']
+    Tgraph: typeof import('./src/components/rightComponents/graph/Tgraph.vue')['default']
     Ttable: typeof import('./src/components/rightComponents/graph/components/Ttable.vue')['default']
     Ttext: typeof import('./src/components/rightComponents/graph/components/Ttext.vue')['default']
   }
