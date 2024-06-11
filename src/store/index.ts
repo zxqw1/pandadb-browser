@@ -8,7 +8,7 @@ const store: StoreOptions<any> = {
     mutations: {
         increment(state: any, value) {
             console.log(value,"10")
-            state.list.unshift(value)
+            state.list.push(value)
         }
     },
     

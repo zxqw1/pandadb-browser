@@ -10,7 +10,7 @@
     <a-row style="display: flex; flex-direction: column">
       <!-- 数据库选择 -->
       <a-col style="margin-top: 20px; display: flex; align-items: center">
-        <div class="circle"></div>
+        <div class="circle"></div>  
         <div class="name">数据库选择</div>
       </a-col>
       <a-col style="margin-top: 20px; display: flex; align-items: center" class="sele">
@@ -83,7 +83,7 @@ const labelShow = (color) => {
   let promiseData = request.fetchData(
     "neo4j",
     "admin",
-    "MATCH (n) RETURN n LIMIT 25"
+    "MATCH (n) RETURN n LIMIT 10"
   );
   promiseData
     .then((result: any) => {

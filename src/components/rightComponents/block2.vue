@@ -1,6 +1,6 @@
 <template>
   <!-- <h1>block2</h1> -->
-  <div style="margin-top: 24px" v-for="(item, index) in list" :key="index">
+  <div style="margin-top: 24px" v-for="(item, index) in store.state.list" :key="index">
     <el-row>
       <!-- 右上 -->
       <el-col
@@ -123,7 +123,7 @@
             <!-- graph-详情 -->
             <!-- <h1>graph详情</h1> -->
             <div style="border: #efefef solid 1px; height: 324px; width: 100%">
-              <relation-graph ref="graphRef$" :options="options" />
+              <relation-graph ref="graphRef" :options="options" />
             </div>
           </el-tab-pane>
           <el-tab-pane label="table">
@@ -631,22 +631,46 @@ const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 const store = useStore();
 //list数据
 // let list = ref(store.state.list);
-let list = ref([]);
+// let list = ref([]);
 //graph
-const graphRef$ = ref<RelationGraph>();
+const graphRef = ref<RelationGraph>();
 const options = {
   defaultExpandHolderPosition: "right",
 };
-let num = ref(0); // 定义一个从0开始的num
+// let num = ref(0); // 定义一个从0开始的num
 const graphList = ref([]); // 定义个数组
-watch(store.state.list, async () => {
-  list.value = store.state.list; // 获取vuex的数据
+watch(store.state.list, async (newVal, oldVal) => {
+  // list.value = store.state.list; // 获取vuex的数据
   await nextTick(); // 因为要获取dom，放在nextTick之后，要等dom加载完成
-  console.log(list.value, 301);
-  list.value.map((item) => {
-    console.log(item.result.records[0].keys, 304);
     //判断数据为节点的数据
-    if (item.result.records[0].keys[0] === "n") {
+    if (oldVal[oldVal.length-1].result.records[0].keys[0] === "n") {
+      let list = [
+        {
+          rootId: graphList.value.length === 0 ? 1 : graphList.value.length + 1,
+          nodes: [],
+          lines: [],
+        }
+      ]
+      console.log(graphList.value,"659")
+      oldVal[oldVal.length-1].result.records.map((item)=>{
+        list[0].nodes.push({
+          id: item._fields[0].elementId,
+          text: item._fields[0].properties.browserUsed,
+          color: oldVal[oldVal.length-1].color
+        })
+      })
+      graphList.value.push(list)
+      console.log(graphList.value,"668")
+      oldVal.map((item, index)=>{
+        // console.log(item,"669")
+        if(index === oldVal.length - 1){
+          graphRef.value[index].setJsonData(graphList.value[index][0])
+        }
+      })
+      // console.log(list,"667")
+      // console.log(graphRef,"669")
+      // console.log(graphList.value,"669")
+
       // graphList.value[num.value] = {
       //   // 第一遍，num肯定是0，正好对应数组的下标0，给数组的下标0赋值，给个对象
       //   rootId: num.value, // 唯一id，就拿num就行
@@ -673,15 +697,15 @@ watch(store.state.list, async () => {
       //     });
       //   });
       // }
-      // graphRef$.value[num.value].setJsonData(graphList.value[num.value]);
+      // graphRef.value[num.value].setJsonData(graphList.value[num.value]);
       // num.value = ++num.value;
-      console.log("n");
-    } else if (item.result.records[0].keys[0] === "p") {
-      console.log("p");
+      // console.log("n");
+    } else if (oldVal[oldVal.length-1].result.records[0].keys[0] === "p") {
+    //   console.log("p");
     } else {
-      console.log("keys");
+    //   console.log("keys");
     }
-  });
+  // });
 });
 onMounted(async () => {});
 //code

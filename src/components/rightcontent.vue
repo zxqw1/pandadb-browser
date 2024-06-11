@@ -2,10 +2,10 @@
   <div class="content">
     <a-row>
       <search></search>
-      <div style="display: flex; flex-direction: column; width: 100%;height: 868px; overflow-y: scroll;">
+      <div style="display: flex; flex-direction: column-reverse; width: 100%;max-height: 868px; overflow-y: scroll;">
         <!-- <block style="margin-bottom: 16px;"></block> -->
-        <block2/>
         <login></login>
+        <block2/>
         <!-- <relationGraphVue/> -->
       </div>
     </a-row>
