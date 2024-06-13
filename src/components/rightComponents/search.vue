@@ -21,7 +21,6 @@
             position:isFullscreen ?'relative' :'static'
           }"
          
-          @keydown.enter.prevent="handleEnter"
         >
           <!-- logo -->
           <img
@@ -117,9 +116,10 @@ const nodeShow = () => {
   if(context.value === ''){
 
   }else{
-    let promiseData = request.fetchData("neo4j", "bigdata", context.value);
+    let promiseData = request.fetchData("neo4j", "admin", context.value);
   promiseData
     .then((result: any) => {
+      console.log('输入的数据',result.records[0]._fields[0])
       store.commit("increment", result);
     })
     .catch((error: any) => {
