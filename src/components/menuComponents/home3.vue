@@ -27,7 +27,7 @@
         <a-tag color="rgb(145, 149, 160)" style="cursor: pointer" @click="labelShow">
           *(3,181,724)</a-tag>
         <a-tag :color="item.color" style="margin-left: 10px; margin-top: 10px; cursor: pointer"
-          v-for="(item, index) in dataBase[0].nodes" :key="index" @click="graphShow($event, item.color)">
+          v-for="(item, index) in dataBase[0].nodes" :key="index" @click="graphShow($event)">
           {{ item.text }}
         </a-tag>
       </a-col>
@@ -65,6 +65,7 @@ import { ref } from "vue";
 import dataBase from "@/data/dataBase";
 import request from "../../utils/request.js";
 import { useStore } from "vuex";
+import { ElMessageBox } from "element-plus"
 // 展示节点
 const store = useStore();
 const value = ref("");
@@ -79,7 +80,7 @@ const options = [
   },
 ];
 // 节点展示全局
-const labelShow = (color) => {
+const labelShow = () => {
   let promiseData = request.fetchData(
     "neo4j",
     "admin",
@@ -88,14 +89,17 @@ const labelShow = (color) => {
   promiseData
     .then((result: any) => {
       console.log(result, "节点的数据");
-      store.commit("increment", { color, result });
+      store.commit("increment",  result );
     })
     .catch((error: any) => {
       console.log(error);
+      ElMessageBox.alert(error, "错误提示", {
+        confirmButtonText: "好的",
+      });
     });
 };
 // 节点展示部分
-const graphShow = (event, color) => {
+const graphShow = (event) => {
   let promiseData = request.fetchData(
     "neo4j",
     "admin",
@@ -104,10 +108,13 @@ const graphShow = (event, color) => {
   promiseData
     .then((result: any) => {
       console.log(result, "部分节点数据");
-      store.commit("increment", { color, result });
+      store.commit("increment", result);
     })
     .catch((error: any) => {
       console.log(error);
+      ElMessageBox.alert(error, "错误提示", {
+        confirmButtonText: "好的",
+      });
     });
 };
 // 关系全部
@@ -120,10 +127,13 @@ const relationShow = () => {
   promiseData
     .then((result: any) => {
       // console.log(result,"关系的数据")
-      store.commit("increment", { color: "red", result });
+      store.commit("increment", result );
     })
     .catch((error: any) => {
       console.log(error);
+      ElMessageBox.alert(error, "错误提示", {
+        confirmButtonText: "好的",
+      });
     });
 };
 //关系部分
@@ -136,10 +146,13 @@ const relationClick = (event) => {
   promiseData
     .then((result: any) => {
       console.log(result, "部分关系数据");
-      store.commit("increment", { color: "blue", result });
+      store.commit("increment",  result );
     })
     .catch((error: any) => {
       console.log(error);
+      ElMessageBox.alert(error, "错误提示", {
+        confirmButtonText: "好的",
+      });
     });
 };
 //属性
@@ -147,19 +160,22 @@ const keysClick = (event) => {
   let promiseData = request.fetchData(
     "neo4j",
     "admin",
-    `MATCH (n) WHERE (n.birthday) IS NOT NULL 
-      RETURN DISTINCT "node" as entity, n.birthday AS birthday LIMIT 25 
+    `MATCH (n) WHERE (n.${event.target.innerText}) IS NOT NULL 
+      RETURN DISTINCT "node" as entity, n.${event.target.innerText} AS ${event.target.innerText} LIMIT 25 
       UNION ALL 
-      MATCH ()-[r]-() WHERE (r.birthday) IS NOT NULL 
-      RETURN DISTINCT "relationship" AS entity, r.birthday AS birthday LIMIT 25`
+      MATCH ()-[r]-() WHERE (r.${event.target.innerText}) IS NOT NULL 
+      RETURN DISTINCT "relationship" AS entity, r.${event.target.innerText} AS ${event.target.innerText} LIMIT 25`
   );
   promiseData
     .then((result: any) => {
       console.log(result, "属性数据");
-      store.commit("increment", { color: "blue", result });
+      store.commit("increment",  result );
     })
     .catch((error: any) => {
       console.log(error);
+      ElMessageBox.alert(error, "错误提示", {
+        confirmButtonText: "好的",
+      });
     });
 };
 </script>

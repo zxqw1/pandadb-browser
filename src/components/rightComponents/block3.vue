@@ -101,7 +101,7 @@
       <!-- 展示 node -->
       <el-col
         style="background-color: #ffffff"
-        v-if="
+        v-if="  
           item.records[0].keys.indexOf('n') !== -1 &&
           item.records[0].keys.indexOf('p') === -1 &&
           item.records[0]._fields[0] &&
@@ -131,10 +131,11 @@
               </span>
             </template>
             <!-- graph-详情 -->
-            <h1>graph详情-node</h1>
-            <!-- <div style="border: #efefef solid 1px; height: 324px; width: 100%">
+            <div style="border: #efefef solid 1px; height: 324px; width: 100%; ">
+              <el-button type="primary" :icon="ArrowLeftBold" style="z-index:4;position: absolute;right: 15px;border: none; " color="#999999" @click="OverviewClick" />
+               <!-- <div style="z-index: 3;position: absolute">134</div> -->
               <relation-graph ref="graphRef" :options="options" />
-            </div> -->
+            </div>
           </el-tab-pane>
           <el-tab-pane label="table">
             <!-- table-标题 -->
@@ -149,7 +150,7 @@
               </div>
             </template>
             <!-- table-详情 -->
-            <div style="height: 324px; overflow: scroll; ">
+            <div style="height: 324px; overflow: scroll">
               <a-row
                 style="
                   font-size: 16px;
@@ -164,7 +165,7 @@
                   flex-wrap: nowrap;
                 "
               >
-              <!-- 这块是 node的table的标题 -->
+                <!-- 这块是 node的table的标题 -->
                 <a-col
                   v-for="(item2, index2) in item.records[0].keys"
                   :key="index2"
@@ -177,25 +178,34 @@
               <a-row
                 v-for="(item3, index3) in item.records"
                 :key="index3"
-                style="flex-wrap: nowrap; display: flex; flex-direction: row;align-items: flex-start;"
+                style="
+                  flex-wrap: nowrap;
+                  display: flex;
+                  flex-direction: row;
+                  align-items: flex-start;
+                "
               >
-              <a-col  v-for="(item4, index4) in item3._fields"
-              :key="index4"
-              :span="6"
-              >
-                <pre
-                  style="
-                    margin-bottom: 10px;
-                    padding: 10px;
-                    margin-top: 10px;
-                    margin-right: 30px;
-                    background-color: rgb(239, 239, 239);
-                    border-bottom: 1px solid #000000;
-                  "
-                 >
-                  {{ JSON.stringify(item4 === null ? "null" : item4, null, 2) }}</pre>
-              </a-col>
-                </a-row>
+                <a-col
+                  v-for="(item4, index4) in item3._fields"
+                  :key="index4"
+                  :span="6"
+                >
+                  <pre
+                    style="
+                      margin-bottom: 10px;
+                      padding: 10px;
+                      margin-top: 10px;
+                      margin-right: 30px;
+                      background-color: rgb(239, 239, 239);
+                      border-bottom: 1px solid #000000;
+                    "
+                  >
+                  {{
+                      JSON.stringify(item4 === null ? "null" : item4, null, 2)
+                    }}</pre
+                  >
+                </a-col>
+              </a-row>
             </div>
           </el-tab-pane>
           <el-tab-pane label="text">
@@ -212,21 +222,32 @@
             </template>
             <!-- text-详情 -->
             <div style="padding: 10px; height: 324px; overflow-y: scroll">
-              <el-row style=" flex-wrap: nowrap; display: flex;">
-                <el-col style="border-right: none; border:1px dashed #666666 ;" class="td" v-for="(item5,index5) in item.records[0].keys" :key="index5" :span="6">
-                  {{item5 }}
+              <el-row style="flex-wrap: nowrap; display: flex">
+                <el-col
+                  style="border-right: none; border: 1px dashed #666666"
+                  class="td"
+                  v-for="(item5, index5) in item.records[0].keys"
+                  :key="index5"
+                  :span="6"
+                >
+                  {{ item5 }}
                 </el-col>
-                </el-row>
-                <el-row v-for="(item6, index6) in item.records"
-                :key="index6" >
+              </el-row>
+              <el-row v-for="(item6, index6) in item.records" :key="index6">
                 <el-col
                   class="td"
                   :span="6"
-                  style="border-right: none; border:1px dashed #666666 ;"
-                  v-for="(item7,index7) in item6._fields"
+                  style="border-right: none; border: 1px dashed #666666"
+                  v-for="(item7, index7) in item6._fields"
                   :key="index7"
                 >
-                  {{ item7 === null ? "null" : item7.properties ? item7.properties : item7}}
+                  {{
+                    item7 === null
+                      ? "null"
+                      : item7.properties
+                      ? item7.properties
+                      : item7
+                  }}
                 </el-col>
               </el-row>
             </div>
@@ -326,10 +347,10 @@
               </span>
             </template>
             <!-- graph-详情 -->
-            <h1>graph详情-relation</h1>
-            <!-- <div style="border: #efefef solid 1px; height: 324px; width: 100%">
-              <relation-graph ref="graphRef$" :options="options" />
-            </div> -->
+            <!-- <h1>graph详情-relation</h1> -->
+            <div style="border: #efefef solid 1px; height: 324px; width: 100%">
+              <relation-graph ref="graphRef" :options="options" />
+            </div>
           </el-tab-pane>
           <el-tab-pane label="table">
             <!-- table-标题 -->
@@ -344,7 +365,7 @@
               </div>
             </template>
             <!-- table-详情 -->
-            <div style="height: 324px; overflow: scroll; ">
+            <div style="height: 324px; overflow: scroll">
               <a-row
                 style="
                   font-size: 16px;
@@ -360,7 +381,7 @@
                 "
               >
                 <a-col
-                v-for="(item2, index2) in item.records[0].keys"
+                  v-for="(item2, index2) in item.records[0].keys"
                   :key="index2"
                   :span="6"
                 >
@@ -370,25 +391,34 @@
               <a-row
                 v-for="(item3, index3) in item.records"
                 :key="index3"
-                style="flex-wrap: nowrap; display: flex; flex-direction: row;align-items: flex-start;"
+                style="
+                  flex-wrap: nowrap;
+                  display: flex;
+                  flex-direction: row;
+                  align-items: flex-start;
+                "
               >
-              <a-col  v-for="(item4, index4) in item4._fields"
-              :key="index4"
-              :span="6"
-              >
-                <pre
-                  style="
-                    margin-bottom: 10px;
-                    padding: 10px;
-                    margin-top: 10px;
-                    margin-right: 30px;
-                    background-color: rgb(239, 239, 239);
-                    border-bottom: 1px solid #000000;
-                  "
-                 >
-                  {{ JSON.stringify(item4 === null ? "null" : item, null, 2) }}</pre>
-              </a-col>
-                </a-row>
+                <a-col
+                  v-for="(item4, index4) in item3._fields"
+                  :key="index4"
+                  :span="6"
+                >
+                  <pre
+                    style="
+                      margin-bottom: 10px;
+                      padding: 10px;
+                      margin-top: 10px;
+                      margin-right: 30px;
+                      background-color: rgb(239, 239, 239);
+                      border-bottom: 1px solid #000000;
+                    "
+                  >
+                  {{
+                      JSON.stringify(item4 === null ? "null" : item4, null, 2)
+                    }}</pre
+                  >
+                </a-col>
+              </a-row>
             </div>
           </el-tab-pane>
           <el-tab-pane label="text">
@@ -405,24 +435,39 @@
             </template>
             <!-- text-详情 -->
             <div style="padding: 10px; height: 324px; overflow-y: scroll">
-              <el-row style=" flex-wrap: nowrap; display: flex;">
-                <el-col style="border-right: none; border:1px dashed #666666 ;" class="td" v-for="(item11,index11) in item.records[0].keys" :key="index11" :span="6">
-                  {{ item11 }}
+              <el-row style="flex-wrap: nowrap; display: flex">
+                <el-col
+                  style="border-right: none; border: 1px dashed #666666"
+                  class="td"
+                  v-for="(item5, index5) in item.records[0].keys"
+                  :key="index5"
+                  :span="6"
+                >
+                  {{ item5 }}
                 </el-col>
-                </el-row>
-                <el-row v-for="(item12, index12) in item.records"
-                :key="index12" >
+              </el-row>
+              <el-row v-for="(item6, index6) in item.records" :key="index6">
                 <el-col
                   class="td"
                   :span="6"
-                  style="border-right: none; border:1px dashed #666666 ;"
-                  v-for="(item13,index13) in item12._fields"
-                  :key="index13"
+                  style="border-right: none; border: 1px dashed #666666"
+                  v-for="(item7, index7) in item6._fields"
+                  :key="index7"
                 >
-                {{ item13 }}
-                  <!-- {{ item13 === null ? 'null' : item13.start.properties ? item13.start.properties :item13}}  -->
-                  <!-- {{ item13 === null ? 'null' : item13.end.properties ? item13.end.properties :item13 }} -->
-                  <!-- {{ item7 === null ? "null" : item7.properties ? item7.properties : item7}} -->
+                  {{
+                    item7 === null
+                      ? "null"
+                      : item7.start
+                      ? item7.start.properties
+                      : item7
+                  }}
+                  {{
+                    item7 === null
+                      ? "null"
+                      : item7.start
+                      ? item7.end.properties
+                      : item7
+                  }}
                 </el-col>
               </el-row>
             </div>
@@ -471,7 +516,7 @@
                   :style="{ height: isunfold ? '100%' : '30px' }"
                   style="font-size: 16px; color: #666666; overflow: hidden"
                 >
-                {{ item.summary }}
+                  {{ item.summary }}
                 </el-col>
               </el-row>
               <el-row>
@@ -508,51 +553,61 @@
               </div>
             </template>
             <!-- table-详情 -->
-            <h1>table详情keys</h1>
-            <!-- <el-row
-              style="
-                font-size: 16px;
-                font-weight: 500;
-                color: #666666;
-                height: 32px;
-                background-color: #ffffff;
-                border-bottom: 1px #999999 dashed;
-                padding-left: 16px;
-                position: sticky;
-                top: 0;
-              "
-            >
-              <el-col
-                :span="12"
-                style="font-size: 16px; font-weight: 500; color: #666666"
-                v-for="(item4, index4) in item.result.records[0].keys"
-                :key="index4"
-              >
-                {{ item4 }}
-              </el-col>
-            </el-row> -->
-            <!-- <div style="height: 292px; overflow-y: scroll">
-              <el-row
+            <div style="height: 324px; overflow: scroll">
+              <a-row
                 style="
                   font-size: 16px;
-                  font-weight: 500;
                   color: #666666;
                   height: 32px;
                   background-color: #ffffff;
                   border-bottom: 1px #999999 dashed;
                   padding-left: 16px;
+                  z-index: 1;
+                  position: sticky;
+                  top: 0;
+                  flex-wrap: nowrap;
                 "
-                v-for="(item5, index5) in item.result.records"
-                :key="index5"
               >
-                <el-col :span="12">
-                  {{ item5._fields[0] }}
-                </el-col>
-                <el-col :span="12">
-                  {{ item5._fields[1] }}
-                </el-col>
-              </el-row>
-            </div> -->
+                <a-col
+                  v-for="(item2, index2) in item.records[0].keys"
+                  :key="index2"
+                  :span="6"
+                >
+                  {{ item2 }}
+                </a-col>
+              </a-row>
+              <a-row
+                v-for="(item3, index3) in item.records"
+                :key="index3"
+                style="
+                  flex-wrap: nowrap;
+                  display: flex;
+                  flex-direction: row;
+                  align-items: flex-start;
+                "
+              >
+                <a-col
+                  v-for="(item4, index4) in item3._fields"
+                  :key="index4"
+                  :span="6"
+                >
+                  <pre
+                    style="
+                      margin-bottom: 10px;
+                      padding: 10px;
+                      margin-top: 10px;
+                      margin-right: 30px;
+                      background-color: rgb(239, 239, 239);
+                      border-bottom: 1px solid #000000;
+                    "
+                  >
+                  {{
+                      JSON.stringify(item4 === null ? "null" : item4, null, 2)
+                    }}</pre
+                  >
+                </a-col>
+              </a-row>
+            </div>
           </el-tab-pane>
           <el-tab-pane label="text">
             <!-- text-标题 -->
@@ -567,32 +622,30 @@
               </div>
             </template>
             <!-- text-详情 -->
-            <h1>text详情</h1>
-            <!-- <el-row>
-              <el-col
-                :span="4"
-                class="text"
-                style="border-bottom: none; font-weight: 500"
-                v-for="(item5, index5) in item.result.records[0].keys"
-                :key="index5"
-              >
-                {{ item5 }}
-              </el-col>
-            </el-row>
-            <div style="height: 292px; overflow-y: scroll">
-              <el-row
-                style=""
-                v-for="(item5, index5) in item.result.records"
-                :key="index5"
-              >
-                <el-col :span="4" class="text">
-                  {{ item5._fields[0] }}
-                </el-col>
-                <el-col :span="4" class="text">
-                  {{ item5._fields[1] }}
+            <div style="padding: 10px; height: 324px; overflow-y: scroll">
+              <el-row style="flex-wrap: nowrap; display: flex">
+                <el-col
+                  style="border-right: none; border: 1px dashed #666666"
+                  class="td"
+                  v-for="(item5, index5) in item.records[0].keys"
+                  :key="index5"
+                  :span="6"
+                >
+                  {{ item5 }}
                 </el-col>
               </el-row>
-            </div> -->
+              <el-row v-for="(item6, index6) in item.records" :key="index6">
+                <el-col
+                  class="td"
+                  :span="6"
+                  style="border-right: none; border: 1px dashed #666666"
+                  v-for="(item7, index7) in item6._fields"
+                  :key="index7"
+                >
+                  {{ item7 === null ? "null" : item7 }}
+                </el-col>
+              </el-row>
+            </div>
           </el-tab-pane>
           <el-tab-pane label="code">
             <!-- code-标题 -->
@@ -607,24 +660,23 @@
               </div>
             </template>
             <!-- code-详情 -->
-            <h1>code详情</h1>
-            <!-- <div style="padding: 10px; height: 324px; overflow-y: scroll">
+            <div style="padding: 10px; height: 324px; overflow-y: scroll">
               <el-row>
                 <el-col class="severTitle" :span="8"> Server version</el-col>
                 <el-col :span="16" class="severContent">
-                  {{ item.result.summary.server.agent }}
+                  {{ item.summary.server.agent }}
                 </el-col>
               </el-row>
               <el-row>
                 <el-col class="severTitle" :span="8"> Server address</el-col>
                 <el-col :span="16" class="severContent">
-                  {{ item.result.summary.server.address }}
+                  {{ item.summary.server.address }}
                 </el-col>
               </el-row>
               <el-row>
                 <el-col class="severTitle" :span="8"> Query </el-col>
                 <el-col :span="16" class="severContent">
-                  {{ item.result.summary.query.text }}
+                  {{ item.summary.query.text }}
                 </el-col>
               </el-row>
               <el-row>
@@ -638,7 +690,7 @@
                   :style="{ height: isunfold ? '100%' : '30px' }"
                   style="font-size: 16px; color: #666666; overflow: hidden"
                 >
-                  {{ item.result.summary }}
+                  {{ item.summary }}
                 </el-col>
               </el-row>
               <el-row>
@@ -652,13 +704,25 @@
                   :style="{ height: isres ? '100%' : '30px' }"
                   style="font-size: 16px; color: #666666; overflow: hidden"
                 >
-                  {{ item.result.records }}
+                  {{ item.records }}
                 </el-col>
               </el-row>
-            </div> -->
+            </div>
           </el-tab-pane>
         </el-tabs>
       </el-col>
+      <div
+        style="
+          width: 100%;
+          height: 24px;
+          border-top: 1px #666666 solid;
+          background-color: #ffffff;
+          line-height: 24px;
+          padding-left: 16px;
+        "
+      >
+        Started streaming 25 records in less than 1 ms and completed after 3 ms.
+      </div>
     </el-row>
   </div>
 </template>
@@ -679,6 +743,7 @@ import {
   ShrinkOutlined,
   UpOutlined,
 } from "@ant-design/icons-vue";
+import { ArrowLeftBold } from '@element-plus/icons-vue'
 import { keysOf } from "element-plus/es/utils/objects.mjs";
 import { ElMessage, ElMessageBox } from "element-plus";
 import request from "../../utils/request.js";
@@ -692,159 +757,13 @@ const options = {
 };
 // let num = ref(0); // 定义一个从0开始的num
 const graphList = ref([]); // 定义个数组
+const OverviewClick = ()=>{
+      console.log('打开overviewclick')
+    }
 watch(store.state.list, async (newVal, oldVal) => {
   console.log(oldVal, 648);
-  // await nextTick(); // 因为要获取dom，放在nextTick之后，要等dom加载完成
-  //判断数据为节点的数据
-  // if (oldVal[oldVal.length - 1].records[0].keys.length === 1) {
-  //   if (
-  //     oldVal[oldVal.length - 1].records[0]._fields[0] &&
-  //     oldVal[oldVal.length - 1].records[0]._fields[0].elementId &&
-  //     oldVal[oldVal.length - 1].records[0]._fields[0].properties
-  //   ) {
-  //     // console.log("n");
-  //     console.log("我是节点");
-  //     // let list = [
-  //     //   {
-  //     //     rootId: graphList.value.length === 0 ? 1 : graphList.value.length + 1,
-  //     //     nodes: [],
-  //     //     lines: [],
-  //     //   }
-  //     // ]
-  //     // oldVal[oldVal.length-1].result.records.map((item)=>{
-  //     //   list[0].nodes.push({
-  //     //     id: item._fields[0].elementId,
-  //     //     text: item._fields[0].properties.browserUsed,
-  //     //     color: oldVal[oldVal.length-1].color
-  //     //   })
-  //     // })
-  //     // graphList.value.push(list)
-  //     // console.log(graphList.value,"668")
-  //     // oldVal.map((item, index)=>{
-  //     //   if(index === oldVal.length - 1){
-  //     //     graphRef.value[index].setJsonData(graphList.value[index][0])
-  //     //   }
-  //     // })
-  //     // console.log(list,"667")
-  //     // console.log(graphRef,"669")
-  //     // console.log(graphList.value,"669")
+  await nextTick(); // 因为要获取dom，放在nextTick之后，要等dom加载完成
 
-  //     // graphList.value[num.value] = {
-  //     //   // 第一遍，num肯定是0，正好对应数组的下标0，给数组的下标0赋值，给个对象
-  //     //   rootId: num.value, // 唯一id，就拿num就行
-  //     //   nodes: [], // 必有的
-  //     //   lines: [], // 必有的
-  //     // };
-  //     // console.log(list.value, "305")
-  //     // if (list.value[0].result.records[0]._fields[0].properties.browserUsed) {
-  //     //   list.value[0].result.records.map((item, index) => {
-  //     //     // 循环取到的vuex的数据
-  //     //     graphList.value[num.value].nodes.unshift({
-  //     //       id: item._fields[0].elementId,
-  //     //       text: item._fields[0].properties.browserUsed,
-  //     //       color: list.value[0].color,
-  //     //     });
-  //     //   });
-  //     // } else {
-  //     //   list.value[0].result.records.map((item, index) => {
-  //     //     // 循环取到的vuex的数据
-  //     //     graphList.value[num.value].nodes.unshift({
-  //     //       id: item._fields[0].elementId,
-  //     //       text: item._fields[0].properties.name,
-  //     //       color: list.value[0].color,
-  //     //     });
-  //     //   });
-  //     // }
-  //     // graphRef.value[num.value].setJsonData(graphList.value[num.value]);
-  //     // num.value = ++num.value;
-  //     // console.log("n");
-  //   } else if (
-  //     oldVal[oldVal.length - 1].records[0]._fields[0] &&
-  //     oldVal[oldVal.length - 1].records[0]._fields[0].end &&
-  //     oldVal[oldVal.length - 1].records[0]._fields[0].start
-  //   ) {
-  //     console.log("我是关系");
-  //   } else {
-  //     console.log("我是字符串");
-  //   }
-  // } else {
-  //   if (
-  //     oldVal[oldVal.length - 1].records[0].keys.indexOf("n") !== -1 &&
-  //     oldVal[oldVal.length - 1].records[0].keys.indexOf("p") !== -1
-  //   ) {
-  //     oldVal[oldVal.length - 1].records[0]._fields.map((item) => {
-  //       if (item && item.end && item.start) {
-  //         console.log("我是关系2");
-  //       }
-  //     });
-  //   } else {
-  //     oldVal[oldVal.length - 1].records[0]._fields.map((item) => {
-  //       if (item && item.elementId && item.properties) {
-  //         // console.log("n");
-  //         console.log("我是节点2");
-  //         // let list = [
-  //         //   {
-  //         //     rootId: graphList.value.length === 0 ? 1 : graphList.value.length + 1,
-  //         //     nodes: [],
-  //         //     lines: [],
-  //         //   }
-  //         // ]
-  //         // oldVal[oldVal.length-1].result.records.map((item)=>{
-  //         //   list[0].nodes.push({
-  //         //     id: item._fields[0].elementId,
-  //         //     text: item._fields[0].properties.browserUsed,
-  //         //     color: oldVal[oldVal.length-1].color
-  //         //   })
-  //         // })
-  //         // graphList.value.push(list)
-  //         // console.log(graphList.value,"668")
-  //         // oldVal.map((item, index)=>{
-  //         //   if(index === oldVal.length - 1){
-  //         //     graphRef.value[index].setJsonData(graphList.value[index][0])
-  //         //   }
-  //         // })
-  //         // console.log(list,"667")
-  //         // console.log(graphRef,"669")
-  //         // console.log(graphList.value,"669")
-
-  //         // graphList.value[num.value] = {
-  //         //   // 第一遍，num肯定是0，正好对应数组的下标0，给数组的下标0赋值，给个对象
-  //         //   rootId: num.value, // 唯一id，就拿num就行
-  //         //   nodes: [], // 必有的
-  //         //   lines: [], // 必有的
-  //         // };
-  //         // console.log(list.value, "305")
-  //         // if (list.value[0].result.records[0]._fields[0].properties.browserUsed) {
-  //         //   list.value[0].result.records.map((item, index) => {
-  //         //     // 循环取到的vuex的数据
-  //         //     graphList.value[num.value].nodes.unshift({
-  //         //       id: item._fields[0].elementId,
-  //         //       text: item._fields[0].properties.browserUsed,
-  //         //       color: list.value[0].color,
-  //         //     });
-  //         //   });
-  //         // } else {
-  //         //   list.value[0].result.records.map((item, index) => {
-  //         //     // 循环取到的vuex的数据
-  //         //     graphList.value[num.value].nodes.unshift({
-  //         //       id: item._fields[0].elementId,
-  //         //       text: item._fields[0].properties.name,
-  //         //       color: list.value[0].color,
-  //         //     });
-  //         //   });
-  //         // }
-  //         // graphRef.value[num.value].setJsonData(graphList.value[num.value]);
-  //         // num.value = ++num.value;
-  //         // console.log("n");
-  //       } else if (item && item.end && item.start) {
-  //         console.log("我是关系2");
-  //       } else {
-  //         console.log("我是字符串2");
-  //       }
-  //     });
-  //   }
-  // }
-  // });
   if (
     oldVal[oldVal.length - 1].records[0].keys.indexOf("n") !== -1 &&
     oldVal[oldVal.length - 1].records[0].keys.indexOf("p") === -1 &&
@@ -854,6 +773,36 @@ watch(store.state.list, async (newVal, oldVal) => {
   ) {
     console.log("我是节点");
     context.value = oldVal[oldVal.length - 1].summary.query.text;
+    
+    let textName = ref("");
+    //节点图数据处理
+    let list = [
+      {
+        rootId: graphList.value.length === 0 ? 1 : graphList.value.length + 1,
+        nodes: [],
+        lines: [],
+      },
+    ];
+    oldVal[oldVal.length - 1].records.map((item: any) => {
+      if (item.keys.indexOf("n") !== -1) {
+        for (const key in item._fields[item.keys.indexOf("n")].properties) {
+          textName.value = item._fields[item.keys.indexOf("n")].properties[key];
+        }
+        list[0].nodes.push({
+          id: item._fields[item.keys.indexOf("n")].elementId,
+          text: textName.value,
+          color: "#21a1ff",
+        });
+      }
+    });
+    graphList.value.push(list);
+    console.log(graphRef.value, "781");
+    console.log(graphList.value, "782");
+    oldVal.map((item, index) => {
+      if (index === oldVal.length - 1) {
+        graphRef.value[index].setJsonData(graphList.value[index][0]);
+      }
+    });
   } else if (
     oldVal[oldVal.length - 1].records[0].keys.indexOf("p") !== -1 &&
     oldVal[oldVal.length - 1].records[0]._fields[0] &&
@@ -866,6 +815,54 @@ watch(store.state.list, async (newVal, oldVal) => {
   ) {
     console.log("我是关系");
     context.value = oldVal[oldVal.length - 1].summary.query.text;
+    //关系图数据处理
+    let textName = ref("");
+    let textTitle = ref("");
+    let list = [
+      {
+        rootId: graphList.value.length === 0 ? 1 : graphList.value.length + 1,
+        nodes: [],
+        lines: [],
+      },
+    ];
+    oldVal[oldVal.length - 1].records.map((item: any) => {
+      if (item.keys.indexOf("p") !== -1) {
+        for (const key in item._fields[item.keys.indexOf("p")].start
+          .properties) {
+          textName.value =
+            item._fields[item.keys.indexOf("p")].start.properties[key];
+        }
+        for (const key in item._fields[item.keys.indexOf("p")].end.properties) {
+          textTitle.value =
+            item._fields[item.keys.indexOf("p")].end.properties[key];
+        }
+        list[0].nodes.push({
+          id: item._fields[item.keys.indexOf("p")].start.elementId,
+          text: textName.value,
+          color: "#21a1ff",
+        });
+        list[0].nodes.push({
+          id: item._fields[item.keys.indexOf("p")].end.elementId,
+          text: textTitle.value,
+          color: "#21a1ff",
+        });
+        list[0].lines.push({
+          from: item._fields[item.keys.indexOf("p")].start.elementId,
+          to: item._fields[item.keys.indexOf("p")].end.elementId,
+          text:item._fields[item.keys.indexOf("p")].segments[item.keys.indexOf("p")].relationship.type,
+          color:"#666666"
+        });
+      }
+    });
+    console.log(list, 839);
+    graphList.value.push(list);
+    //问题在这往下
+    console.log(graphRef, 842);
+    oldVal.map((item, index) => {
+      if (index === oldVal.length - 1) {
+        graphRef.value[index].setJsonData(graphList.value[index][0]);
+      }
+    });
   } else {
     console.log("我是keys");
   }
@@ -883,6 +880,17 @@ const resClick = () => {
 </script>
 
 <style scoped>
+::v-deep.relation-graph .rel-toolbar-v-center {
+    top: calc((100% - 240px) / 2) !important;
+}
+::v-deep.el-button{
+  background-color: rgba(204, 204, 204, 0.3);
+  color: #999999;
+  border:rgba(204, 204, 204, 0.3) 1px solid ;
+}
+.el-button:hover{
+  background-color: rgba(167, 167, 167, 0.3);;
+}
 .text {
   font-size: 16px;
   color: #666666;

@@ -95,7 +95,7 @@ import {
   CloseOutlined,
   ShrinkOutlined,
 } from "@ant-design/icons-vue";
-import { ElMessage, ElMessageBox } from "element-plus";
+import {  ElMessageBox } from "element-plus";
 import request from "../../utils/request.js";
 import { useStore } from "vuex";
 import type { he } from "element-plus/es/locale/index.mjs";

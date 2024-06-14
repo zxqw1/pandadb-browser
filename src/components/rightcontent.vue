@@ -5,7 +5,7 @@
       <div style="display: flex; flex-direction: column-reverse; width: 100%;max-height: 868px; overflow-y: scroll;">
         <!-- <block style="margin-bottom: 16px;"></block> -->
         <login></login>
-        <block2/>
+        <block3/>
         <!-- <relationGraphVue/> -->
       </div>
     </a-row>
@@ -16,7 +16,7 @@
 import search from "./rightComponents/search.vue";
 import login from "./rightComponents/login.vue";
 // import block from "./rightComponents/block.vue"; 
-import block2 from "./rightComponents/block2.vue";
+import block3 from "./rightComponents/block3.vue";
 // import relationGraphVue from "./rightComponents/relation-graph.vue";
 </script>
 

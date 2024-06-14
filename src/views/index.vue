@@ -53,7 +53,7 @@ onMounted(()=>{
 <style>
 .el-button--primary{
   background-color: #6a8322;
-  border: 1px solid #6a8322 !important;
+  border: 1px solid #6a8322 ;
 }
 .el-button--primary:hover{
   background-color: #6a8322;
