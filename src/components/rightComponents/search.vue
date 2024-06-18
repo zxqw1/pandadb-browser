@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref,nextTick } from "vue";
 import {
   CaretRightOutlined,
   ExpandAltOutlined,
@@ -98,7 +98,7 @@ import {
 import {  ElMessageBox } from "element-plus";
 import request from "../../utils/request.js";
 import { useStore } from "vuex";
-import type { he } from "element-plus/es/locale/index.mjs";
+import { el, type he } from "element-plus/es/locale/index.mjs";
 import { autoCompleteProps } from "ant-design-vue/es/auto-complete/index.js";
 const store = useStore();
 const isFullscreen = ref<boolean>(false);
@@ -111,8 +111,9 @@ const toggleFullScreen = () => {
 const handleBlur = (event) => {
   context.value = event.target.innerText;
 };
-const nodeShow = () => {
-  console.log(context.value, 92);
+const nodeShow = async() => {
+  await nextTick()
+  // console.log(element,118)
   if(context.value === ''){
 
   }else{

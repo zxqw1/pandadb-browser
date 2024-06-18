@@ -2,11 +2,20 @@
   <div class="content">
     <a-row>
       <search></search>
-      <div style="display: flex; flex-direction: column-reverse; width: 100%;max-height: 868px; overflow-y: scroll;">
-        <!-- <block style="margin-bottom: 16px;"></block> -->
+      <div
+        style="
+          display: flex;
+          flex-direction: column-reverse;
+          width: 100%;
+          max-height: 868px;
+          overflow-y: auto;
+        "
+        class="scroll-container"
+        ref="scrollContainer"
+      >
         <login></login>
         <block3/>
-        <!-- <relationGraphVue/> -->
+        <!-- :scrollDom="scrollContainer" -->
       </div>
     </a-row>
   </div>
@@ -15,9 +24,29 @@
 <script setup lang="ts">
 import search from "./rightComponents/search.vue";
 import login from "./rightComponents/login.vue";
-// import block from "./rightComponents/block.vue"; 
 import block3 from "./rightComponents/block3.vue";
-// import relationGraphVue from "./rightComponents/relation-graph.vue";
+import {
+  defineComponent,
+  ref,
+  onMounted,
+  onUpdated,
+  watch,
+  nextTick,
+} from "vue";
+import { useStore } from "vuex";
+const store = useStore();
+const scrollContainer = ref(null);
+watch(store.state.list, async () => {
+  await nextTick();
+  //设置滚动条
+  if (scrollContainer.value) {
+    scrollContainer.value.scrollTo({
+      top: -scrollContainer.value.scrollHeight
+    });
+  
+  }
+});
+
 </script>
 
 <style scoped>
