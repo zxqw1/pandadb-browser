@@ -17,7 +17,7 @@
             min-height: 32px;
           "
           :style="{
-            height: isFullscreen ? '100vh' : 'auto',  
+            height: isFullscreen ? '100vh' : 'auto', 
             position:isFullscreen ?'relative' :'static'
           }"
          
@@ -81,6 +81,7 @@
         :style="{ position:isFullscreen ? 'absolute' : 'static',
               top:isFullscreen ? '10px' : 'auto',
               right:isFullscreen ? '10px' : 'auto',}"
+        @click="deleteClick"
         />
       </el-col>
     </el-row>
@@ -107,6 +108,10 @@ const context = ref("");
 const toggleFullScreen = () => {
   isFullscreen.value = !isFullscreen.value;
 };
+//删除
+const deleteClick = ()=>{
+  context.value = ""
+}
 // 拿到输入数据
 const handleBlur = (event) => {
   context.value = event.target.innerText;
@@ -115,7 +120,7 @@ const nodeShow = async() => {
   await nextTick()
   // console.log(element,118)
   if(context.value === ''){
-
+    
   }else{
     let promiseData = request.fetchData("neo4j", "admin", context.value);
   promiseData

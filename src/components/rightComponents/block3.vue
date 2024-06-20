@@ -1,9 +1,18 @@
 <template>
   <!-- <h1>block2</h1> -->
   <div
-    style="margin-top: 24px"
+    style="background-color: #ffffff"
     v-for="(item, index) in store.state.list"
     :key="index"
+    :style="{
+      position: isFullscreen ? 'fixed' : 'static',
+      top: isFullscreen ? '0' : '0',
+      left: isFullscreen ? '0' : '0',
+      width: isFullscreen ? '100vw' : 'auto',
+      zIndex: isFullscreen ? '5' : '0',
+      height: isFullscreen ? '100vh' : 'auto',
+      marginTop: isFullscreen ? '0' : '24px',
+    }"
   >
     <el-row>
       <!-- 右上 -->
@@ -36,7 +45,7 @@
           />
           <CloseOutlined
             style="margin-left: 16px"
-            @click="removeModule(item)"
+            @click="removeModule(index)"
           />
         </div>
       </el-col>
@@ -68,9 +77,9 @@
                   contenteditable="true"
                   style="width: 96%"
                   class="searchText"
-                  @blur="handleBlur"
+                  @blur="handleBlur(index)"
                 >
-                  {{ context }}
+                  {{ item.summary.query.text }}
                 </div>
                 <!-- 展示 -->
                 <CaretRightOutlined
@@ -101,9 +110,9 @@
           v-if="
             item.records[0].keys.indexOf('n') !== -1 &&
             item.records[0].keys.indexOf('p') === -1 &&
-            item.records[0]._fields[0] &&
-            item.records[0]._fields[0].elementId &&
-            item.records[0]._fields[0].properties
+            item.records[0]._fields[item.records[0].keys.indexOf('n')] &&
+            item.records[0]._fields[item.records[0].keys.indexOf('n')].elementId &&
+            item.records[0]._fields[item.records[0].keys.indexOf('n')].properties
           "
         >
           <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu">
@@ -129,8 +138,76 @@
               </template>
               <!-- graph-详情 -->
               <div
-                style="border: #efefef solid 1px; height: 324px; width: 100%"
+                style="
+                  border: #efefef solid 1px;
+                  width: 100%;
+                  display: flex;
+                  flex-direction: row-reverse;
+                  position: relative;
+                "
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
               >
+              <!-- overview按钮 -->
+                <div
+                  style="
+                    background-color: #dcdcdc30;
+                    width: 45px;
+                    height: 28px;
+                    position: absolute;
+                    z-index: 1;
+                    right: 15px;
+                    top: 8px;
+                    box-shadow: 0 0 2px #ccc;
+                    line-height: 33px;
+                    text-align: center;
+                    cursor: pointer;
+                  "
+                  @click="OverviewClick"
+                  v-if="!overview"
+                >
+                  <ArrowLeftBold color="#999999" style="width: 16px" />
+                </div>
+                <!-- overview展开 -->
+                <div  
+                  style="
+                    width: 328px;
+                    min-height: 452px;
+                    background-color: #ffffff;
+                    box-shadow: 0 0 2px #ccc;
+                    z-index: 1;
+                    position: relative;
+                  "
+                  v-else
+                >
+                  <ArrowLeftBold
+                    color="#999999"
+                    style="
+                      width: 16px;
+                      position: absolute;
+                      right: 0px;
+                      top: 0px;
+                      margin: 18px;
+                      cursor: pointer;
+                      z-index: 1;
+                    "
+                    @click="OverviewClick"
+                  />
+                  <el-row>
+                    <el-col
+                      style="margin: 10px; font-size: 18px; font-weight: 500"
+                    >
+                      Overview
+                    </el-col>
+                    <el-col style="margin: 0 0 0 10px">
+                      <div style="font-weight: bold">Node labels</div>
+                      <el-tag effect="dark" round>*({{ overNodeList.length }})</el-tag>
+                      <el-tag effect="dark" round v-for="(item,index) in labels" :key="index" style="margin-left: 10px;">{{ item }}</el-tag>
+                    </el-col>
+                    <el-col style="margin: 10px 0 0 10px;">
+                      Displaying {{ overNodeList.length }} nodes, 0 relationships.
+                    </el-col>
+                  </el-row>
+                </div>
                 <relation-graph ref="graphRef" :options="options" />
               </div>
             </el-tab-pane>
@@ -147,7 +224,10 @@
                 </div>
               </template>
               <!-- table-详情 -->
-              <div style="height: 324px; overflow: scroll">
+              <div
+                style="overflow: auto"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              >
                 <a-row
                   style="
                     font-size: 16px;
@@ -197,9 +277,8 @@
                         border-bottom: 1px solid #000000;
                         position: relative;
                       "
-                      ref="preRef"
                     >
-                  <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;" @click="tableCopy(index3)"/>
+                  <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;" @click="tableCopy(item4)"/>
                   {{ JSON.stringify(item4 === null ? "null" : item4, null, 2)}}
                 </pre>
                   </a-col>
@@ -219,7 +298,10 @@
                 </div>
               </template>
               <!-- text-详情 -->
-              <div style="padding: 10px; height: 324px; overflow-y: scroll">
+              <div
+                style="padding: 10px; overflow-y: auto"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              >
                 <el-row style="flex-wrap: nowrap; display: flex">
                   <el-col
                     style="border-right: none; border: 1px dashed #666666"
@@ -263,7 +345,10 @@
                 </div>
               </template>
               <!-- code-详情 -->
-              <div style="padding: 10px; height: 324px; overflow-y: scroll">
+              <div
+                style="padding: 10px; overflow-y: auto"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              >
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server version</el-col>
                   <el-col :span="16" class="severContent">
@@ -345,10 +430,80 @@
                 </span>
               </template>
               <!-- graph-详情 -->
-              <!-- <h1>graph详情-relation</h1> -->
               <div
-                style="border: #efefef solid 1px; height: 324px; width: 100%"
+                style="  border: #efefef solid 1px;
+                  width: 100%;
+                  display: flex;
+                  flex-direction: row-reverse;
+                  position: relative;"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
               >
+               <!-- overview按钮 -->
+               <div
+                  style="
+                    background-color: #dcdcdc30;
+                    width: 45px;
+                    height: 28px;
+                    position: absolute;
+                    z-index: 1;
+                    right: 15px;
+                    top: 8px;
+                    box-shadow: 0 0 2px #ccc;
+                    line-height: 33px;
+                    text-align: center;
+                    cursor: pointer;
+                  "
+                  @click="OverviewClick2"
+                  v-if="!overview2"
+                >
+                  <ArrowLeftBold color="#999999" style="width: 16px" />
+                </div>
+                <!-- overview展开 -->
+                <div  
+                  style="
+                    width: 328px;
+                    min-height: 452px;
+                    background-color: #ffffff;
+                    box-shadow: 0 0 2px #ccc;
+                    z-index: 1;
+                    position: relative;
+                  "
+                  v-else
+                >
+                  <ArrowLeftBold
+                    color="#999999"
+                    style="
+                      width: 16px;
+                      position: absolute;
+                      right: 0px;
+                      top: 0px;
+                      margin: 18px;
+                      cursor: pointer;
+                      z-index: 1;
+                    "
+                    @click="OverviewClick2"
+                  />
+                  <el-row>
+                    <el-col
+                      style="margin: 10px; font-size: 18px; font-weight: 500"
+                    >
+                      Overview
+                    </el-col>
+                    <el-col style="margin: 0 0 0 10px">
+                      <div style="font-weight: bold">Node labels</div>
+                      <el-tag effect="dark" round>*({{ overNodeList2.length }})</el-tag>
+                      <el-tag effect="dark" round v-for="(item,index) in labels2" :key="index" style="margin-left: 10px;">{{ item }}</el-tag>
+                    </el-col>
+                    <el-col style="margin: 10px 0 0 10px">
+                      <div style="font-weight: bold">Relationship types</div>
+                      <el-tag effect="dark" round>*({{ overNodeList2.length }})</el-tag>
+                      <el-tag effect="dark" round v-for="(item,index) in labels2" :key="index" style="margin-left: 10px;">{{ item }}</el-tag>
+                    </el-col> 
+                    <el-col style="margin: 10px 0 0 10px;">
+                      Displaying {{ overNodeList2.length }} nodes, 0 relationships.
+                    </el-col>
+                  </el-row>
+                </div>
                 <relation-graph ref="graphRef" :options="options" />
               </div>
             </el-tab-pane>
@@ -365,7 +520,10 @@
                 </div>
               </template>
               <!-- table-详情 -->
-              <div style="height: 324px; overflow: scroll">
+              <div
+                style="height: 324px; overflow: auto"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              >
                 <a-row
                   style="
                     font-size: 16px;
@@ -383,7 +541,7 @@
                   <a-col
                     v-for="(item2, index2) in item.records[0].keys"
                     :key="index2"
-                    :span="6"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
                   >
                     {{ item2 }}
                   </a-col>
@@ -401,7 +559,7 @@
                   <a-col
                     v-for="(item4, index4) in item3._fields"
                     :key="index4"
-                    :span="6"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
                   >
                     <pre
                       style="
@@ -413,9 +571,8 @@
                         border-bottom: 1px solid #000000;
                         position: relative;
                       "
-                      ref="preRef2"
                     >
-                    <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;" @click="tableCopyRelation(index3,item3.keys.length)"/>
+                    <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;" @click="tableCopy(item4)"/>
                   {{ JSON.stringify(item4 === null ? "null" : item4, null, 2)  }} </pre>
                   </a-col>
                 </a-row>
@@ -434,7 +591,10 @@
                 </div>
               </template>
               <!-- text-详情 -->
-              <div style="padding: 10px; height: 324px; overflow-y: scroll">
+              <div
+                style="padding: 10px; overflow-y: auto"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              >
                 <el-row style="flex-wrap: nowrap; display: flex">
                   <el-col
                     style="border-right: none; border: 1px dashed #666666"
@@ -486,7 +646,10 @@
               </template>
               <!-- code-详情 -->
               <!-- <h1>code详情</h1> -->
-              <div style="padding: 10px; height: 324px; overflow-y: scroll">
+              <div
+                style="padding: 10px; overflow-y: auto"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              >
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server version</el-col>
                   <el-col :span="16" class="severContent">
@@ -553,7 +716,10 @@
                 </div>
               </template>
               <!-- table-详情 -->
-              <div style="height: 324px; overflow-y: scroll">
+              <div
+                style="overflow-y: auto"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              >
                 <a-row
                   style="
                     font-size: 16px;
@@ -571,7 +737,7 @@
                   <a-col
                     v-for="(item2, index2) in item.records[0].keys"
                     :key="index2"
-                    :span="6"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
                   >
                     {{ item2 }}
                   </a-col>
@@ -589,7 +755,7 @@
                   <a-col
                     v-for="(item4, index4) in item3._fields"
                     :key="index4"
-                    :span="6"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
                   >
                     <pre
                       style="
@@ -599,14 +765,13 @@
                         margin-right: 30px;
                         background-color: rgb(239, 239, 239);
                         border-bottom: 1px solid #000000;
+                        position: relative;
                       "
-                      ref="preRef"
                     >
-                    <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;" @click="tableCopy(index3)"/>
+                    <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;" @click="tableCopy(item4)"/>
                   {{
                         JSON.stringify(item4 === null ? "null" : item4, null, 2)
-                      }}</pre
-                    >
+                      }}</pre>
                   </a-col>
                 </a-row>
               </div>
@@ -624,7 +789,10 @@
                 </div>
               </template>
               <!-- text-详情 -->
-              <div style="padding: 10px; height: 324px; overflow-y: scroll">
+              <div
+                style="padding: 10px; overflow-y: auto"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              >
                 <el-row style="flex-wrap: nowrap; display: flex">
                   <el-col
                     style="border-right: none; border: 1px dashed #666666"
@@ -662,7 +830,10 @@
                 </div>
               </template>
               <!-- code-详情 -->
-              <div style="padding: 10px; height: 324px; overflow-y: scroll">
+              <div
+                style="padding: 10px; overflow-y: auto"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              >
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server version</el-col>
                   <el-col :span="16" class="severContent">
@@ -713,6 +884,7 @@
             </el-tab-pane>
           </el-tabs>
         </el-col>
+        <!-- 时间戳 -->
         <div
           style="
             width: 100%;
@@ -723,18 +895,16 @@
             padding-left: 16px;
           "
         >
-          Started streaming 25 records in less than 1 ms and completed after 3
-          ms.
+          Started streaming 25 records in less than 1 ms and completed after 3ms.
         </div>
       </el-col>
     </el-row>
   </div>
 </template>
 <script setup lang="ts">
-import { ref, watch, onMounted, nextTick, computed, onUpdated } from "vue";
+import { ref, watch, onMounted, nextTick } from "vue";
 import { useStore } from "vuex";
 import RelationGraph from "relation-graph/vue3";
-// 导入icon
 import {
   PushpinOutlined,
   DownOutlined,
@@ -748,42 +918,35 @@ import {
   UpOutlined,
 } from "@ant-design/icons-vue";
 import { ArrowLeftBold, CopyDocument } from "@element-plus/icons-vue";
-import { keysOf } from "element-plus/es/utils/objects.mjs";
 import { ElMessage, ElMessageBox } from "element-plus";
 import request from "../../utils/request.js";
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 const store = useStore();
-const context = ref("");
 //graph
 const graphRef = ref<RelationGraph>();
 const options = {
   defaultExpandHolderPosition: "right",
 };
-// let num = ref(0); // 定义一个从0开始的num
 const graphList = ref([]); // 定义个数组
 const overview = ref(false);
+const overview2 = ref(false);
 const islaunch = ref(false);
 const isFullscreen = ref(false);
-const preRef = ref(null); // 引用 pre 元素
-const preRef2 = ref(null); // 引用 pre 元素
-
-// const scrollContainer = ref<HTMLElement | null>(null);
+const overNodeList = ref([])
+const overNodeList2 = ref([])
+const labels = ref([])
+const labels2 = ref([])
 //复制
-const tableCopy = (index3) => {
-  console.log(preRef.value[index3].innerText, "复制");
-  navigator.clipboard.writeText(preRef.value[index3].innerText);
+const tableCopy = (item4: any) => {
+  navigator.clipboard.writeText(
+    JSON.stringify(item4 === null ? null : item4, null, 2)
+  );
   ElMessage({
-    message: '内容已复制到剪贴板',
-    type: 'success',
+    message: "内容已复制到剪贴板",
+    type: "success",
     plain: true,
-  })
+  });
 };
-//复制relation
-const tableCopyRelation = (index3,length) =>{
-  console.log(index3)
-  console.log(length)
-  console.log(preRef2.value[index3+length-1].innerText, "复制2");
-}
 //置顶
 const topClick = (item) => {
   console.log("置顶");
@@ -791,13 +954,27 @@ const topClick = (item) => {
 //放大
 const toggleFullScreen = () => {
   isFullscreen.value = !isFullscreen.value;
+  console.log("放大");
 };
 //收起
 const retract = () => {
   islaunch.value = !islaunch.value;
 };
+//overview
 const OverviewClick = () => {
   overview.value = !overview.value;
+};
+//overview2
+const OverviewClick2 = () => {
+  overview2.value = !overview2.value;
+};
+//删除
+const removeModule = (index:any) => {
+  // store.commit("remove", index);
+};
+//输入
+const handleBlur = (index) => {
+  console.log(index, 788);
 };
 watch(store.state.list, async (newVal, oldVal) => {
   console.log(oldVal, 648);
@@ -805,12 +982,11 @@ watch(store.state.list, async (newVal, oldVal) => {
   if (
     oldVal[oldVal.length - 1].records[0].keys.indexOf("n") !== -1 &&
     oldVal[oldVal.length - 1].records[0].keys.indexOf("p") === -1 &&
-    oldVal[oldVal.length - 1].records[0]._fields[0] &&
-    oldVal[oldVal.length - 1].records[0]._fields[0].elementId &&
-    oldVal[oldVal.length - 1].records[0]._fields[0].properties
+    oldVal[oldVal.length - 1].records[0]._fields[oldVal[oldVal.length - 1].records[0].keys.indexOf("n")] &&
+    oldVal[oldVal.length - 1].records[0]._fields[oldVal[oldVal.length - 1].records[0].keys.indexOf("n")].elementId &&
+    oldVal[oldVal.length - 1].records[0]._fields[oldVal[oldVal.length - 1].records[0].keys.indexOf("n")].properties
   ) {
     console.log("我是节点");
-    context.value = oldVal[oldVal.length - 1].summary.query.text;
     let textName = ref("");
     //节点图数据处理
     let list = [
@@ -832,14 +1008,26 @@ watch(store.state.list, async (newVal, oldVal) => {
         });
       }
     });
+    // console.log(list,"927")
     graphList.value.push(list);
-    console.log(graphRef.value, "781");
-    console.log(graphList.value, "782");
+    console.log(graphList.value,"929")
     oldVal.map((item, index) => {
+      console.log(item,"931")
       if (index === oldVal.length - 1) {
         graphRef.value[index].setJsonData(graphList.value[index][0]);
       }
+      //取节点数组
+      const set = new Set(item.records.map(JSON.stringify));
+       overNodeList.value =  Array.from(set).map(JSON.parse)
+       console.log(overNodeList.value,' ')
+       overNodeList.value.map(item2=>{
+        labels.value.push(...item2._fields[item2.keys.indexOf("n")].labels)
+       })
+       labels.value = new Set(labels.value)
+      labels.value = Array.from(labels.value)
+      //  console.log(labels.value,'labels')
     });
+
   } else if (
     oldVal[oldVal.length - 1].records[0].keys.indexOf("p") !== -1 &&
     oldVal[oldVal.length - 1].records[0]._fields[0] &&
@@ -851,7 +1039,6 @@ watch(store.state.list, async (newVal, oldVal) => {
     ].start
   ) {
     console.log("我是关系");
-    context.value = oldVal[oldVal.length - 1].summary.query.text;
     //关系图数据处理
     let textName = ref("");
     let textTitle = ref("");
@@ -895,15 +1082,31 @@ watch(store.state.list, async (newVal, oldVal) => {
     console.log(list, 839);
     graphList.value.push(list);
     oldVal.map((item, index) => {
+      // console.log(item,1078)
       if (index === oldVal.length - 1) {
         graphRef.value[index].setJsonData(graphList.value[index][0]);
       }
+      //取节点数组
+      item.records.map(item2=>{
+        // console.log(item2,1085)
+         overNodeList2.value.push(item2._fields[item2.keys.indexOf("p")].start,item2._fields[item2.keys.indexOf("p")].end)
+      })
+      // const set = new Set(item.records.map(JSON.stringify));
+      //  overNodeList2.value =  Array.from(set).map(JSON.parse)
+       console.log(overNodeList2.value,'1085 ')
+       const set = new Set(overNodeList2.value.map(JSON.stringify));
+       overNodeList2.value =  Array.from(set).map(JSON.parse)
+       overNodeList2.value.map(item3=>{
+        labels2.value.push(...item3.labels)
+       })
+       labels2.value = new Set(labels2.value)
+      labels2.value = Array.from(labels2.value)
+       console.log(labels2.value,'labels2')
     });
   } else {
     console.log("我是keys");
   }
 });
-onMounted(async () => {});
 //code
 const isunfold = ref(false);
 const isres = ref(false);

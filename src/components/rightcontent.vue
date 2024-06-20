@@ -14,7 +14,7 @@
         ref="scrollContainer"
       >
         <login></login>
-        <block3/>
+        <block3 />
         <!-- :scrollDom="scrollContainer" -->
       </div>
     </a-row>
@@ -26,10 +26,7 @@ import search from "./rightComponents/search.vue";
 import login from "./rightComponents/login.vue";
 import block3 from "./rightComponents/block3.vue";
 import {
-  defineComponent,
   ref,
-  onMounted,
-  onUpdated,
   watch,
   nextTick,
 } from "vue";
