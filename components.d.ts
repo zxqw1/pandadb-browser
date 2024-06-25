@@ -29,6 +29,7 @@ declare module 'vue' {
     Guides: typeof import('./src/components/menuComponents/guides.vue')['default']
     Header: typeof import('./src/components/header.vue')['default']
     Help: typeof import('./src/components/menuComponents/help.vue')['default']
+    Home: typeof import('./src/components/menuComponents/home.vue')['default']
     Home3: typeof import('./src/components/menuComponents/home3.vue')['default']
     Login: typeof import('./src/components/rightComponents/login.vue')['default']
     Menu: typeof import('./src/components/menu.vue')['default']
@@ -40,6 +41,7 @@ declare module 'vue' {
     Setter: typeof import('./src/components/menuComponents/setter.vue')['default']
     Tcode: typeof import('./src/components/rightComponents/graph/components/Tcode.vue')['default']
     Tgraph: typeof import('./src/components/rightComponents/graph/Tgraph.vue')['default']
+    TopBlock: typeof import('./src/components/rightComponents/topBlock.vue')['default']
     Ttable: typeof import('./src/components/rightComponents/graph/components/Ttable.vue')['default']
     Ttext: typeof import('./src/components/rightComponents/graph/components/Ttext.vue')['default']
   }

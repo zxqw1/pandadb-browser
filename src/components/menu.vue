@@ -17,9 +17,7 @@
       </template>
       <!--首页内容  -->
       <div v-if="tabsName" class="content">
-        <!-- <home /> -->
-        <!-- <home2/> -->
-        <home3/>
+        <home/>
       </div>
     </el-tab-pane>
     <el-tab-pane name="偏好" :disabled="loginelse">
@@ -100,9 +98,7 @@ import {
   ToolOutlined,
   CustomerServiceFilled,
 } from "@ant-design/icons-vue";
-// import home from "./menuComponents/home.vue";
-// import home2 from "./menuComponents/home2.vue";
-import home3 from "./menuComponents/home3.vue"
+import home from "./menuComponents/home.vue"
 import guides from "./menuComponents/guides.vue";
 import help from "./menuComponents/help.vue";
 import about from "./menuComponents/about.vue";

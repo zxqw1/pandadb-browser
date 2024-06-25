@@ -1,8 +1,11 @@
 <template>
-  <div class="search" :style="{
-    height: isFullscreen ? '100vh' : 'auto',
-    padding:isFullscreen ? '20px' : 'auto',
-  }">
+  <div
+    class="search"
+    :style="{
+      height: isFullscreen ? '100vh' : 'auto',
+      padding: isFullscreen ? '20px' : 'auto',
+    }"
+  >
     <el-row>
       <!-- position: relative; -->
       <el-col :span="22" style="display: flex; align-items: center">
@@ -17,42 +20,53 @@
             min-height: 32px;
           "
           :style="{
-            height: isFullscreen ? '100vh' : 'auto', 
-            position:isFullscreen ?'relative' :'static'
+            height: isFullscreen ? '100vh' : 'auto',
+            position: isFullscreen ? 'relative' : 'static',
           }"
-         
         >
           <!-- logo -->
           <img
             src="../../assets/img/logos.png"
             style="width: 44px; height: 30px"
             :style="{
-              position:isFullscreen ? 'absolute' : 'static',
-              top:isFullscreen ? '10px' : 'auto',
+              position: isFullscreen ? 'absolute' : 'static',
+              top: isFullscreen ? '10px' : 'auto',
             }"
             alt=""
           />
           <!-- 真实输入 -->
-          <div
+          <input
+            type="text  "
+            autosize
+            v-model="context"
+            style="width: 96%; font-size: 16px;color: #666666;background-color: rgb(246, 246, 246);border: none;"
+            class="searchText"
+            :style="{
+              position: isFullscreen ? 'absolute' : 'static',
+              top: isFullscreen ? '10px' : 'auto',
+              right: isFullscreen ? '10px' : 'auto',
+            }"
+          />
+          <!-- <div
             contenteditable="true"
             style="width: 96%"
             class="searchText"
             @blur="handleBlur"
             :style="{
-              position:isFullscreen ? 'absolute' : 'static',
-              top:isFullscreen ? '10px' : 'auto',
-              right:isFullscreen ? '10px' : 'auto',
+              position: isFullscreen ? 'absolute' : 'static',
+              top: isFullscreen ? '10px' : 'auto',
+              right: isFullscreen ? '10px' : 'auto',
             }"
           >
             {{ context }}
-          </div>
+          </div> -->
           <!-- 展示 -->
           <CaretRightOutlined
             style="color: #6a8322; font-size: 28px"
             :style="{
-              position:isFullscreen ? 'absolute' : 'static',
-              top:isFullscreen ? '10px' : 'auto',
-              right:isFullscreen ? '10px' : 'auto',
+              position: isFullscreen ? 'absolute' : 'static',
+              top: isFullscreen ? '10px' : 'auto',
+              right: isFullscreen ? '10px' : 'auto',
             }"
             @click="nodeShow"
           />
@@ -73,15 +87,18 @@
           v-if="!isFullscreen"
         />
         <ShrinkOutlined
-          style="font-size: 20px;position: absolute; top: 10px;"
+          style="font-size: 20px; position: absolute; top: 10px"
           @click="toggleFullScreen"
           v-else
         />
-        <CloseOutlined style="font-size: 20px"
-        :style="{ position:isFullscreen ? 'absolute' : 'static',
-              top:isFullscreen ? '10px' : 'auto',
-              right:isFullscreen ? '10px' : 'auto',}"
-        @click="deleteClick"
+        <CloseOutlined
+          style="font-size: 20px"
+          :style="{
+            position: isFullscreen ? 'absolute' : 'static',
+            top: isFullscreen ? '10px' : 'auto',
+            right: isFullscreen ? '10px' : 'auto',
+          }"
+          @click="deleteClick"
         />
       </el-col>
     </el-row>
@@ -89,18 +106,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref,nextTick } from "vue";
+import { ref, nextTick } from "vue";
+
 import {
   CaretRightOutlined,
   ExpandAltOutlined,
   CloseOutlined,
   ShrinkOutlined,
 } from "@ant-design/icons-vue";
-import {  ElMessageBox } from "element-plus";
+import { ElMessageBox } from "element-plus";
 import request from "../../utils/request.js";
 import { useStore } from "vuex";
 import { el, type he } from "element-plus/es/locale/index.mjs";
 import { autoCompleteProps } from "ant-design-vue/es/auto-complete/index.js";
+// const prop //咋写来的我咋一直报错
+// const props = {
+//   load: {
+//     type: Boolean,
+//     default: false
+//   }
+// }
+// console.log(props,'124')
 const store = useStore();
 const isFullscreen = ref<boolean>(false);
 const context = ref("");
@@ -109,34 +135,37 @@ const toggleFullScreen = () => {
   isFullscreen.value = !isFullscreen.value;
 };
 //删除
-const deleteClick = ()=>{
-  context.value = ""
-}
-// 拿到输入数据
-const handleBlur = (event) => {
-  context.value = event.target.innerText;
-};
-const nodeShow = async() => {
-  await nextTick()
-  // console.log(element,118)
-  if(context.value === ''){
-    
-  }else{
-    let promiseData = request.fetchData("neo4j", "admin", context.value);
-  promiseData
-    .then((result: any) => {
-      console.log('输入的数据',result.records[0]._fields[0])
-      store.commit("increment", result);
-    })
-    .catch((error: any) => {
-      console.log(error, 106);
-      ElMessageBox.alert(error, "错误提示", {
-        confirmButtonText: "好的",
-      });
-    });
+const deleteClick = () => {
   context.value = "";
+};
+// 拿到输入数据
+// const handleBlur = (event) => {
+//   if (!/^[a-zA-Z ]*$/.test(event.target.innerText)) {
+//     event.preventDefault();
+//   } else {
+//     context.value = event.target.innerText;
+//   }
+// };
+const nodeShow = async () => {
+  await nextTick();
+  // console.log(element,118)
+  if (context.value === "") {
+  } else {
+    let promiseData = request.fetchData("neo4j", "admin", context.value);
+    promiseData
+      .then((result: any) => {
+        // emits('load', false)
+        // console.log("输入的数据", result.records[0]._fields[0]);
+        store.commit("increment", result);
+      })
+      .catch((error: any) => {
+        console.log(error, 106);
+        ElMessageBox.alert(error, "错误提示", {
+          confirmButtonText: "好的",
+        });
+      });
+    context.value = "";
   }
-  
 };
 </script>
 
@@ -144,7 +173,7 @@ const nodeShow = async() => {
 .search {
   width: 100%;
   background-color: #ffffff;
-  padding: 14px 16px ;
+  padding: 14px 16px;
 }
 .searchBlock {
   display: flex;

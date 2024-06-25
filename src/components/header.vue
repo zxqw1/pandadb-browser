@@ -2,7 +2,7 @@
   <a-row>
     <a-col>
       <img src="../assets/img/logo.png" alt="">
-      <div class="title">pandaDB Studio</div>
+      <div class="title">PandaDB Studio</div>
     </a-col>
   </a-row>
 </template>

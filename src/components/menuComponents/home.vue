@@ -89,7 +89,7 @@ const labelShow = () => {
   promiseData
     .then((result: any) => {
       console.log(result, "节点的数据");
-      store.commit("increment",  result );
+      // store.commit("increment",  result );
     })
     .catch((error: any) => {
       console.log(error);
@@ -108,7 +108,7 @@ const graphShow = (event) => {
   promiseData
     .then((result: any) => {
       console.log(result, "部分节点数据");
-      store.commit("increment", result);
+      // store.commit("increment", result);
     })
     .catch((error: any) => {
       console.log(error);
@@ -146,7 +146,7 @@ const relationClick = (event) => {
   promiseData
     .then((result: any) => {
       console.log(result, "部分关系数据");
-      store.commit("increment",  result );
+      // store.commit("increment",  result );
     })
     .catch((error: any) => {
       console.log(error);
@@ -169,7 +169,7 @@ const keysClick = (event) => {
   promiseData
     .then((result: any) => {
       console.log(result, "属性数据");
-      store.commit("increment",  result );
+      // store.commit("increment",  result );
     })
     .catch((error: any) => {
       console.log(error);

@@ -13,6 +13,7 @@
       height: isFullscreen ? '100vh' : 'auto',
       marginTop: isFullscreen ? '0' : '24px',
     }"
+    v-loading="loading"
   >
     <el-row>
       <!-- 右上 -->
@@ -25,14 +26,21 @@
         "
       >
         <div class="topIcon">
-          <PushpinOutlined style="margin-left: 16px" @click="topClick(item)" />
+          <PushpinOutlined
+            style="margin-left: 16px"
+            @click="topClick(index,item)"
+          />
           <UpOutlined
             :key="index"
             style="margin-left: 16px"
-            @click="retract"
-            v-if="!islaunch"
+            @click="item.show = false"
+            v-if="item.show"
           />
-          <DownOutlined style="margin-left: 16px" @click="retract" v-else />
+          <DownOutlined
+            style="margin-left: 16px"
+            @click="item.show = true"
+            v-else
+          />
           <ExpandAltOutlined
             style="margin-left: 16px"
             @click="toggleFullScreen"
@@ -45,65 +53,71 @@
           />
           <CloseOutlined
             style="margin-left: 16px"
-            @click="removeModule(index)"
+            @click="removeModule(item, index)"
           />
         </div>
       </el-col>
-      <!-- 输入 -->
-      <el-col>
-        <div class="search">
-          <el-row>
-            <el-col :span="23" style="display: flex; align-items: center">
-              <!-- 输入框 -->
-              <div
-                class="searchBlock"
-                style="
-                  background-color: #f6f6f6;
-                  width: 100%;
-                  border-radius: 5px;
-                  border: 1px dashed #d2dabb;
-                  min-height: 32px;
-                "
-                @keydown.enter.prevent="handleEnter"
-              >
-                <!-- logo -->
-                <img
-                  src="../../assets/img/logos.png"
-                  style="width: 44px; height: 30px"
-                  alt=""
-                />
-                <!-- 真实输入 -->
-                <div
-                  contenteditable="true"
-                  style="width: 96%"
-                  class="searchText"
-                  @blur="handleBlur(index)"
-                >
-                  {{ item.summary.query.text }}
-                </div>
-                <!-- 展示 -->
-                <CaretRightOutlined
-                  style="color: #6a8322; font-size: 28px"
-                  @click="nodeShow"
-                />
-              </div>
-            </el-col>
-            <el-col
-              :span="1"
+      <el-row style="width: 100%;padding:0 16px 0 16px ">
+        <el-col :span="22">
+          <div
+            class="searchBlock"
+            style="
+              background-color: #f6f6f6;
+              width: 100%;
+              border-radius: 5px;
+              border: 1px dashed #d2dabb;
+              min-height: 32px;
+            "
+            :style="{
+              position: isFullscreen ? 'relative' : 'static',
+            }"
+          >
+            <!-- logo -->
+            <img
+              src="../../assets/img/logos.png"
+              style="width: 44px; height: 30px"
+              :style="{
+                position: isFullscreen ? 'absolute' : 'static',
+              }"
+              alt=""
+            />
+            <!-- 真实输入 -->
+            <input
+              type="text"
+              autosize
+              v-model="item.summary.query.text" 
               style="
-                padding-left: 10px;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
+                width: 96%;
+                font-size: 16px;
+                color: #666666;
+                background-color: rgb(246, 246, 246);
+                border: none;
               "
-            >
-              <StarOutlined style="font-size: 20px; color: #666666" />
-              <VerticalAlignBottomOutlined style="font-size: 24px" />
-            </el-col>
-          </el-row>
-        </div>
-      </el-col>
-      <el-col v-show="!islaunch">
+              class="searchText"
+              :style="{
+                position: isFullscreen ? 'absolute' : 'static',
+                left: isFullscreen ? '50px' : 'auto',
+              }"
+              :placeholder="item.summary.query.text"
+            />
+            <!-- 展示 -->
+            <CaretRightOutlined
+              style="color: #6a8322; font-size: 28px"
+              :style="{
+                position: isFullscreen ? 'absolute' : 'static',
+                right: isFullscreen ? '10px' : 'auto',
+              }"
+              @click="nodeShow2(item.summary.query.text, index)"
+            />
+          </div>
+        </el-col>
+        <el-col :span="2" style="display: flex;align-items: center;justify-content: space-around;">
+          <StarOutlined :style="{fontSize:'20px'}" />
+          <VerticalAlignBottomOutlined :style="{fontSize:'20px'}" />
+        </el-col>
+      </el-row>
+      <!-- 展示 -->
+      <el-col v-show="item.show">
         <!-- 展示 node -->
         <el-col
           style="background-color: #ffffff"
@@ -111,8 +125,10 @@
             item.records[0].keys.indexOf('n') !== -1 &&
             item.records[0].keys.indexOf('p') === -1 &&
             item.records[0]._fields[item.records[0].keys.indexOf('n')] &&
-            item.records[0]._fields[item.records[0].keys.indexOf('n')].elementId &&
-            item.records[0]._fields[item.records[0].keys.indexOf('n')].properties
+            item.records[0]._fields[item.records[0].keys.indexOf('n')]
+              .elementId &&
+            item.records[0]._fields[item.records[0].keys.indexOf('n')]
+              .properties
           "
         >
           <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu">
@@ -147,7 +163,7 @@
                 "
                 :style="{ height: isFullscreen ? '100vh' : '324px' }"
               >
-              <!-- overview按钮 -->
+                <!-- overview按钮 -->
                 <div
                   style="
                     background-color: #dcdcdc30;
@@ -168,7 +184,7 @@
                   <ArrowLeftBold color="#999999" style="width: 16px" />
                 </div>
                 <!-- overview展开 -->
-                <div  
+                <div
                   style="
                     width: 328px;
                     min-height: 452px;
@@ -200,11 +216,21 @@
                     </el-col>
                     <el-col style="margin: 0 0 0 10px">
                       <div style="font-weight: bold">Node labels</div>
-                      <el-tag effect="dark" round>*({{ overNodeList.length }})</el-tag>
-                      <el-tag effect="dark" round v-for="(item,index) in labels" :key="index" style="margin-left: 10px;">{{ item }}</el-tag>
+                      <el-tag effect="dark" round
+                        >*({{ overNodeList.length }})</el-tag
+                      >
+                      <el-tag
+                        effect="dark"
+                        round
+                        v-for="(item, index) in labels"
+                        :key="index"
+                        style="margin-left: 10px"
+                        >{{ item }}</el-tag
+                      >
                     </el-col>
-                    <el-col style="margin: 10px 0 0 10px;">
-                      Displaying {{ overNodeList.length }} nodes, 0 relationships.
+                    <el-col style="margin: 10px 0 0 10px">
+                      Displaying {{ overNodeList.length }} nodes, 0
+                      relationships.
                     </el-col>
                   </el-row>
                 </div>
@@ -431,15 +457,17 @@
               </template>
               <!-- graph-详情 -->
               <div
-                style="  border: #efefef solid 1px;
+                style="
+                  border: #efefef solid 1px;
                   width: 100%;
                   display: flex;
                   flex-direction: row-reverse;
-                  position: relative;"
+                  position: relative;
+                "
                 :style="{ height: isFullscreen ? '100vh' : '324px' }"
               >
-               <!-- overview按钮 -->
-               <div
+                <!-- overview按钮 -->
+                <div
                   style="
                     background-color: #dcdcdc30;
                     width: 45px;
@@ -459,7 +487,7 @@
                   <ArrowLeftBold color="#999999" style="width: 16px" />
                 </div>
                 <!-- overview展开 -->
-                <div  
+                <div
                   style="
                     width: 328px;
                     min-height: 452px;
@@ -491,16 +519,35 @@
                     </el-col>
                     <el-col style="margin: 0 0 0 10px">
                       <div style="font-weight: bold">Node labels</div>
-                      <el-tag effect="dark" round>*({{ overNodeList2.length }})</el-tag>
-                      <el-tag effect="dark" round v-for="(item,index) in labels2" :key="index" style="margin-left: 10px;">{{ item }}</el-tag>
+                      <el-tag effect="dark" round
+                        >*({{ overNodeList2.length }})</el-tag
+                      >
+                      <el-tag
+                        effect="dark"
+                        round
+                        v-for="(item, index) in labels2"
+                        :key="index"
+                        style="margin-left: 10px"
+                        >{{ item }}</el-tag
+                      >
                     </el-col>
                     <el-col style="margin: 10px 0 0 10px">
                       <div style="font-weight: bold">Relationship types</div>
-                      <el-tag effect="dark" round>*({{ overNodeList2.length }})</el-tag>
-                      <el-tag effect="dark" round v-for="(item,index) in labels2" :key="index" style="margin-left: 10px;">{{ item }}</el-tag>
-                    </el-col> 
-                    <el-col style="margin: 10px 0 0 10px;">
-                      Displaying {{ overNodeList2.length }} nodes, 0 relationships.
+                      <el-tag effect="dark" round
+                        >*({{ overNodeList2.length }})</el-tag
+                      >
+                      <el-tag
+                        effect="dark"
+                        round
+                        v-for="(item, index) in labels2"
+                        :key="index"
+                        style="margin-left: 10px"
+                        >{{ item }}</el-tag
+                      >
+                    </el-col>
+                    <el-col style="margin: 10px 0 0 10px">
+                      Displaying {{ overNodeList2.length }} nodes, 0
+                      relationships.
                     </el-col>
                   </el-row>
                 </div>
@@ -895,7 +942,8 @@
             padding-left: 16px;
           "
         >
-          Started streaming 25 records in less than 1 ms and completed after 3ms.
+          Started streaming 25 records in less than 1 ms and completed after
+          3ms.
         </div>
       </el-col>
     </el-row>
@@ -930,12 +978,14 @@ const options = {
 const graphList = ref([]); // 定义个数组
 const overview = ref(false);
 const overview2 = ref(false);
-const islaunch = ref(false);
 const isFullscreen = ref(false);
-const overNodeList = ref([])
-const overNodeList2 = ref([])
-const labels = ref([])
-const labels2 = ref([])
+const overNodeList = ref([]);
+const overNodeList2 = ref([]);
+const labels = ref([]);
+const labels2 = ref([]);
+const isPushFlag = ref(0);
+const loading = ref(false)
+const isTop = ref(false)
 //复制
 const tableCopy = (item4: any) => {
   navigator.clipboard.writeText(
@@ -948,19 +998,14 @@ const tableCopy = (item4: any) => {
   });
 };
 //置顶
-const topClick = (item) => {
-  console.log("置顶");
+const topClick = ( index: Number,item:any) => {
+  store.commit("top", {index,item});
 };
 //放大
 const toggleFullScreen = () => {
   isFullscreen.value = !isFullscreen.value;
   console.log("放大");
 };
-//收起
-const retract = () => {
-  islaunch.value = !islaunch.value;
-};
-//overview
 const OverviewClick = () => {
   overview.value = !overview.value;
 };
@@ -969,65 +1014,99 @@ const OverviewClick2 = () => {
   overview2.value = !overview2.value;
 };
 //删除
-const removeModule = (index:any) => {
-  // store.commit("remove", index);
+const removeModule = (record: any, index: any) => {
+  store.commit("remove2", index);
 };
-//输入
-const handleBlur = (index) => {
-  console.log(index, 788);
-};
+//修改
+const nodeShow2 = async (text:any, index:Number)=>{
+  await nextTick()
+  // console.log(index,"index1029")
+  if(text === ""){
+
+  }else{
+    // console.log(text,'text')
+    let promiseData = request.fetchData("neo4j", "admin", text); //我得用他发请求
+    promiseData
+      .then((result: any) => {
+        console.log("拿到的数据", result);
+        store.commit("revise", {index,result});
+
+      })
+      .catch((error: any) => {
+        console.log(error, 106);
+        ElMessageBox.alert(error, "错误提示", {
+          confirmButtonText: "好的",
+        });
+      });
+  }
+}
 watch(store.state.list, async (newVal, oldVal) => {
-  console.log(oldVal, 648);
+  // console.log(oldVal, 1044);
   await nextTick(); // 因为要获取dom，放在nextTick之后，要等dom加载完成
+  // console.log(oldVal[oldVal.length-1].records[0].keys,"1046")
+  if(oldVal.length === 0){
+    return
+  }
+  console.log(oldVal, "1050")
   if (
     oldVal[oldVal.length - 1].records[0].keys.indexOf("n") !== -1 &&
     oldVal[oldVal.length - 1].records[0].keys.indexOf("p") === -1 &&
-    oldVal[oldVal.length - 1].records[0]._fields[oldVal[oldVal.length - 1].records[0].keys.indexOf("n")] &&
-    oldVal[oldVal.length - 1].records[0]._fields[oldVal[oldVal.length - 1].records[0].keys.indexOf("n")].elementId &&
-    oldVal[oldVal.length - 1].records[0]._fields[oldVal[oldVal.length - 1].records[0].keys.indexOf("n")].properties
+    oldVal[oldVal.length - 1].records[0]._fields[
+      oldVal[oldVal.length - 1].records[0].keys.indexOf("n")
+    ] &&
+    oldVal[oldVal.length - 1].records[0]._fields[
+      oldVal[oldVal.length - 1].records[0].keys.indexOf("n")
+    ].elementId &&
+    oldVal[oldVal.length - 1].records[0]._fields[
+      oldVal[oldVal.length - 1].records[0].keys.indexOf("n")
+    ].properties
   ) {
-    console.log("我是节点");
     let textName = ref("");
     //节点图数据处理
-    let list = [
-      {
-        rootId: graphList.value.length === 0 ? 1 : graphList.value.length + 1,
+    graphList.value = [];
+    oldVal.forEach((item2, index2) => {
+      let obj = {
+        rootId: index2,
         nodes: [],
         lines: [],
-      },
-    ];
-    oldVal[oldVal.length - 1].records.map((item: any) => {
-      if (item.keys.indexOf("n") !== -1) {
-        for (const key in item._fields[item.keys.indexOf("n")].properties) {
-          textName.value = item._fields[item.keys.indexOf("n")].properties[key];
+      };
+      oldVal[index2].records.map((item: any) => {
+        if (item.keys.indexOf("n") !== -1) {
+          for (const key in item._fields[item.keys.indexOf("n")].properties) {
+            textName.value =
+              item._fields[item.keys.indexOf("n")].properties[key];
+          }
+          obj.nodes.push({
+            id: item._fields[item.keys.indexOf("n")].elementId,
+            text: textName.value,
+            color: "#21a1ff",
+          });
+          // list.push(obj)
+          // list[0].nodes.push({
+          //   id: item._fields[item.keys.indexOf("n")].elementId,
+          //   text: textName.value,
+          //   color: "#21a1ff",
+          // });
         }
-        list[0].nodes.push({
-          id: item._fields[item.keys.indexOf("n")].elementId,
-          text: textName.value,
-          color: "#21a1ff",
-        });
-      }
+      });
+      graphList.value.push([obj]);
     });
-    // console.log(list,"927")
-    graphList.value.push(list);
-    console.log(graphList.value,"929")
     oldVal.map((item, index) => {
-      console.log(item,"931")
       if (index === oldVal.length - 1) {
         graphRef.value[index].setJsonData(graphList.value[index][0]);
+        isPushFlag.value = oldVal.length;
       }
       //取节点数组
-      const set = new Set(item.records.map(JSON.stringify));
-       overNodeList.value =  Array.from(set).map(JSON.parse)
-       console.log(overNodeList.value,' ')
-       overNodeList.value.map(item2=>{
-        labels.value.push(...item2._fields[item2.keys.indexOf("n")].labels)
-       })
-       labels.value = new Set(labels.value)
-      labels.value = Array.from(labels.value)
+      // const set = new Set(item.records.map(JSON.stringify));
+      //  overNodeList.value =  Array.from(set).map(JSON.parse)
+      //  console.log(overNodeList.value,' ')
+      //  overNodeList.value.map(item2=>{
+      //   labels.value.push(...item2._fields[item2.keys.indexOf("n")].labels)
+      //  })
+      //  labels.value = new Set(labels.value)
+      // labels.value = Array.from(labels.value)
       //  console.log(labels.value,'labels')
     });
-
   } else if (
     oldVal[oldVal.length - 1].records[0].keys.indexOf("p") !== -1 &&
     oldVal[oldVal.length - 1].records[0]._fields[0] &&
@@ -1038,7 +1117,7 @@ watch(store.state.list, async (newVal, oldVal) => {
       oldVal[oldVal.length - 1].records[0].keys.indexOf("p")
     ].start
   ) {
-    console.log("我是关系");
+    // console.log("我是关系");
     //关系图数据处理
     let textName = ref("");
     let textTitle = ref("");
@@ -1079,7 +1158,7 @@ watch(store.state.list, async (newVal, oldVal) => {
         });
       }
     });
-    console.log(list, 839);
+    // console.log(list, 839);
     graphList.value.push(list);
     oldVal.map((item, index) => {
       // console.log(item,1078)
@@ -1087,24 +1166,23 @@ watch(store.state.list, async (newVal, oldVal) => {
         graphRef.value[index].setJsonData(graphList.value[index][0]);
       }
       //取节点数组
-      item.records.map(item2=>{
-        // console.log(item2,1085)
-         overNodeList2.value.push(item2._fields[item2.keys.indexOf("p")].start,item2._fields[item2.keys.indexOf("p")].end)
-      })
-      // const set = new Set(item.records.map(JSON.stringify));
-      //  overNodeList2.value =  Array.from(set).map(JSON.parse)
-       console.log(overNodeList2.value,'1085 ')
-       const set = new Set(overNodeList2.value.map(JSON.stringify));
-       overNodeList2.value =  Array.from(set).map(JSON.parse)
-       overNodeList2.value.map(item3=>{
-        labels2.value.push(...item3.labels)
-       })
-       labels2.value = new Set(labels2.value)
-      labels2.value = Array.from(labels2.value)
-       console.log(labels2.value,'labels2')
+      // item.records.map(item2=>{
+      //   console.log(item2,1092)
+      //    overNodeList2.value.push(item2._fields[item2.keys.indexOf("p")].start,item2._fields[item2.keys.indexOf("p")].end)
+      // })
+      //  console.log(overNodeList2.value,'1085 ')
+      //    const set = new Set(overNodeList2.value.map(JSON.stringify));
+      //    overNodeList2.value =  Array.from(set).map(JSON.parse)
+      //    overNodeList2.value.map(item3=>{
+      //     labels2.value.push(...item3.labels)
+      //    })
+      //    labels2.value = new Set(labels2.value)
+      //   labels2.value = Array.from(labels2.value)
+      //    console.log(labels2.value,'labels2')
     });
   } else {
-    console.log("我是keys");
+    // graphList.value.push(list);
+    console.log(oldVal, "我是keys");
   }
 });
 //code

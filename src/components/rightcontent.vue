@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <a-row>
-      <search></search>
+      <search @load="loadFun"></search>
       <div
         style="
           display: flex;
@@ -12,10 +12,11 @@
         "
         class="scroll-container"
         ref="scrollContainer"
+        v-loading="loading"
       >
+        <topBlock/>
+        <block/>
         <login></login>
-        <block3 />
-        <!-- :scrollDom="scrollContainer" -->
       </div>
     </a-row>
   </div>
@@ -24,26 +25,25 @@
 <script setup lang="ts">
 import search from "./rightComponents/search.vue";
 import login from "./rightComponents/login.vue";
-import block3 from "./rightComponents/block3.vue";
-import {
-  ref,
-  watch,
-  nextTick,
-} from "vue";
+import block from "./rightComponents/block.vue";
+import topBlock from "./rightComponents/topBlock.vue";
+import { ref, watch, nextTick } from "vue";
 import { useStore } from "vuex";
 const store = useStore();
 const scrollContainer = ref(null);
+const loading = ref(false)
 watch(store.state.list, async () => {
   await nextTick();
   //设置滚动条
   if (scrollContainer.value) {
     scrollContainer.value.scrollTo({
-      top: -scrollContainer.value.scrollHeight
+      top: -scrollContainer.value.scrollHeight,
     });
-  
   }
 });
-
+const loadFun = (value) => {
+  console.log(value,"44")
+}
 </script>
 
 <style scoped>
