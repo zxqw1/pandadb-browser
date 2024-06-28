@@ -119,14 +119,6 @@ import request from "../../utils/request.js";
 import { useStore } from "vuex";
 import { el, type he } from "element-plus/es/locale/index.mjs";
 import { autoCompleteProps } from "ant-design-vue/es/auto-complete/index.js";
-// const prop //咋写来的我咋一直报错
-// const props = {
-//   load: {
-//     type: Boolean,
-//     default: false
-//   }
-// }
-// console.log(props,'124')
 const store = useStore();
 const isFullscreen = ref<boolean>(false);
 const context = ref("");
@@ -138,24 +130,17 @@ const toggleFullScreen = () => {
 const deleteClick = () => {
   context.value = "";
 };
-// 拿到输入数据
-// const handleBlur = (event) => {
-//   if (!/^[a-zA-Z ]*$/.test(event.target.innerText)) {
-//     event.preventDefault();
-//   } else {
-//     context.value = event.target.innerText;
-//   }
-// };
 const nodeShow = async () => {
   await nextTick();
-  // console.log(element,118)
   if (context.value === "") {
   } else {
+    const startTime = performance.now();
     let promiseData = request.fetchData("neo4j", "admin", context.value);
     promiseData
       .then((result: any) => {
-        // emits('load', false)
-        // console.log("输入的数据", result.records[0]._fields[0]);
+        const endTime = performance.now();
+        const responseTime = endTime - startTime
+        result.resTime = Math.round(responseTime) +'ms'
         store.commit("increment", result);
       })
       .catch((error: any) => {

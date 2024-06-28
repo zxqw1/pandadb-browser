@@ -14,9 +14,9 @@
         ref="scrollContainer"
         v-loading="loading"
       >
-        <topBlock/>
-        <block/>
         <login></login>
+        <block2/>
+        <blockTop/>
       </div>
     </a-row>
   </div>
@@ -25,8 +25,8 @@
 <script setup lang="ts">
 import search from "./rightComponents/search.vue";
 import login from "./rightComponents/login.vue";
-import block from "./rightComponents/block.vue";
-import topBlock from "./rightComponents/topBlock.vue";
+import block2 from "./rightComponents/block2.vue"
+import blockTop from "./rightComponents/blockTop.vue";
 import { ref, watch, nextTick } from "vue";
 import { useStore } from "vuex";
 const store = useStore();

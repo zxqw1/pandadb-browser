@@ -23,6 +23,7 @@ declare module 'vue' {
     Block: typeof import('./src/components/rightComponents/block.vue')['default']
     Block2: typeof import('./src/components/rightComponents/block2.vue')['default']
     Block3: typeof import('./src/components/rightComponents/block3.vue')['default']
+    BlockTop: typeof import('./src/components/rightComponents/blockTop.vue')['default']
     copy: typeof import('./src/components/rightComponents/block2 copy.vue')['default']
     Favorate: typeof import('./src/components/menuComponents/Favorate.vue')['default']
     Graph: typeof import('./src/components/rightComponents/graph/components/graph.vue')['default']
@@ -44,5 +45,6 @@ declare module 'vue' {
     TopBlock: typeof import('./src/components/rightComponents/topBlock.vue')['default']
     Ttable: typeof import('./src/components/rightComponents/graph/components/Ttable.vue')['default']
     Ttext: typeof import('./src/components/rightComponents/graph/components/Ttext.vue')['default']
+    Zuizhongfangan: typeof import('./src/components/rightComponents/zuizhongfangan.vue')['default']
   }
 }

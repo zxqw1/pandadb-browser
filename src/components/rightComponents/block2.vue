@@ -1,5 +1,4 @@
 <template>
-  <!-- <h1>block2</h1> -->
   <div
     style="background-color: #ffffff"
     v-for="(item, index) in store.state.list"
@@ -10,12 +9,13 @@
       left: isFullscreen ? '0' : '0',
       width: isFullscreen ? '100vw' : 'auto',
       zIndex: isFullscreen ? '5' : '0',
-      height: isFullscreen ? '100vh' : 'auto',
-      marginTop: isFullscreen ? '0' : '24px',
     }"
-    v-loading="loading"
   >
-    <el-row>
+    <el-row v-if="item.length">
+      <div
+        style="background-color: #f6f6f6; width: 100%; height: 24px"
+        v-if="!isFullscreen"
+      ></div>
       <!-- 右上 -->
       <el-col
         style="
@@ -23,23 +23,24 @@
           display: flex;
           flex-direction: row-reverse;
           height: 24px;
+          padding-right: 14px;
+          padding-top: 4px;
         "
       >
         <div class="topIcon">
           <PushpinOutlined
             style="margin-left: 16px"
-            @click="topClick(index,item)"
-          />
-          <UpOutlined
-            :key="index"
-            style="margin-left: 16px"
-            @click="item.show = false"
-            v-if="item.show"
+            @click="topClick(index, item)"
           />
           <DownOutlined
             style="margin-left: 16px"
-            @click="item.show = true"
+            v-if="item.show"
+            @click="item.show = false"
+          />
+          <UpOutlined
             v-else
+            style="margin-left: 16px"
+            @click="item.show = true"
           />
           <ExpandAltOutlined
             style="margin-left: 16px"
@@ -53,11 +54,12 @@
           />
           <CloseOutlined
             style="margin-left: 16px"
-            @click="removeModule(item, index)"
+            @click="removeModule(index)"
           />
         </div>
       </el-col>
-      <el-row style="width: 100%;padding:0 16px 0 16px ">
+      <!-- 搜索 -->
+      <el-row style="width: 100%; padding: 8px 16px 0 16px">
         <el-col :span="22">
           <div
             class="searchBlock"
@@ -67,6 +69,8 @@
               border-radius: 5px;
               border: 1px dashed #d2dabb;
               min-height: 32px;
+              display: flex;
+              align-items: center;
             "
             :style="{
               position: isFullscreen ? 'relative' : 'static',
@@ -83,11 +87,12 @@
             />
             <!-- 真实输入 -->
             <input
+              :value="item[0].summary.query.text"
+              @input="inputChange($event)"
               type="text"
               autosize
-              v-model="item.summary.query.text" 
               style="
-                width: 96%;
+                width: 93%;
                 font-size: 16px;
                 color: #666666;
                 background-color: rgb(246, 246, 246);
@@ -98,7 +103,6 @@
                 position: isFullscreen ? 'absolute' : 'static',
                 left: isFullscreen ? '50px' : 'auto',
               }"
-              :placeholder="item.summary.query.text"
             />
             <!-- 展示 -->
             <CaretRightOutlined
@@ -107,33 +111,49 @@
                 position: isFullscreen ? 'absolute' : 'static',
                 right: isFullscreen ? '10px' : 'auto',
               }"
-              @click="nodeShow2(item.summary.query.text, index)"
+              @click="nodeShow2(item, index)"
             />
           </div>
         </el-col>
-        <el-col :span="2" style="display: flex;align-items: center;justify-content: space-around;">
-          <StarOutlined :style="{fontSize:'20px'}" />
-          <VerticalAlignBottomOutlined :style="{fontSize:'20px'}" />
+        <el-col
+          :span="2"
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+          "
+        >
+          <StarOutlined :style="{ fontSize: '20px' }" />
+          <VerticalAlignBottomOutlined :style="{ fontSize: '20px' }" />
         </el-col>
       </el-row>
       <!-- 展示 -->
-      <el-col v-show="item.show">
-        <!-- 展示 node -->
+      <el-col
+        style="height: 348px; margin-top: 12px"
+        v-show="!item.show"
+        :style="{
+          height: isFullscreen ? '100vh' : 'auto',
+        }"
+      >
+        <!-- node -->
         <el-col
-          style="background-color: #ffffff"
           v-if="
-            item.records[0].keys.indexOf('n') !== -1 &&
-            item.records[0].keys.indexOf('p') === -1 &&
-            item.records[0]._fields[item.records[0].keys.indexOf('n')] &&
-            item.records[0]._fields[item.records[0].keys.indexOf('n')]
+            item[0].records[0].keys.indexOf('n') !== -1 &&
+            item[0].records[0].keys.indexOf('p') === -1 &&
+            item[0].records[0]._fields[item[0].records[0].keys.indexOf('n')] &&
+            item[0].records[0]._fields[item[0].records[0].keys.indexOf('n')]
               .elementId &&
-            item.records[0]._fields[item.records[0].keys.indexOf('n')]
+            item[0].records[0]._fields[item[0].records[0].keys.indexOf('n')]
               .properties
           "
         >
-          <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu">
+          <el-tabs
+            :tab-position="tabPosition"
+            class="demo-tabs graphMenu"
+            :style="{ height: isFullscreen ? '100vh' : '324px' }"
+          >
             <el-tab-pane label="graph">
-              <!-- graph-标题 -->
+              <!-- label标题 -->
               <template #label>
                 <span
                   style="
@@ -152,7 +172,7 @@
                   >
                 </span>
               </template>
-              <!-- graph-详情 -->
+              <!-- 图 -->
               <div
                 style="
                   border: #efefef solid 1px;
@@ -183,7 +203,6 @@
                 >
                   <ArrowLeftBold color="#999999" style="width: 16px" />
                 </div>
-                <!-- overview展开 -->
                 <div
                   style="
                     width: 328px;
@@ -217,28 +236,30 @@
                     <el-col style="margin: 0 0 0 10px">
                       <div style="font-weight: bold">Node labels</div>
                       <el-tag effect="dark" round
-                        >*({{ overNodeList.length }})</el-tag
+                        >*(0)</el-tag
                       >
                       <el-tag
                         effect="dark"
                         round
-                        v-for="(item, index) in labels"
-                        :key="index"
                         style="margin-left: 10px"
-                        >{{ item }}</el-tag
+                        >123</el-tag
                       >
                     </el-col>
                     <el-col style="margin: 10px 0 0 10px">
-                      Displaying {{ overNodeList.length }} nodes, 0
+                      Displaying  nodes, 0
                       relationships.
                     </el-col>
                   </el-row>
                 </div>
-                <relation-graph ref="graphRef" :options="options" />
+                <RelationGraph
+                  ref="graphRef"
+                  :options="options"
+                  style="height: 336px"
+                  :style="{ height: isFullscreen ? '100vh' : '324px' }"
+                ></RelationGraph>
               </div>
             </el-tab-pane>
             <el-tab-pane label="table">
-              <!-- table-标题 -->
               <template #label>
                 <div>
                   <img
@@ -249,10 +270,9 @@
                   <div style="font-weight: 600; color: #666666">table</div>
                 </div>
               </template>
-              <!-- table-详情 -->
-              <div
-                style="overflow: auto"
-                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              <!-- 详情 -->
+              <div style="overflow: auto"
+              :style="{ height: isFullscreen ? '100vh' : '324px' }"
               >
                 <a-row
                   style="
@@ -268,18 +288,16 @@
                     flex-wrap: nowrap;
                   "
                 >
-                  <!-- 这块是 node的table的标题 -->
                   <a-col
-                    v-for="(item2, index2) in item.records[0].keys"
+                    v-for="(item2, index2) in item[0].records[0].keys"
                     :key="index2"
-                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
+                    :span="item[0].records[0].keys.length != 1 ? '6' : '24'"
                   >
                     {{ item2 }}
                   </a-col>
                 </a-row>
-                <!-- 这块是node的table的内容 -->
                 <a-row
-                  v-for="(item3, index3) in item.records"
+                  v-for="(item3, index3) in item[0].records"
                   :key="index3"
                   style="
                     flex-wrap: nowrap;
@@ -291,7 +309,7 @@
                   <a-col
                     v-for="(item4, index4) in item3._fields"
                     :key="index4"
-                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
+                    :span="item[0].records[0].keys.length != 1 ? '6' : '24'"
                   >
                     <pre
                       style="
@@ -305,14 +323,13 @@
                       "
                     >
                   <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;" @click="tableCopy(item4)"/>
-                  {{ JSON.stringify(item4 === null ? "null" : item4, null, 2)}}
+                  {{ JSON.stringify(item4 === null ? null : item4, null, 2)}}
                 </pre>
                   </a-col>
                 </a-row>
               </div>
             </el-tab-pane>
             <el-tab-pane label="text">
-              <!-- text-标题 -->
               <template #label>
                 <div>
                   <img
@@ -323,26 +340,27 @@
                   <div style="font-weight: 600; color: #666666">text</div>
                 </div>
               </template>
-              <!-- text-详情 -->
-              <div
-                style="padding: 10px; overflow-y: auto"
-                :style="{ height: isFullscreen ? '100vh' : '324px' }"
-              >
+              <!-- 详情 -->
+              <div style="padding: 10px; overflow-y: auto"
+              :style="{ height: isFullscreen ? '100vh' : '324px' }">
                 <el-row style="flex-wrap: nowrap; display: flex">
                   <el-col
                     style="border-right: none; border: 1px dashed #666666"
                     class="td"
-                    v-for="(item5, index5) in item.records[0].keys"
+                    v-for="(item5, index5) in item[0].records[0].keys"
                     :key="index5"
-                    :span="6"
+                    :span="item[0].records[0].keys.length !== 1 ? 6 : 24"
                   >
                     {{ item5 }}
                   </el-col>
                 </el-row>
-                <el-row v-for="(item6, index6) in item.records" :key="index6">
+                <el-row
+                  v-for="(item6, index6) in item[0].records"
+                  :key="index6"
+                >
                   <el-col
                     class="td"
-                    :span="6"
+                    :span="item[0].records[0].keys.length !== 1 ? 6 : 24"
                     style="border-right: none; border: 1px dashed #666666"
                     v-for="(item7, index7) in item6._fields"
                     :key="index7"
@@ -359,7 +377,6 @@
               </div>
             </el-tab-pane>
             <el-tab-pane label="code">
-              <!-- code-标题 -->
               <template #label>
                 <div>
                   <img
@@ -370,27 +387,24 @@
                   <div style="font-weight: 600; color: #666666">code</div>
                 </div>
               </template>
-              <!-- code-详情 -->
-              <div
-                style="padding: 10px; overflow-y: auto"
-                :style="{ height: isFullscreen ? '100vh' : '324px' }"
-              >
+              <!-- 详情 -->
+              <div style="padding: 10px; overflow-y: auto">
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server version</el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item.summary.server.agent }}
+                    {{ item[0].summary.server.agent }}
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server address</el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item.summary.server.address }}
+                    {{ item[0].summary.server.address }}
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Query </el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item.summary.query.text }}
+                    {{ item[0].summary.query.text }}
                   </el-col>
                 </el-row>
                 <el-row>
@@ -404,7 +418,7 @@
                     :style="{ height: isunfold ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden"
                   >
-                    {{ item.summary }}
+                    {{ item[0].summary }}
                   </el-col>
                 </el-row>
                 <el-row>
@@ -418,26 +432,31 @@
                     :style="{ height: isres ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden"
                   >
-                    {{ item.records }}
+                    {{ item[0].records }}
                   </el-col>
                 </el-row>
               </div>
             </el-tab-pane>
           </el-tabs>
         </el-col>
-        <!-- 展示 relation -->
+        <!-- relation -->
         <el-col
-          style="background-color: #ffffff"
           v-else-if="
-            item.records[0].keys.indexOf('p') !== -1 &&
-            item.records[0]._fields[0] &&
-            item.records[0]._fields[item.records[0].keys.indexOf('p')].end &&
-            item.records[0]._fields[item.records[0].keys.indexOf('p')].start
+            item[0].records[0].keys.indexOf('p') !== -1 &&
+            item[0].records[0]._fields[0] &&
+            item[0].records[0]._fields[item[0].records[0].keys.indexOf('p')]
+              .end &&
+            item[0].records[0]._fields[item[0].records[0].keys.indexOf('p')]
+              .start
           "
         >
-          <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu">
+          <el-tabs
+            :tab-position="tabPosition"
+            class="demo-tabs graphMenu"
+            :style="{ height: isFullscreen ? '100vh' : '324px' }"
+          >
             <el-tab-pane label="graph">
-              <!-- graph-标题 -->
+              <!-- graph标题 -->
               <template #label>
                 <span
                   style="
@@ -448,6 +467,7 @@
                 >
                   <img
                     src="../../assets/img/图谱.png"
+                    alt=""
                     style="width: 24px; height: 24px"
                   />
                   <span style="font-weight: 600; color: #666666" class="graph"
@@ -455,9 +475,8 @@
                   >
                 </span>
               </template>
-              <!-- graph-详情 -->
               <div
-                style="
+              style="
                   border: #efefef solid 1px;
                   width: 100%;
                   display: flex;
@@ -466,8 +485,7 @@
                 "
                 :style="{ height: isFullscreen ? '100vh' : '324px' }"
               >
-                <!-- overview按钮 -->
-                <div
+              <div
                   style="
                     background-color: #dcdcdc30;
                     width: 45px;
@@ -481,12 +499,11 @@
                     text-align: center;
                     cursor: pointer;
                   "
-                  @click="OverviewClick2"
-                  v-if="!overview2"
+                  @click="OverviewClick"
+                  v-if="!overview"
                 >
                   <ArrowLeftBold color="#999999" style="width: 16px" />
                 </div>
-                <!-- overview展开 -->
                 <div
                   style="
                     width: 328px;
@@ -509,7 +526,7 @@
                       cursor: pointer;
                       z-index: 1;
                     "
-                    @click="OverviewClick2"
+                    @click="OverviewClick"
                   />
                   <el-row>
                     <el-col
@@ -520,42 +537,30 @@
                     <el-col style="margin: 0 0 0 10px">
                       <div style="font-weight: bold">Node labels</div>
                       <el-tag effect="dark" round
-                        >*({{ overNodeList2.length }})</el-tag
+                        >*(0)</el-tag
                       >
                       <el-tag
                         effect="dark"
                         round
-                        v-for="(item, index) in labels2"
-                        :key="index"
                         style="margin-left: 10px"
-                        >{{ item }}</el-tag
+                        >123</el-tag
                       >
                     </el-col>
                     <el-col style="margin: 10px 0 0 10px">
-                      <div style="font-weight: bold">Relationship types</div>
-                      <el-tag effect="dark" round
-                        >*({{ overNodeList2.length }})</el-tag
-                      >
-                      <el-tag
-                        effect="dark"
-                        round
-                        v-for="(item, index) in labels2"
-                        :key="index"
-                        style="margin-left: 10px"
-                        >{{ item }}</el-tag
-                      >
-                    </el-col>
-                    <el-col style="margin: 10px 0 0 10px">
-                      Displaying {{ overNodeList2.length }} nodes, 0
+                      Displaying  nodes, 0
                       relationships.
                     </el-col>
                   </el-row>
                 </div>
-                <relation-graph ref="graphRef" :options="options" />
-              </div>
+              <RelationGraph
+                ref="graphRef"
+                :options="options"
+                style="height: 336px"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              ></RelationGraph>
+            </div>
             </el-tab-pane>
             <el-tab-pane label="table">
-              <!-- table-标题 -->
               <template #label>
                 <div>
                   <img
@@ -566,9 +571,10 @@
                   <div style="font-weight: 600; color: #666666">table</div>
                 </div>
               </template>
-              <!-- table-详情 -->
+              <!-- 详情 -->
+
               <div
-                style="height: 324px; overflow: auto"
+                style="overflow: auto"
                 :style="{ height: isFullscreen ? '100vh' : '324px' }"
               >
                 <a-row
@@ -586,15 +592,15 @@
                   "
                 >
                   <a-col
-                    v-for="(item2, index2) in item.records[0].keys"
+                    v-for="(item2, index2) in item[0].records[0].keys"
                     :key="index2"
-                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
+                    :span="item[0].records[0].keys.length != 1 ? '6' : '24'"
                   >
                     {{ item2 }}
                   </a-col>
                 </a-row>
                 <a-row
-                  v-for="(item3, index3) in item.records"
+                  v-for="(item3, index3) in item[0].records"
                   :key="index3"
                   style="
                     flex-wrap: nowrap;
@@ -606,7 +612,7 @@
                   <a-col
                     v-for="(item4, index4) in item3._fields"
                     :key="index4"
-                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
+                    :span="item[0].records[0].keys.length != 1 ? '6' : '24'"
                   >
                     <pre
                       style="
@@ -626,7 +632,6 @@
               </div>
             </el-tab-pane>
             <el-tab-pane label="text">
-              <!-- text-标题 -->
               <template #label>
                 <div>
                   <img
@@ -637,26 +642,27 @@
                   <div style="font-weight: 600; color: #666666">text</div>
                 </div>
               </template>
-              <!-- text-详情 -->
-              <div
-                style="padding: 10px; overflow-y: auto"
-                :style="{ height: isFullscreen ? '100vh' : '324px' }"
-              >
+              <!-- 详情 -->
+
+              <div style="padding: 10px; overflow-y: auto">
                 <el-row style="flex-wrap: nowrap; display: flex">
                   <el-col
                     style="border-right: none; border: 1px dashed #666666"
                     class="td"
-                    v-for="(item5, index5) in item.records[0].keys"
+                    v-for="(item5, index5) in item[0].records[0].keys"
                     :key="index5"
-                    :span="6"
+                    :span="item[0].records[0].keys.length != 1 ? 6 : 24"
                   >
                     {{ item5 }}
                   </el-col>
                 </el-row>
-                <el-row v-for="(item6, index6) in item.records" :key="index6">
+                <el-row
+                  v-for="(item6, index6) in item[0].records"
+                  :key="index6"
+                >
                   <el-col
                     class="td"
-                    :span="6"
+                    :span="item[0].records[0].keys.length != 1 ? 6 : 24"
                     style="border-right: none; border: 1px dashed #666666"
                     v-for="(item7, index7) in item6._fields"
                     :key="index7"
@@ -680,7 +686,6 @@
               </div>
             </el-tab-pane>
             <el-tab-pane label="code">
-              <!-- code-标题 -->
               <template #label>
                 <div>
                   <img
@@ -691,28 +696,25 @@
                   <div style="font-weight: 600; color: #666666">code</div>
                 </div>
               </template>
-              <!-- code-详情 -->
-              <!-- <h1>code详情</h1> -->
-              <div
-                style="padding: 10px; overflow-y: auto"
-                :style="{ height: isFullscreen ? '100vh' : '324px' }"
-              >
+              <!-- 详情 -->
+
+              <div style="padding: 10px; overflow-y: auto">
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server version</el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item.summary.server.agent }}
+                    {{ item[0].summary.server.agent }}
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server address</el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item.summary.server.address }}
+                    {{ item[0].summary.server.address }}
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Query </el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item.summary.query.text }}
+                    {{ item[0].summary.query.text }}
                   </el-col>
                 </el-row>
                 <el-row>
@@ -726,7 +728,7 @@
                     :style="{ height: isunfold ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden"
                   >
-                    {{ item.summary }}
+                    {{ item[0].summary }}
                   </el-col>
                 </el-row>
                 <el-row>
@@ -740,18 +742,21 @@
                     :style="{ height: isres ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden"
                   >
-                    {{ item.records }}
+                    {{ item[0].records }}
                   </el-col>
                 </el-row>
               </div>
             </el-tab-pane>
           </el-tabs>
         </el-col>
-        <!-- 展示keys -->
-        <el-col style="background-color: #ffffff" v-else>
-          <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu">
+        <!-- keys -->
+        <el-col v-else>
+          <el-tabs
+            :tab-position="tabPosition"
+            class="demo-tabs graphMenu"
+            :style="{ height: isFullscreen ? '100vh' : '324px' }"
+          >
             <el-tab-pane label="table">
-              <!-- table-标题 -->
               <template #label>
                 <div>
                   <img
@@ -762,7 +767,7 @@
                   <div style="font-weight: 600; color: #666666">table</div>
                 </div>
               </template>
-              <!-- table-详情 -->
+              <!-- 详情 -->
               <div
                 style="overflow-y: auto"
                 :style="{ height: isFullscreen ? '100vh' : '324px' }"
@@ -782,15 +787,15 @@
                   "
                 >
                   <a-col
-                    v-for="(item2, index2) in item.records[0].keys"
+                    v-for="(item2, index2) in item[0].records[0].keys"
                     :key="index2"
-                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
+                    :span="item[0].records[0].keys.length != 1 ? '6' : '24'"
                   >
                     {{ item2 }}
                   </a-col>
                 </a-row>
                 <a-row
-                  v-for="(item3, index3) in item.records"
+                  v-for="(item3, index3) in item[0].records"
                   :key="index3"
                   style="
                     flex-wrap: nowrap;
@@ -802,7 +807,7 @@
                   <a-col
                     v-for="(item4, index4) in item3._fields"
                     :key="index4"
-                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
+                    :span="item[0].records[0].keys.length != 1 ? '6' : '24'"
                   >
                     <pre
                       style="
@@ -824,7 +829,6 @@
               </div>
             </el-tab-pane>
             <el-tab-pane label="text">
-              <!-- text-标题 -->
               <template #label>
                 <div>
                   <img
@@ -835,7 +839,7 @@
                   <div style="font-weight: 600; color: #666666">text</div>
                 </div>
               </template>
-              <!-- text-详情 -->
+              <!-- 详情 -->
               <div
                 style="padding: 10px; overflow-y: auto"
                 :style="{ height: isFullscreen ? '100vh' : '324px' }"
@@ -844,17 +848,20 @@
                   <el-col
                     style="border-right: none; border: 1px dashed #666666"
                     class="td"
-                    v-for="(item5, index5) in item.records[0].keys"
+                    v-for="(item5, index5) in item[0].records[0].keys"
                     :key="index5"
-                    :span="6"
+                    :span="item[0].records[0].keys.length != 1 ? 6 : 24"
                   >
                     {{ item5 }}
                   </el-col>
                 </el-row>
-                <el-row v-for="(item6, index6) in item.records" :key="index6">
+                <el-row
+                  v-for="(item6, index6) in item[0].records"
+                  :key="index6"
+                >
                   <el-col
                     class="td"
-                    :span="6"
+                    :span="item[0].records[0].keys.length != 1 ? 6 : 24"
                     style="border-right: none; border: 1px dashed #666666"
                     v-for="(item7, index7) in item6._fields"
                     :key="index7"
@@ -865,7 +872,6 @@
               </div>
             </el-tab-pane>
             <el-tab-pane label="code">
-              <!-- code-标题 -->
               <template #label>
                 <div>
                   <img
@@ -876,27 +882,26 @@
                   <div style="font-weight: 600; color: #666666">code</div>
                 </div>
               </template>
-              <!-- code-详情 -->
-              <div
-                style="padding: 10px; overflow-y: auto"
-                :style="{ height: isFullscreen ? '100vh' : '324px' }"
-              >
+              <!-- 详情 -->
+              <!-- :style="{ height: isFullscreen ? '100vh' : '324px' }" -->
+
+              <div style="padding: 10px; overflow-y: auto">
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server version</el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item.summary.server.agent }}
+                    {{ item[0].summary.server.agent }}
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server address</el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item.summary.server.address }}
+                    {{ item[0].summary.server.address }}
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Query </el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item.summary.query.text }}
+                    {{ item[0].summary.query.text }}
                   </el-col>
                 </el-row>
                 <el-row>
@@ -910,7 +915,7 @@
                     :style="{ height: isunfold ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden"
                   >
-                    {{ item.summary }}
+                    {{ item[0].summary }}
                   </el-col>
                 </el-row>
                 <el-row>
@@ -924,31 +929,31 @@
                     :style="{ height: isres ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden"
                   >
-                    {{ item.records }}
+                    {{ item[0].records }}
                   </el-col>
                 </el-row>
               </div>
             </el-tab-pane>
           </el-tabs>
         </el-col>
-        <!-- 时间戳 -->
-        <div
-          style="
-            width: 100%;
-            height: 24px;
-            border-top: 1px #666666 solid;
-            background-color: #ffffff;
-            line-height: 24px;
-            padding-left: 16px;
-          "
-        >
-          Started streaming 25 records in less than 1 ms and completed after
-          3ms.
-        </div>
       </el-col>
+      <div
+        style="
+          width: 100%;
+          height: 24px;
+          border-top: 1px #666666 solid;
+          background-color: #ffffff;
+          line-height: 24px;
+          padding-left: 16px;
+        "
+      >
+        Transmit {{ item[0].records.length }} records within
+        {{ item[0].resTime }}.
+      </div>
     </el-row>
   </div>
 </template>
+
 <script setup lang="ts">
 import { ref, watch, onMounted, nextTick } from "vue";
 import { useStore } from "vuex";
@@ -968,24 +973,57 @@ import {
 import { ArrowLeftBold, CopyDocument } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import request from "../../utils/request.js";
+//变量
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 const store = useStore();
-//graph
-const graphRef = ref<RelationGraph>();
-const options = {
-  defaultExpandHolderPosition: "right",
-};
-const graphList = ref([]); // 定义个数组
-const overview = ref(false);
-const overview2 = ref(false);
+const options = {};
+const graphRef = ref(null);
 const isFullscreen = ref(false);
-const overNodeList = ref([]);
-const overNodeList2 = ref([]);
-const labels = ref([]);
-const labels2 = ref([]);
-const isPushFlag = ref(0);
-const loading = ref(false)
-const isTop = ref(false)
+const isunfold = ref(false);
+const isres = ref(false);
+const text = ref("");
+const inputValue = ref("");
+const overview = ref(false);
+const OverviewClick = () => {
+  overview.value = !overview.value;
+};
+const unfoldClick = () => {
+  isunfold.value = !isunfold.value;
+};
+const resClick = () => {
+  isres.value = !isres.value;
+};
+// 置顶
+const topClick = (index: Number, item: any) => {
+  store.commit("top", { index, item });
+};
+//放大
+const toggleFullScreen = () => {
+  isFullscreen.value = !isFullscreen.value;
+};
+//修改
+const nodeShow2 = async (record: any, index: Number) => {
+  await nextTick();
+  if (inputValue.value === "") {
+  } else {
+    const startTime = performance.now();
+    let promiseData = request.fetchData("neo4j", "admin", inputValue.value);
+    promiseData
+      .then((result: any) => {
+        const endTime = performance.now();
+        const responseTime = endTime - startTime;
+        result.resTime = Math.round(responseTime) + "ms";
+        result.summary.query.text = inputValue.value;
+        store.commit("revise", { index, result });
+      })
+      .catch((error: any) => {
+        console.log(error, 106);
+        ElMessageBox.alert(error, "错误提示", {
+          confirmButtonText: "好的",
+        });
+      });
+  }
+};
 //复制
 const tableCopy = (item4: any) => {
   navigator.clipboard.writeText(
@@ -997,202 +1035,91 @@ const tableCopy = (item4: any) => {
     plain: true,
   });
 };
-//置顶
-const topClick = ( index: Number,item:any) => {
-  store.commit("top", {index,item});
-};
-//放大
-const toggleFullScreen = () => {
-  isFullscreen.value = !isFullscreen.value;
-  console.log("放大");
-};
-const OverviewClick = () => {
-  overview.value = !overview.value;
-};
-//overview2
-const OverviewClick2 = () => {
-  overview2.value = !overview2.value;
-};
 //删除
-const removeModule = (record: any, index: any) => {
-  store.commit("remove2", index);
+const removeModule = (index: Number) => {
+  store.commit("remove", index);
 };
-//修改
-const nodeShow2 = async (text:any, index:Number)=>{
-  await nextTick()
-  // console.log(index,"index1029")
-  if(text === ""){
-
-  }else{
-    // console.log(text,'text')
-    let promiseData = request.fetchData("neo4j", "admin", text); //我得用他发请求
-    promiseData
-      .then((result: any) => {
-        console.log("拿到的数据", result);
-        store.commit("revise", {index,result});
-
-      })
-      .catch((error: any) => {
-        console.log(error, 106);
-        ElMessageBox.alert(error, "错误提示", {
-          confirmButtonText: "好的",
-        });
-      });
-  }
-}
 watch(store.state.list, async (newVal, oldVal) => {
-  // console.log(oldVal, 1044);
-  await nextTick(); // 因为要获取dom，放在nextTick之后，要等dom加载完成
-  // console.log(oldVal[oldVal.length-1].records[0].keys,"1046")
-  if(oldVal.length === 0){
-    return
-  }
-  console.log(oldVal, "1050")
-  if (
-    oldVal[oldVal.length - 1].records[0].keys.indexOf("n") !== -1 &&
-    oldVal[oldVal.length - 1].records[0].keys.indexOf("p") === -1 &&
-    oldVal[oldVal.length - 1].records[0]._fields[
-      oldVal[oldVal.length - 1].records[0].keys.indexOf("n")
-    ] &&
-    oldVal[oldVal.length - 1].records[0]._fields[
-      oldVal[oldVal.length - 1].records[0].keys.indexOf("n")
-    ].elementId &&
-    oldVal[oldVal.length - 1].records[0]._fields[
-      oldVal[oldVal.length - 1].records[0].keys.indexOf("n")
-    ].properties
-  ) {
-    let textName = ref("");
-    //节点图数据处理
-    graphList.value = [];
-    oldVal.forEach((item2, index2) => {
-      let obj = {
-        rootId: index2,
-        nodes: [],
-        lines: [],
-      };
-      oldVal[index2].records.map((item: any) => {
-        if (item.keys.indexOf("n") !== -1) {
-          for (const key in item._fields[item.keys.indexOf("n")].properties) {
-            textName.value =
-              item._fields[item.keys.indexOf("n")].properties[key];
-          }
-          obj.nodes.push({
-            id: item._fields[item.keys.indexOf("n")].elementId,
-            text: textName.value,
-            color: "#21a1ff",
-          });
-          // list.push(obj)
-          // list[0].nodes.push({
-          //   id: item._fields[item.keys.indexOf("n")].elementId,
-          //   text: textName.value,
-          //   color: "#21a1ff",
-          // });
+  await nextTick();
+  let num = undefined;
+  let record = undefined;
+  oldVal.forEach((item: any, index: Number) => {
+    if (item.length) {
+      record = item;
+      num = index;
+      text.value = item[0].summary.query.text;
+    }
+  });
+  if (num !== undefined && record !== undefined) {
+    let obj = {
+      rootId: num,
+      nodes: [],
+      lines: [],
+    };
+    record[0].records.forEach((item) => {
+      let textName = "";
+      let textTitle = "";
+      if (
+        item.keys.indexOf("n") !== -1 &&
+        item.keys.indexOf("p") === -1 &&
+        item._fields[item.keys.indexOf("n")] &&
+        item._fields[item.keys.indexOf("n")].elementId &&
+        item._fields[item.keys.indexOf("n")].properties
+      ) {
+        for (const key in item._fields[item.keys.indexOf("n")].properties) {
+          textName = item._fields[item.keys.indexOf("n")].properties[key];
         }
-      });
-      graphList.value.push([obj]);
-    });
-    oldVal.map((item, index) => {
-      if (index === oldVal.length - 1) {
-        graphRef.value[index].setJsonData(graphList.value[index][0]);
-        isPushFlag.value = oldVal.length;
-      }
-      //取节点数组
-      // const set = new Set(item.records.map(JSON.stringify));
-      //  overNodeList.value =  Array.from(set).map(JSON.parse)
-      //  console.log(overNodeList.value,' ')
-      //  overNodeList.value.map(item2=>{
-      //   labels.value.push(...item2._fields[item2.keys.indexOf("n")].labels)
-      //  })
-      //  labels.value = new Set(labels.value)
-      // labels.value = Array.from(labels.value)
-      //  console.log(labels.value,'labels')
-    });
-  } else if (
-    oldVal[oldVal.length - 1].records[0].keys.indexOf("p") !== -1 &&
-    oldVal[oldVal.length - 1].records[0]._fields[0] &&
-    oldVal[oldVal.length - 1].records[0]._fields[
-      oldVal[oldVal.length - 1].records[0].keys.indexOf("p")
-    ].end &&
-    oldVal[oldVal.length - 1].records[0]._fields[
-      oldVal[oldVal.length - 1].records[0].keys.indexOf("p")
-    ].start
-  ) {
-    // console.log("我是关系");
-    //关系图数据处理
-    let textName = ref("");
-    let textTitle = ref("");
-    let list = [
-      {
-        rootId: graphList.value.length === 0 ? 1 : graphList.value.length + 1,
-        nodes: [],
-        lines: [],
-      },
-    ];
-    oldVal[oldVal.length - 1].records.map((item: any) => {
-      if (item.keys.indexOf("p") !== -1) {
+        obj.nodes.push({
+          id: item._fields[item.keys.indexOf("n")].elementId,
+          text: textName,
+          color: "#21a1ff",
+        });
+      } else if (
+        item.keys.indexOf("p") !== -1 &&
+        item._fields[0] &&
+        item._fields[item.keys.indexOf("p")].end &&
+        item._fields[item.keys.indexOf("p")].start
+      ) {
         for (const key in item._fields[item.keys.indexOf("p")].start
           .properties) {
-          textName.value =
-            item._fields[item.keys.indexOf("p")].start.properties[key];
+          textName = item._fields[item.keys.indexOf("p")].start.properties[key];
         }
         for (const key in item._fields[item.keys.indexOf("p")].end.properties) {
-          textTitle.value =
-            item._fields[item.keys.indexOf("p")].end.properties[key];
+          textTitle = item._fields[item.keys.indexOf("p")].end.properties[key];
         }
-        list[0].nodes.push({
+        obj.nodes.push({
           id: item._fields[item.keys.indexOf("p")].start.elementId,
-          text: textName.value,
+          text: textName,
           color: "#21a1ff",
         });
-        list[0].nodes.push({
+        obj.nodes.push({
           id: item._fields[item.keys.indexOf("p")].end.elementId,
-          text: textTitle.value,
+          text: textTitle,
           color: "#21a1ff",
         });
-        list[0].lines.push({
+        obj.lines.push({
           from: item._fields[item.keys.indexOf("p")].start.elementId,
           to: item._fields[item.keys.indexOf("p")].end.elementId,
           text: item._fields[item.keys.indexOf("p")].segments[0].relationship
             .type,
           color: "#666666",
         });
+      } else {
       }
     });
-    // console.log(list, 839);
-    graphList.value.push(list);
-    oldVal.map((item, index) => {
-      // console.log(item,1078)
-      if (index === oldVal.length - 1) {
-        graphRef.value[index].setJsonData(graphList.value[index][0]);
-      }
-      //取节点数组
-      // item.records.map(item2=>{
-      //   console.log(item2,1092)
-      //    overNodeList2.value.push(item2._fields[item2.keys.indexOf("p")].start,item2._fields[item2.keys.indexOf("p")].end)
-      // })
-      //  console.log(overNodeList2.value,'1085 ')
-      //    const set = new Set(overNodeList2.value.map(JSON.stringify));
-      //    overNodeList2.value =  Array.from(set).map(JSON.parse)
-      //    overNodeList2.value.map(item3=>{
-      //     labels2.value.push(...item3.labels)
-      //    })
-      //    labels2.value = new Set(labels2.value)
-      //   labels2.value = Array.from(labels2.value)
-      //    console.log(labels2.value,'labels2')
-    });
-  } else {
-    // graphList.value.push(list);
-    console.log(oldVal, "我是keys");
+    // console.log(obj,"919")
+    let reviseNum = JSON.parse(sessionStorage.getItem("reviseNum"));
+    if (reviseNum !== -1) {
+      // 用我这个就行
+      graphRef.value[reviseNum].setJsonData(store.state.obj2);
+    } else if (obj.nodes.length !== 0 || obj.lines.length !== 0) {
+      graphRef.value[num].setJsonData(obj);
+    }
   }
 });
-//code
-const isunfold = ref(false);
-const isres = ref(false);
-const unfoldClick = () => {
-  isunfold.value = !isunfold.value;
-};
-const resClick = () => {
-  isres.value = !isres.value;
+onMounted(() => {});
+const inputChange = (e: any) => {
+  inputValue.value = e.target.value;
 };
 </script>
 

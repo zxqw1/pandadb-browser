@@ -80,104 +80,104 @@ const options = [
   },
 ];
 // 节点展示全局
-const labelShow = () => {
-  let promiseData = request.fetchData(
-    "neo4j",
-    "admin",
-    "MATCH (n) RETURN n LIMIT 10"
-  );
-  promiseData
-    .then((result: any) => {
-      console.log(result, "节点的数据");
-      // store.commit("increment",  result );
-    })
-    .catch((error: any) => {
-      console.log(error);
-      ElMessageBox.alert(error, "错误提示", {
-        confirmButtonText: "好的",
-      });
-    });
-};
+// const labelShow = () => {
+//   let promiseData = request.fetchData(
+//     "neo4j",
+//     "admin",
+//     "MATCH (n) RETURN n LIMIT 10"
+//   );
+//   promiseData
+//     .then((result: any) => {
+//       console.log(result, "节点的数据");
+//       // store.commit("increment",  result );
+//     })
+//     .catch((error: any) => {
+//       console.log(error);
+//       ElMessageBox.alert(error, "错误提示", {
+//         confirmButtonText: "好的",
+//       });
+//     });
+// };
 // 节点展示部分
-const graphShow = (event) => {
-  let promiseData = request.fetchData(
-    "neo4j",
-    "admin",
-    `MATCH(n:${event.target.innerText})RETURN n LIMIT 25`
-  );
-  promiseData
-    .then((result: any) => {
-      console.log(result, "部分节点数据");
-      // store.commit("increment", result);
-    })
-    .catch((error: any) => {
-      console.log(error);
-      ElMessageBox.alert(error, "错误提示", {
-        confirmButtonText: "好的",
-      });
-    });
-};
+// const graphShow = (event) => {
+//   let promiseData = request.fetchData(
+//     "neo4j",
+//     "admin",
+//     `MATCH(n:${event.target.innerText})RETURN n LIMIT 25`
+//   );
+//   promiseData
+//     .then((result: any) => {
+//       console.log(result, "部分节点数据");
+//       // store.commit("increment", result);
+//     })
+//     .catch((error: any) => {
+//       console.log(error);
+//       ElMessageBox.alert(error, "错误提示", {
+//         confirmButtonText: "好的",
+//       });
+//     });
+// };
 // 关系全部
-const relationShow = () => {
-  let promiseData = request.fetchData(
-    "neo4j",
-    "admin",
-    `MATCH p=()-->() RETURN p LIMIT 25`
-  );
-  promiseData
-    .then((result: any) => {
-      // console.log(result,"关系的数据")
-      store.commit("increment", result );
-    })
-    .catch((error: any) => {
-      console.log(error);
-      ElMessageBox.alert(error, "错误提示", {
-        confirmButtonText: "好的",
-      });
-    });
-};
+// const relationShow = () => {
+//   let promiseData = request.fetchData(
+//     "neo4j",
+//     "admin",
+//     `MATCH p=()-->() RETURN p LIMIT 25`
+//   );
+//   promiseData
+//     .then((result: any) => {
+//       // console.log(result,"关系的数据")
+//       store.commit("increment", result );
+//     })
+//     .catch((error: any) => {
+//       console.log(error);
+//       ElMessageBox.alert(error, "错误提示", {
+//         confirmButtonText: "好的",
+//       });
+//     });
+// };
 //关系部分
-const relationClick = (event) => {
-  let promiseData = request.fetchData(
-    "neo4j",
-    "admin",
-    `MATCH p=()-[r:${event.target.innerText}]->() RETURN p LIMIT 25`
-  );
-  promiseData
-    .then((result: any) => {
-      console.log(result, "部分关系数据");
-      // store.commit("increment",  result );
-    })
-    .catch((error: any) => {
-      console.log(error);
-      ElMessageBox.alert(error, "错误提示", {
-        confirmButtonText: "好的",
-      });
-    });
-};
+// const relationClick = (event) => {
+//   let promiseData = request.fetchData(
+//     "neo4j",
+//     "admin",
+//     `MATCH p=()-[r:${event.target.innerText}]->() RETURN p LIMIT 25`
+//   );
+//   promiseData
+//     .then((result: any) => {
+//       console.log(result, "部分关系数据");
+//       // store.commit("increment",  result );
+//     })
+//     .catch((error: any) => {
+//       console.log(error);
+//       ElMessageBox.alert(error, "错误提示", {
+//         confirmButtonText: "好的",
+//       });
+//     });
+// };
 //属性
-const keysClick = (event) => {
-  let promiseData = request.fetchData(
-    "neo4j",
-    "admin",
-    `MATCH (n) WHERE (n.${event.target.innerText}) IS NOT NULL 
-      RETURN DISTINCT "node" as entity, n.${event.target.innerText} AS ${event.target.innerText} LIMIT 25 
-      UNION ALL 
-      MATCH ()-[r]-() WHERE (r.${event.target.innerText}) IS NOT NULL 
-      RETURN DISTINCT "relationship" AS entity, r.${event.target.innerText} AS ${event.target.innerText} LIMIT 25`
-  );
-  promiseData
-    .then((result: any) => {
-      console.log(result, "属性数据");
-      // store.commit("increment",  result );
-    })
-    .catch((error: any) => {
-      console.log(error);
-      ElMessageBox.alert(error, "错误提示", {
-        confirmButtonText: "好的",
-      });
-    });
-};
+// const keysClick = (event) => {
+//   let promiseData = request.fetchData(
+//     "neo4j",
+//     "admin",
+//     `MATCH (n) WHERE (n.${event.target.innerText}) IS NOT NULL 
+//       RETURN DISTINCT "node" as entity, n.${event.target.innerText} AS ${event.target.innerText} LIMIT 25 
+//       UNION ALL 
+//       MATCH ()-[r]-() WHERE (r.${event.target.innerText}) IS NOT NULL 
+//       RETURN DISTINCT "relationship" AS entity, r.${event.target.innerText} AS ${event.target.innerText} LIMIT 25`
+//   );
+//   promiseData
+//     .then((result: any) => {
+//       console.log(result, "属性数据");
+//       // store.commit("increment",  result );
+//     })
+//     .catch((error: any) => {
+//       console.log(error);
+//       ElMessageBox.alert(error, "错误提示", {
+//         confirmButtonText: "好的",
+//       });
+//     });
+// };
 </script>
 
 <style scoped>
