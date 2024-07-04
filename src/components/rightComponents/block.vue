@@ -1,8 +1,8 @@
 <template>
   <div
     style="background-color: #ffffff"
-    v-for="(item, index) in store.state.list"
-    :key="index"
+    v-for="(item, index) in list"
+    :key="item.id"
     :style="{
       position: isFullscreen ? 'fixed' : 'static',
       top: isFullscreen ? '0' : '0',
@@ -11,7 +11,7 @@
       zIndex: isFullscreen ? '5' : '0',
     }"
   >
-    <el-row v-if="item.length">
+    <el-row>
       <div
         style="background-color: #f6f6f6; width: 100%; height: 24px"
         v-if="!isFullscreen"
@@ -59,74 +59,7 @@
         </div>
       </el-col>
       <!-- 搜索 -->
-      <el-row style="width: 100%; padding: 8px 16px 0 16px">
-        <el-col :span="22">
-          <div
-            class="searchBlock"
-            style="
-              background-color: #f6f6f6;
-              width: 100%;
-              border-radius: 5px;
-              border: 1px dashed #d2dabb;
-              min-height: 32px;
-              display: flex;
-              align-items: center;
-            "
-            :style="{
-              position: isFullscreen ? 'relative' : 'static',
-            }"
-          >
-            <!-- logo -->
-            <img
-              src="../../assets/img/logos.png"
-              style="width: 44px; height: 30px"
-              :style="{
-                position: isFullscreen ? 'absolute' : 'static',
-              }"
-              alt=""
-            />
-            <!-- 真实输入 -->
-            <input
-              :value="item[0].summary.query.text"
-              @input="inputChange($event)"
-              type="text"
-              autosize
-              style="
-                width: 93%;
-                font-size: 16px;
-                color: #666666;
-                background-color: rgb(246, 246, 246);
-                border: none;
-              "
-              class="searchText"
-              :style="{
-                position: isFullscreen ? 'absolute' : 'static',
-                left: isFullscreen ? '50px' : 'auto',
-              }"
-            />
-            <!-- 展示 -->
-            <CaretRightOutlined
-              style="color: #6a8322; font-size: 28px"
-              :style="{
-                position: isFullscreen ? 'absolute' : 'static',
-                right: isFullscreen ? '10px' : 'auto',
-              }"
-              @click="nodeShow2(item, index)"
-            />
-          </div>
-        </el-col>
-        <el-col
-          :span="2"
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-          "
-        >
-          <StarOutlined :style="{ fontSize: '20px' }" />
-          <VerticalAlignBottomOutlined :style="{ fontSize: '20px' }" />
-        </el-col>
-      </el-row>
+      <search3 :command="item.summary.query.text" :index="index" />
       <!-- 展示 -->
       <el-col
         style="height: 348px; margin-top: 12px"
@@ -138,12 +71,12 @@
         <!-- node -->
         <el-col
           v-if="
-            item[0].records[0].keys.indexOf('n') !== -1 &&
-            item[0].records[0].keys.indexOf('p') === -1 &&
-            item[0].records[0]._fields[item[0].records[0].keys.indexOf('n')] &&
-            item[0].records[0]._fields[item[0].records[0].keys.indexOf('n')]
+            item.records[0].keys.indexOf('n') !== -1 &&
+            item.records[0].keys.indexOf('p') === -1 &&
+            item.records[0]._fields[item.records[0].keys.indexOf('n')] &&
+            item.records[0]._fields[item.records[0].keys.indexOf('n')]
               .elementId &&
-            item[0].records[0]._fields[item[0].records[0].keys.indexOf('n')]
+            item.records[0]._fields[item.records[0].keys.indexOf('n')]
               .properties
           "
         >
@@ -235,19 +168,13 @@
                     </el-col>
                     <el-col style="margin: 0 0 0 10px">
                       <div style="font-weight: bold">Node labels</div>
-                      <el-tag effect="dark" round
-                        >*(0)</el-tag
-                      >
-                      <el-tag
-                        effect="dark"
-                        round
-                        style="margin-left: 10px"
+                      <el-tag effect="dark" round>*(0)</el-tag>
+                      <el-tag effect="dark" round style="margin-left: 10px"
                         >123</el-tag
                       >
                     </el-col>
                     <el-col style="margin: 10px 0 0 10px">
-                      Displaying  nodes, 0
-                      relationships.
+                      Displaying nodes, 0 relationships.
                     </el-col>
                   </el-row>
                 </div>
@@ -271,8 +198,9 @@
                 </div>
               </template>
               <!-- 详情 -->
-              <div style="overflow: auto"
-              :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              <div
+                style="overflow: auto"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
               >
                 <a-row
                   style="
@@ -289,15 +217,15 @@
                   "
                 >
                   <a-col
-                    v-for="(item2, index2) in item[0].records[0].keys"
+                    v-for="(item2, index2) in item.records[0].keys"
                     :key="index2"
-                    :span="item[0].records[0].keys.length != 1 ? '6' : '24'"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
                   >
                     {{ item2 }}
                   </a-col>
                 </a-row>
                 <a-row
-                  v-for="(item3, index3) in item[0].records"
+                  v-for="(item3, index3) in item.records"
                   :key="index3"
                   style="
                     flex-wrap: nowrap;
@@ -309,7 +237,7 @@
                   <a-col
                     v-for="(item4, index4) in item3._fields"
                     :key="index4"
-                    :span="item[0].records[0].keys.length != 1 ? '6' : '24'"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
                   >
                     <pre
                       style="
@@ -341,26 +269,25 @@
                 </div>
               </template>
               <!-- 详情 -->
-              <div style="padding: 10px; overflow-y: auto"
-              :style="{ height: isFullscreen ? '100vh' : '324px' }">
+              <div
+                style="padding: 10px; overflow-y: auto"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              >
                 <el-row style="flex-wrap: nowrap; display: flex">
                   <el-col
                     style="border-right: none; border: 1px dashed #666666"
                     class="td"
-                    v-for="(item5, index5) in item[0].records[0].keys"
+                    v-for="(item5, index5) in item.records[0].keys"
                     :key="index5"
-                    :span="item[0].records[0].keys.length !== 1 ? 6 : 24"
+                    :span="item.records[0].keys.length !== 1 ? 6 : 24"
                   >
                     {{ item5 }}
                   </el-col>
                 </el-row>
-                <el-row
-                  v-for="(item6, index6) in item[0].records"
-                  :key="index6"
-                >
+                <el-row v-for="(item6, index6) in item.records" :key="index6">
                   <el-col
                     class="td"
-                    :span="item[0].records[0].keys.length !== 1 ? 6 : 24"
+                    :span="item.records[0].keys.length !== 1 ? 6 : 24"
                     style="border-right: none; border: 1px dashed #666666"
                     v-for="(item7, index7) in item6._fields"
                     :key="index7"
@@ -392,19 +319,19 @@
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server version</el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item[0].summary.server.agent }}
+                    {{ item.summary.server.agent }}
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server address</el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item[0].summary.server.address }}
+                    {{ item.summary.server.address }}
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Query </el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item[0].summary.query.text }}
+                    {{ item.summary.query.text }}
                   </el-col>
                 </el-row>
                 <el-row>
@@ -418,7 +345,7 @@
                     :style="{ height: isunfold ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden"
                   >
-                    {{ item[0].summary }}
+                    {{ item.summary }}
                   </el-col>
                 </el-row>
                 <el-row>
@@ -432,7 +359,7 @@
                     :style="{ height: isres ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden"
                   >
-                    {{ item[0].records }}
+                    {{ item.records }}
                   </el-col>
                 </el-row>
               </div>
@@ -442,12 +369,10 @@
         <!-- relation -->
         <el-col
           v-else-if="
-            item[0].records[0].keys.indexOf('p') !== -1 &&
-            item[0].records[0]._fields[0] &&
-            item[0].records[0]._fields[item[0].records[0].keys.indexOf('p')]
-              .end &&
-            item[0].records[0]._fields[item[0].records[0].keys.indexOf('p')]
-              .start
+            item.records[0].keys.indexOf('p') !== -1 &&
+            item.records[0]._fields[0] &&
+            item.records[0]._fields[item.records[0].keys.indexOf('p')].end &&
+            item.records[0]._fields[item.records[0].keys.indexOf('p')].start
           "
         >
           <el-tabs
@@ -476,7 +401,7 @@
                 </span>
               </template>
               <div
-              style="
+                style="
                   border: #efefef solid 1px;
                   width: 100%;
                   display: flex;
@@ -485,7 +410,7 @@
                 "
                 :style="{ height: isFullscreen ? '100vh' : '324px' }"
               >
-              <div
+                <div
                   style="
                     background-color: #dcdcdc30;
                     width: 45px;
@@ -536,29 +461,23 @@
                     </el-col>
                     <el-col style="margin: 0 0 0 10px">
                       <div style="font-weight: bold">Node labels</div>
-                      <el-tag effect="dark" round
-                        >*(0)</el-tag
-                      >
-                      <el-tag
-                        effect="dark"
-                        round
-                        style="margin-left: 10px"
+                      <el-tag effect="dark" round>*(0)</el-tag>
+                      <el-tag effect="dark" round style="margin-left: 10px"
                         >123</el-tag
                       >
                     </el-col>
                     <el-col style="margin: 10px 0 0 10px">
-                      Displaying  nodes, 0
-                      relationships.
+                      Displaying nodes, 0 relationships.
                     </el-col>
                   </el-row>
                 </div>
-              <RelationGraph
-                ref="graphRef"
-                :options="options"
-                style="height: 336px"
-                :style="{ height: isFullscreen ? '100vh' : '324px' }"
-              ></RelationGraph>
-            </div>
+                <RelationGraph
+                  ref="graphRef"
+                  :options="options"
+                  style="height: 336px"
+                  :style="{ height: isFullscreen ? '100vh' : '324px' }"
+                ></RelationGraph>
+              </div>
             </el-tab-pane>
             <el-tab-pane label="table">
               <template #label>
@@ -592,15 +511,15 @@
                   "
                 >
                   <a-col
-                    v-for="(item2, index2) in item[0].records[0].keys"
+                    v-for="(item2, index2) in item.records[0].keys"
                     :key="index2"
-                    :span="item[0].records[0].keys.length != 1 ? '6' : '24'"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
                   >
                     {{ item2 }}
                   </a-col>
                 </a-row>
                 <a-row
-                  v-for="(item3, index3) in item[0].records"
+                  v-for="(item3, index3) in item.records"
                   :key="index3"
                   style="
                     flex-wrap: nowrap;
@@ -612,7 +531,7 @@
                   <a-col
                     v-for="(item4, index4) in item3._fields"
                     :key="index4"
-                    :span="item[0].records[0].keys.length != 1 ? '6' : '24'"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
                   >
                     <pre
                       style="
@@ -649,20 +568,17 @@
                   <el-col
                     style="border-right: none; border: 1px dashed #666666"
                     class="td"
-                    v-for="(item5, index5) in item[0].records[0].keys"
+                    v-for="(item5, index5) in item.records[0].keys"
                     :key="index5"
-                    :span="item[0].records[0].keys.length != 1 ? 6 : 24"
+                    :span="item.records[0].keys.length != 1 ? 6 : 24"
                   >
                     {{ item5 }}
                   </el-col>
                 </el-row>
-                <el-row
-                  v-for="(item6, index6) in item[0].records"
-                  :key="index6"
-                >
+                <el-row v-for="(item6, index6) in item.records" :key="index6">
                   <el-col
                     class="td"
-                    :span="item[0].records[0].keys.length != 1 ? 6 : 24"
+                    :span="item.records[0].keys.length != 1 ? 6 : 24"
                     style="border-right: none; border: 1px dashed #666666"
                     v-for="(item7, index7) in item6._fields"
                     :key="index7"
@@ -702,19 +618,19 @@
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server version</el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item[0].summary.server.agent }}
+                    {{ item.summary.server.agent }}
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server address</el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item[0].summary.server.address }}
+                    {{ item.summary.server.address }}
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Query </el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item[0].summary.query.text }}
+                    {{ item.summary.query.text }}
                   </el-col>
                 </el-row>
                 <el-row>
@@ -728,7 +644,7 @@
                     :style="{ height: isunfold ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden"
                   >
-                    {{ item[0].summary }}
+                    {{ item.summary }}
                   </el-col>
                 </el-row>
                 <el-row>
@@ -742,7 +658,7 @@
                     :style="{ height: isres ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden"
                   >
-                    {{ item[0].records }}
+                    {{ item.records }}
                   </el-col>
                 </el-row>
               </div>
@@ -787,15 +703,15 @@
                   "
                 >
                   <a-col
-                    v-for="(item2, index2) in item[0].records[0].keys"
+                    v-for="(item2, index2) in item.records[0].keys"
                     :key="index2"
-                    :span="item[0].records[0].keys.length != 1 ? '6' : '24'"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
                   >
                     {{ item2 }}
                   </a-col>
                 </a-row>
                 <a-row
-                  v-for="(item3, index3) in item[0].records"
+                  v-for="(item3, index3) in item.records"
                   :key="index3"
                   style="
                     flex-wrap: nowrap;
@@ -807,7 +723,7 @@
                   <a-col
                     v-for="(item4, index4) in item3._fields"
                     :key="index4"
-                    :span="item[0].records[0].keys.length != 1 ? '6' : '24'"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
                   >
                     <pre
                       style="
@@ -848,20 +764,17 @@
                   <el-col
                     style="border-right: none; border: 1px dashed #666666"
                     class="td"
-                    v-for="(item5, index5) in item[0].records[0].keys"
+                    v-for="(item5, index5) in item.records[0].keys"
                     :key="index5"
-                    :span="item[0].records[0].keys.length != 1 ? 6 : 24"
+                    :span="item.records[0].keys.length != 1 ? 6 : 24"
                   >
                     {{ item5 }}
                   </el-col>
                 </el-row>
-                <el-row
-                  v-for="(item6, index6) in item[0].records"
-                  :key="index6"
-                >
+                <el-row v-for="(item6, index6) in item.records" :key="index6">
                   <el-col
                     class="td"
-                    :span="item[0].records[0].keys.length != 1 ? 6 : 24"
+                    :span="item.records[0].keys.length != 1 ? 6 : 24"
                     style="border-right: none; border: 1px dashed #666666"
                     v-for="(item7, index7) in item6._fields"
                     :key="index7"
@@ -883,25 +796,23 @@
                 </div>
               </template>
               <!-- 详情 -->
-              <!-- :style="{ height: isFullscreen ? '100vh' : '324px' }" -->
-
               <div style="padding: 10px; overflow-y: auto">
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server version</el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item[0].summary.server.agent }}
+                    {{ item.summary.server.agent }}
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server address</el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item[0].summary.server.address }}
+                    {{ item.summary.server.address }}
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Query </el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item[0].summary.query.text }}
+                    {{ item.summary.query.text }}
                   </el-col>
                 </el-row>
                 <el-row>
@@ -915,7 +826,7 @@
                     :style="{ height: isunfold ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden"
                   >
-                    {{ item[0].summary }}
+                    {{ item.summary }}
                   </el-col>
                 </el-row>
                 <el-row>
@@ -929,7 +840,7 @@
                     :style="{ height: isres ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden"
                   >
-                    {{ item[0].records }}
+                    {{ item.records }}
                   </el-col>
                 </el-row>
               </div>
@@ -947,8 +858,7 @@
           padding-left: 16px;
         "
       >
-        Transmit {{ item[0].records.length }} records within
-        {{ item[0].resTime }}.
+        Transmit {{ item.records.length }} records within {{ item.resTime }}.
       </div>
     </el-row>
   </div>
@@ -963,7 +873,6 @@ import {
   DownOutlined,
   ExpandAltOutlined,
   CloseOutlined,
-  StarOutlined,
   CaretRightOutlined,
   CaretDownOutlined,
   VerticalAlignBottomOutlined,
@@ -973,17 +882,21 @@ import {
 import { ArrowLeftBold, CopyDocument } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import request from "../../utils/request.js";
+import mitts from "../../utils/bus.js";
+//组件
+import search3 from "../rightComponents/blockcomponents/search3.vue";
 //变量
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 const store = useStore();
 const options = {};
-const graphRef = ref(null);
+const graphRef = ref<RelationGraph>();
 const isFullscreen = ref(false);
 const isunfold = ref(false);
 const isres = ref(false);
 const text = ref("");
 const inputValue = ref("");
 const overview = ref(false);
+const list = ref([]);
 const OverviewClick = () => {
   overview.value = !overview.value;
 };
@@ -995,35 +908,80 @@ const resClick = () => {
 };
 // 置顶
 const topClick = (index: Number, item: any) => {
-  store.commit("top", { index, item });
+  list.value.splice(index, 1);
+  mitts.emit("topData", item);
 };
 //放大
 const toggleFullScreen = () => {
   isFullscreen.value = !isFullscreen.value;
 };
 //修改
-const nodeShow2 = async (record: any, index: Number) => {
-  await nextTick();
-  if (inputValue.value === "") {
-  } else {
-    const startTime = performance.now();
-    let promiseData = request.fetchData("neo4j", "admin", inputValue.value);
-    promiseData
-      .then((result: any) => {
-        const endTime = performance.now();
-        const responseTime = endTime - startTime;
-        result.resTime = Math.round(responseTime) + "ms";
-        result.summary.query.text = inputValue.value;
-        store.commit("revise", { index, result });
-      })
-      .catch((error: any) => {
-        console.log(error, 106);
-        ElMessageBox.alert(error, "错误提示", {
-          confirmButtonText: "好的",
-        });
+mitts.on("revise", (revieseResult: any) => {
+  revieseResult.id = generateRandomId();
+  revieseResult.show = false;
+  list.value[revieseResult.number] = revieseResult;
+  let textName = "";
+  let textTitle = "";
+  revieseResult.graphData = {
+    rootId: list.value.length,
+    nodes: [],
+    lines: [],
+  };
+  revieseResult.records.forEach((item: any, index: Number) => {
+    if (
+      item.keys.indexOf("n") !== -1 &&
+      item.keys.indexOf("p") === -1 &&
+      item._fields[item.keys.indexOf("n")] &&
+      item._fields[item.keys.indexOf("n")].elementId &&
+      item._fields[item.keys.indexOf("n")].properties
+    ) {
+      for (const key in item._fields[item.keys.indexOf("n")].properties) {
+        textName = item._fields[item.keys.indexOf("n")].properties[key];
+      }
+      revieseResult.graphData.nodes.push({
+        id: item._fields[item.keys.indexOf("n")].elementId,
+        text: textName,
+        color: "#21a1ff",
       });
-  }
-};
+    } else if (
+      item.keys.indexOf("p") !== -1 &&
+      item._fields[0] &&
+      item._fields[item.keys.indexOf("p")].end &&
+      item._fields[item.keys.indexOf("p")].start
+    ) {
+      for (const key in item._fields[item.keys.indexOf("p")].start.properties) {
+        textName = item._fields[item.keys.indexOf("p")].start.properties[key];
+      }
+      for (const key in item._fields[item.keys.indexOf("p")].end.properties) {
+        textTitle = item._fields[item.keys.indexOf("p")].end.properties[key];
+      }
+      revieseResult.graphData.nodes.push({
+        id: item._fields[item.keys.indexOf("p")].start.elementId,
+        text: textName,
+        color: "#21a1ff",
+      });
+      revieseResult.graphData.nodes.push({
+        id: item._fields[item.keys.indexOf("p")].end.elementId,
+        text: textTitle,
+        color: "#21a1ff",
+      });
+      revieseResult.graphData.lines.push({
+        from: item._fields[item.keys.indexOf("p")].start.elementId,
+        to: item._fields[item.keys.indexOf("p")].end.elementId,
+        text: item._fields[item.keys.indexOf("p")].segments[0].relationship
+          .type,
+        color: "#666666",
+      });
+    } else {
+      console.log("我是keys");
+    }
+  });
+  console.log(list.value, "979");
+  nextTick(() => {
+    graphRef.value[revieseResult.number].setJsonData(revieseResult.graphData);
+  });
+});
+
 //复制
 const tableCopy = (item4: any) => {
   navigator.clipboard.writeText(
@@ -1037,85 +995,83 @@ const tableCopy = (item4: any) => {
 };
 //删除
 const removeModule = (index: Number) => {
-  store.commit("remove", index);
+  list.value.splice(index, 1);
 };
-watch(store.state.list, async (newVal, oldVal) => {
-  await nextTick();
-  let num = undefined;
-  let record = undefined;
-  oldVal.forEach((item: any, index: Number) => {
-    if (item.length) {
-      record = item;
-      num = index;
-      text.value = item[0].summary.query.text;
+// mitts.on("Data", (item: any) => {
+//   list.value.push(item);
+//   nextTick(() => {
+//     graphRef.value[list.value.length - 1].setJsonData(item.graphData);
+//   });
+// });
+//生成数据唯一id
+const generateRandomId = () => {
+  const timestamp = new Date().getTime(); // 获取当前时间戳
+  const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
+  return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
+};
+//数据
+mitts.on("params", (result: any) => {
+  result.id = generateRandomId();
+  list.value.push(result);
+  let textName = "";
+  let textTitle = "";
+  result.graphData = {
+    rootId: list.value.length,
+    nodes: [],
+    lines: [],
+  };
+  result.records.forEach((item: any, index: Number) => {
+    if (
+      item.keys.indexOf("n") !== -1 &&
+      item.keys.indexOf("p") === -1 &&
+      item._fields[item.keys.indexOf("n")] &&
+      item._fields[item.keys.indexOf("n")].elementId &&
+      item._fields[item.keys.indexOf("n")].properties
+    ) {
+      for (const key in item._fields[item.keys.indexOf("n")].properties) {
+        textName = item._fields[item.keys.indexOf("n")].properties[key];
+      }
+      result.graphData.nodes.push({
+        id: item._fields[item.keys.indexOf("n")].elementId,
+        text: textName,
+        color: "#21a1ff",
+      });
+    } else if (
+      item.keys.indexOf("p") !== -1 &&
+      item._fields[0] &&
+      item._fields[item.keys.indexOf("p")].end &&
+      item._fields[item.keys.indexOf("p")].start
+    ) {
+      for (const key in item._fields[item.keys.indexOf("p")].start.properties) {
+        textName = item._fields[item.keys.indexOf("p")].start.properties[key];
+      }
+      for (const key in item._fields[item.keys.indexOf("p")].end.properties) {
+        textTitle = item._fields[item.keys.indexOf("p")].end.properties[key];
+      }
+      result.graphData.nodes.push({
+        id: item._fields[item.keys.indexOf("p")].start.elementId,
+        text: textName,
+        color: "#21a1ff",
+      });
+      result.graphData.nodes.push({
+        id: item._fields[item.keys.indexOf("p")].end.elementId,
+        text: textTitle,
+        color: "#21a1ff",
+      });
+      result.graphData.lines.push({
+        from: item._fields[item.keys.indexOf("p")].start.elementId,
+        to: item._fields[item.keys.indexOf("p")].end.elementId,
+        text: item._fields[item.keys.indexOf("p")].segments[0].relationship
+          .type,
+        color: "#666666",
+      });
+    } else {
+      console.log("我是keys");
     }
   });
-  if (num !== undefined && record !== undefined) {
-    let obj = {
-      rootId: num,
-      nodes: [],
-      lines: [],
-    };
-    record[0].records.forEach((item) => {
-      let textName = "";
-      let textTitle = "";
-      if (
-        item.keys.indexOf("n") !== -1 &&
-        item.keys.indexOf("p") === -1 &&
-        item._fields[item.keys.indexOf("n")] &&
-        item._fields[item.keys.indexOf("n")].elementId &&
-        item._fields[item.keys.indexOf("n")].properties
-      ) {
-        for (const key in item._fields[item.keys.indexOf("n")].properties) {
-          textName = item._fields[item.keys.indexOf("n")].properties[key];
-        }
-        obj.nodes.push({
-          id: item._fields[item.keys.indexOf("n")].elementId,
-          text: textName,
-          color: "#21a1ff",
-        });
-      } else if (
-        item.keys.indexOf("p") !== -1 &&
-        item._fields[0] &&
-        item._fields[item.keys.indexOf("p")].end &&
-        item._fields[item.keys.indexOf("p")].start
-      ) {
-        for (const key in item._fields[item.keys.indexOf("p")].start
-          .properties) {
-          textName = item._fields[item.keys.indexOf("p")].start.properties[key];
-        }
-        for (const key in item._fields[item.keys.indexOf("p")].end.properties) {
-          textTitle = item._fields[item.keys.indexOf("p")].end.properties[key];
-        }
-        obj.nodes.push({
-          id: item._fields[item.keys.indexOf("p")].start.elementId,
-          text: textName,
-          color: "#21a1ff",
-        });
-        obj.nodes.push({
-          id: item._fields[item.keys.indexOf("p")].end.elementId,
-          text: textTitle,
-          color: "#21a1ff",
-        });
-        obj.lines.push({
-          from: item._fields[item.keys.indexOf("p")].start.elementId,
-          to: item._fields[item.keys.indexOf("p")].end.elementId,
-          text: item._fields[item.keys.indexOf("p")].segments[0].relationship
-            .type,
-          color: "#666666",
-        });
-      } else {
-      }
-    });
-    // console.log(obj,"919")
-    let reviseNum = JSON.parse(sessionStorage.getItem("reviseNum"));
-    if (reviseNum !== -1) {
-      // 用我这个就行
-      graphRef.value[reviseNum].setJsonData(store.state.obj2);
-    } else if (obj.nodes.length !== 0 || obj.lines.length !== 0) {
-      graphRef.value[num].setJsonData(obj);
-    }
-  }
+  nextTick(() => {
+    graphRef.value[list.value.length - 1].setJsonData(result.graphData);
+  });
 });
 onMounted(() => {});
 const inputChange = (e: any) => {

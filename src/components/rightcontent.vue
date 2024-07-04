@@ -1,7 +1,8 @@
 <template>
   <div class="content">
     <a-row>
-      <search @load="loadFun"></search>
+      <!-- <search @load="loadFun"></search> -->
+       <search2 />
       <div
         style="
           display: flex;
@@ -15,7 +16,7 @@
         v-loading="loading"
       >
         <login></login>
-        <block2/>
+        <block/>
         <blockTop/>
       </div>
     </a-row>
@@ -23,10 +24,12 @@
 </template>
 
 <script setup lang="ts">
-import search from "./rightComponents/search.vue";
+// import search from "./rightComponents/search.vue";
+import search2 from "./rightComponents/search2.vue"
 import login from "./rightComponents/login.vue";
-import block2 from "./rightComponents/block2.vue"
+import block from "./rightComponents/block.vue"
 import blockTop from "./rightComponents/blockTop.vue";
+
 import { ref, watch, nextTick } from "vue";
 import { useStore } from "vuex";
 const store = useStore();

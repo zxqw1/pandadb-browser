@@ -1,8 +1,8 @@
-store.state.topListTransmit<template>
+<template>
   <div
     style="background-color: #ffffff"
-    v-for="(item, index) in store.state.toplist"
-    :key="index"
+    v-for="(item, index) in topList"
+    :key="item.id"
     :style="{
       position: isFullscreen ? 'fixed' : 'static',
       top: isFullscreen ? '0' : '0',
@@ -11,7 +11,7 @@ store.state.topListTransmit<template>
       zIndex: isFullscreen ? '5' : '0',
     }"
   >
-    <el-row v-if="item.length">
+    <el-row>
       <div
         style="background-color: #f6f6f6; width: 100%; height: 24px"
         v-if="!isFullscreen"
@@ -28,7 +28,10 @@ store.state.topListTransmit<template>
         "
       >
         <div class="topIcon">
-          <PushpinOutlined style="margin-left: 16px;background-color: rgb(215 215 215);color: #6a8322" @click="topClick2(index,item)" />
+          <PushpinOutlined
+            style="margin-left: 16px;color: #6a8322;background-color: #999999"
+            @click="topClick(index, item)"
+          />
           <DownOutlined
             style="margin-left: 16px"
             v-if="item.show"
@@ -84,8 +87,8 @@ store.state.topListTransmit<template>
             />
             <!-- 真实输入 -->
             <input
-              v-model="item[0].summary.query.text"
-              :placeholder="item[0].summary.query.text"
+              :value="item.summary.query.text"
+              @input="inputChange($event)"
               type="text"
               autosize
               style="
@@ -108,7 +111,7 @@ store.state.topListTransmit<template>
                 position: isFullscreen ? 'absolute' : 'static',
                 right: isFullscreen ? '10px' : 'auto',
               }"
-              @click="nodeShow2(item[0].summary.query.text, index)"
+              @click="nodeShow2(item, index)"
             />
           </div>
         </el-col>
@@ -127,7 +130,7 @@ store.state.topListTransmit<template>
       <!-- 展示 -->
       <el-col
         style="height: 348px; margin-top: 12px"
-        v-show="item.show"
+        v-show="!item.show"
         :style="{
           height: isFullscreen ? '100vh' : 'auto',
         }"
@@ -135,16 +138,20 @@ store.state.topListTransmit<template>
         <!-- node -->
         <el-col
           v-if="
-            item[0].records[0].keys.indexOf('n') !== -1 &&
-            item[0].records[0].keys.indexOf('p') === -1 &&
-            item[0].records[0]._fields[item[0].records[0].keys.indexOf('n')] &&
-            item[0].records[0]._fields[item[0].records[0].keys.indexOf('n')]
+            item.records[0].keys.indexOf('n') !== -1 &&
+            item.records[0].keys.indexOf('p') === -1 &&
+            item.records[0]._fields[item.records[0].keys.indexOf('n')] &&
+            item.records[0]._fields[item.records[0].keys.indexOf('n')]
               .elementId &&
-            item[0].records[0]._fields[item[0].records[0].keys.indexOf('n')]
+            item.records[0]._fields[item.records[0].keys.indexOf('n')]
               .properties
           "
         >
-          <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu" :style="{ height: isFullscreen ? '100vh' : '324px' }">
+          <el-tabs
+            :tab-position="tabPosition"
+            class="demo-tabs graphMenu"
+            :style="{ height: isFullscreen ? '100vh' : '324px' }"
+          >
             <el-tab-pane label="graph">
               <!-- label标题 -->
               <template #label>
@@ -165,12 +172,86 @@ store.state.topListTransmit<template>
                   >
                 </span>
               </template>
-              <RelationGraph
-                ref="graphRef"
-                :options="options"
-                style="height: 336px"
+              <!-- 图 -->
+              <div
+                style="
+                  border: #efefef solid 1px;
+                  width: 100%;
+                  display: flex;
+                  flex-direction: row-reverse;
+                  position: relative;
+                "
                 :style="{ height: isFullscreen ? '100vh' : '324px' }"
-              ></RelationGraph>
+              >
+                <!-- overview按钮 -->
+                <div
+                  style="
+                    background-color: #dcdcdc30;
+                    width: 45px;
+                    height: 28px;
+                    position: absolute;
+                    z-index: 1;
+                    right: 15px;
+                    top: 8px;
+                    box-shadow: 0 0 2px #ccc;
+                    line-height: 33px;
+                    text-align: center;
+                    cursor: pointer;
+                  "
+                  @click="OverviewClick"
+                  v-if="!overview"
+                >
+                  <ArrowLeftBold color="#999999" style="width: 16px" />
+                </div>
+                <div
+                  style="
+                    width: 328px;
+                    min-height: 452px;
+                    background-color: #ffffff;
+                    box-shadow: 0 0 2px #ccc;
+                    z-index: 1;
+                    position: relative;
+                  "
+                  v-else
+                >
+                  <ArrowLeftBold
+                    color="#999999"
+                    style="
+                      width: 16px;
+                      position: absolute;
+                      right: 0px;
+                      top: 0px;
+                      margin: 18px;
+                      cursor: pointer;
+                      z-index: 1;
+                    "
+                    @click="OverviewClick"
+                  />
+                  <el-row>
+                    <el-col
+                      style="margin: 10px; font-size: 18px; font-weight: 500"
+                    >
+                      Overview
+                    </el-col>
+                    <el-col style="margin: 0 0 0 10px">
+                      <div style="font-weight: bold">Node labels</div>
+                      <el-tag effect="dark" round>*(0)</el-tag>
+                      <el-tag effect="dark" round style="margin-left: 10px"
+                        >123</el-tag
+                      >
+                    </el-col>
+                    <el-col style="margin: 10px 0 0 10px">
+                      Displaying nodes, 0 relationships.
+                    </el-col>
+                  </el-row>
+                </div>
+                <RelationGraph
+                  ref="graphRef"
+                  :options="options"
+                  style="height: 336px"
+                  :style="{ height: isFullscreen ? '100vh' : '324px' }"
+                ></RelationGraph>
+              </div>
             </el-tab-pane>
             <el-tab-pane label="table">
               <template #label>
@@ -184,7 +265,10 @@ store.state.topListTransmit<template>
                 </div>
               </template>
               <!-- 详情 -->
-              <div style="overflow: auto">
+              <div
+                style="overflow: auto"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              >
                 <a-row
                   style="
                     font-size: 16px;
@@ -200,15 +284,15 @@ store.state.topListTransmit<template>
                   "
                 >
                   <a-col
-                    v-for="(item2, index2) in item[0].records[0].keys"
+                    v-for="(item2, index2) in item.records[0].keys"
                     :key="index2"
-                    :span="item[0].records[0].keys.length != 1 ? '6' : '24'"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
                   >
                     {{ item2 }}
                   </a-col>
                 </a-row>
                 <a-row
-                  v-for="(item3, index3) in item[0].records"
+                  v-for="(item3, index3) in item.records"
                   :key="index3"
                   style="
                     flex-wrap: nowrap;
@@ -220,7 +304,7 @@ store.state.topListTransmit<template>
                   <a-col
                     v-for="(item4, index4) in item3._fields"
                     :key="index4"
-                    :span="item[0].records[0].keys.length != 1 ? '6' : '24'"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
                   >
                     <pre
                       style="
@@ -252,27 +336,25 @@ store.state.topListTransmit<template>
                 </div>
               </template>
               <!-- 详情 -->
-              <!-- :style="{ height: isFullscreen ? '100vh' : '324px' }" -->
-
-              <div style="padding: 10px; overflow-y: auto">
+              <div
+                style="padding: 10px; overflow-y: auto"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              >
                 <el-row style="flex-wrap: nowrap; display: flex">
                   <el-col
                     style="border-right: none; border: 1px dashed #666666"
                     class="td"
-                    v-for="(item5, index5) in item[0].records[0].keys"
+                    v-for="(item5, index5) in item.records[0].keys"
                     :key="index5"
-                    :span="item[0].records[0].keys.length !== 1 ? 6 : 24"
+                    :span="item.records[0].keys.length !== 1 ? 6 : 24"
                   >
                     {{ item5 }}
                   </el-col>
                 </el-row>
-                <el-row
-                  v-for="(item6, index6) in item[0].records"
-                  :key="index6"
-                >
+                <el-row v-for="(item6, index6) in item.records" :key="index6">
                   <el-col
                     class="td"
-                    :span="item[0].records[0].keys.length !== 1 ? 6 : 24"
+                    :span="item.records[0].keys.length !== 1 ? 6 : 24"
                     style="border-right: none; border: 1px dashed #666666"
                     v-for="(item7, index7) in item6._fields"
                     :key="index7"
@@ -300,25 +382,23 @@ store.state.topListTransmit<template>
                 </div>
               </template>
               <!-- 详情 -->
-              <!-- :style="{ height: isFullscreen ? '100vh' : '324px' }" -->
-
               <div style="padding: 10px; overflow-y: auto">
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server version</el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item[0].summary.server.agent }}
+                    {{ item.summary.server.agent }}
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server address</el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item[0].summary.server.address }}
+                    {{ item.summary.server.address }}
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Query </el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item[0].summary.query.text }}
+                    {{ item.summary.query.text }}
                   </el-col>
                 </el-row>
                 <el-row>
@@ -332,7 +412,7 @@ store.state.topListTransmit<template>
                     :style="{ height: isunfold ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden"
                   >
-                    {{ item[0].summary }}
+                    {{ item.summary }}
                   </el-col>
                 </el-row>
                 <el-row>
@@ -346,7 +426,7 @@ store.state.topListTransmit<template>
                     :style="{ height: isres ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden"
                   >
-                    {{ item[0].records }}
+                    {{ item.records }}
                   </el-col>
                 </el-row>
               </div>
@@ -356,17 +436,19 @@ store.state.topListTransmit<template>
         <!-- relation -->
         <el-col
           v-else-if="
-            item[0].records[0].keys.indexOf('p') !== -1 &&
-            item[0].records[0]._fields[0] &&
-            item[0].records[0]._fields[item[0].records[0].keys.indexOf('p')]
-              .end &&
-            item[0].records[0]._fields[item[0].records[0].keys.indexOf('p')]
-              .start
+            item.records[0].keys.indexOf('p') !== -1 &&
+            item.records[0]._fields[0] &&
+            item.records[0]._fields[item.records[0].keys.indexOf('p')].end &&
+            item.records[0]._fields[item.records[0].keys.indexOf('p')].start
           "
         >
-          <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu":style="{ height: isFullscreen ? '100vh' : '324px' }">
+          <el-tabs
+            :tab-position="tabPosition"
+            class="demo-tabs graphMenu"
+            :style="{ height: isFullscreen ? '100vh' : '324px' }"
+          >
             <el-tab-pane label="graph">
-              <!-- table标题 -->
+              <!-- graph标题 -->
               <template #label>
                 <span
                   style="
@@ -385,12 +467,84 @@ store.state.topListTransmit<template>
                   >
                 </span>
               </template>
-              <RelationGraph
-                ref="graphRef"
-                :options="options"
-                style="height: 336px"
+              <div
+                style="
+                  border: #efefef solid 1px;
+                  width: 100%;
+                  display: flex;
+                  flex-direction: row-reverse;
+                  position: relative;
+                "
                 :style="{ height: isFullscreen ? '100vh' : '324px' }"
-              ></RelationGraph>
+              >
+                <div
+                  style="
+                    background-color: #dcdcdc30;
+                    width: 45px;
+                    height: 28px;
+                    position: absolute;
+                    z-index: 1;
+                    right: 15px;
+                    top: 8px;
+                    box-shadow: 0 0 2px #ccc;
+                    line-height: 33px;
+                    text-align: center;
+                    cursor: pointer;
+                  "
+                  @click="OverviewClick"
+                  v-if="!overview"
+                >
+                  <ArrowLeftBold color="#999999" style="width: 16px" />
+                </div>
+                <div
+                  style="
+                    width: 328px;
+                    min-height: 452px;
+                    background-color: #ffffff;
+                    box-shadow: 0 0 2px #ccc;
+                    z-index: 1;
+                    position: relative;
+                  "
+                  v-else
+                >
+                  <ArrowLeftBold
+                    color="#999999"
+                    style="
+                      width: 16px;
+                      position: absolute;
+                      right: 0px;
+                      top: 0px;
+                      margin: 18px;
+                      cursor: pointer;
+                      z-index: 1;
+                    "
+                    @click="OverviewClick"
+                  />
+                  <el-row>
+                    <el-col
+                      style="margin: 10px; font-size: 18px; font-weight: 500"
+                    >
+                      Overview
+                    </el-col>
+                    <el-col style="margin: 0 0 0 10px">
+                      <div style="font-weight: bold">Node labels</div>
+                      <el-tag effect="dark" round>*(0)</el-tag>
+                      <el-tag effect="dark" round style="margin-left: 10px"
+                        >123</el-tag
+                      >
+                    </el-col>
+                    <el-col style="margin: 10px 0 0 10px">
+                      Displaying nodes, 0 relationships.
+                    </el-col>
+                  </el-row>
+                </div>
+                <RelationGraph
+                  ref="graphRef"
+                  :options="options"
+                  style="height: 336px"
+                  :style="{ height: isFullscreen ? '100vh' : '324px' }"
+                ></RelationGraph>
+              </div>
             </el-tab-pane>
             <el-tab-pane label="table">
               <template #label>
@@ -405,7 +559,10 @@ store.state.topListTransmit<template>
               </template>
               <!-- 详情 -->
 
-              <div style=" overflow: auto" :style="{ height: isFullscreen ? '100vh' : '324px' }">
+              <div
+                style="overflow: auto"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              >
                 <a-row
                   style="
                     font-size: 16px;
@@ -421,15 +578,15 @@ store.state.topListTransmit<template>
                   "
                 >
                   <a-col
-                    v-for="(item2, index2) in item[0].records[0].keys"
+                    v-for="(item2, index2) in item.records[0].keys"
                     :key="index2"
-                    :span="item[0].records[0].keys.length != 1 ? '6' : '24'"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
                   >
                     {{ item2 }}
                   </a-col>
                 </a-row>
                 <a-row
-                  v-for="(item3, index3) in item[0].records"
+                  v-for="(item3, index3) in item.records"
                   :key="index3"
                   style="
                     flex-wrap: nowrap;
@@ -441,7 +598,7 @@ store.state.topListTransmit<template>
                   <a-col
                     v-for="(item4, index4) in item3._fields"
                     :key="index4"
-                    :span="item[0].records[0].keys.length != 1 ? '6' : '24'"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
                   >
                     <pre
                       style="
@@ -478,20 +635,17 @@ store.state.topListTransmit<template>
                   <el-col
                     style="border-right: none; border: 1px dashed #666666"
                     class="td"
-                    v-for="(item5, index5) in item[0].records[0].keys"
+                    v-for="(item5, index5) in item.records[0].keys"
                     :key="index5"
-                    :span="item[0].records[0].keys.length != 1 ? 6 : 24"
+                    :span="item.records[0].keys.length != 1 ? 6 : 24"
                   >
                     {{ item5 }}
                   </el-col>
                 </el-row>
-                <el-row
-                  v-for="(item6, index6) in item[0].records"
-                  :key="index6"
-                >
+                <el-row v-for="(item6, index6) in item.records" :key="index6">
                   <el-col
                     class="td"
-                    :span="item[0].records[0].keys.length != 1 ? 6 : 24"
+                    :span="item.records[0].keys.length != 1 ? 6 : 24"
                     style="border-right: none; border: 1px dashed #666666"
                     v-for="(item7, index7) in item6._fields"
                     :key="index7"
@@ -531,19 +685,19 @@ store.state.topListTransmit<template>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server version</el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item[0].summary.server.agent }}
+                    {{ item.summary.server.agent }}
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server address</el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item[0].summary.server.address }}
+                    {{ item.summary.server.address }}
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Query </el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item[0].summary.query.text }}
+                    {{ item.summary.query.text }}
                   </el-col>
                 </el-row>
                 <el-row>
@@ -557,7 +711,7 @@ store.state.topListTransmit<template>
                     :style="{ height: isunfold ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden"
                   >
-                    {{ item[0].summary }}
+                    {{ item.summary }}
                   </el-col>
                 </el-row>
                 <el-row>
@@ -571,7 +725,7 @@ store.state.topListTransmit<template>
                     :style="{ height: isres ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden"
                   >
-                    {{ item[0].records }}
+                    {{ item.records }}
                   </el-col>
                 </el-row>
               </div>
@@ -580,7 +734,11 @@ store.state.topListTransmit<template>
         </el-col>
         <!-- keys -->
         <el-col v-else>
-          <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu":style="{ height: isFullscreen ? '100vh' : '324px' }">
+          <el-tabs
+            :tab-position="tabPosition"
+            class="demo-tabs graphMenu"
+            :style="{ height: isFullscreen ? '100vh' : '324px' }"
+          >
             <el-tab-pane label="table">
               <template #label>
                 <div>
@@ -593,7 +751,10 @@ store.state.topListTransmit<template>
                 </div>
               </template>
               <!-- 详情 -->
-              <div style="overflow-y: auto" :style="{ height: isFullscreen ? '100vh' : '324px' }">
+              <div
+                style="overflow-y: auto"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              >
                 <a-row
                   style="
                     font-size: 16px;
@@ -609,15 +770,15 @@ store.state.topListTransmit<template>
                   "
                 >
                   <a-col
-                    v-for="(item2, index2) in item[0].records[0].keys"
+                    v-for="(item2, index2) in item.records[0].keys"
                     :key="index2"
-                    :span="item[0].records[0].keys.length != 1 ? '6' : '24'"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
                   >
                     {{ item2 }}
                   </a-col>
                 </a-row>
                 <a-row
-                  v-for="(item3, index3) in item[0].records"
+                  v-for="(item3, index3) in item.records"
                   :key="index3"
                   style="
                     flex-wrap: nowrap;
@@ -629,7 +790,7 @@ store.state.topListTransmit<template>
                   <a-col
                     v-for="(item4, index4) in item3._fields"
                     :key="index4"
-                    :span="item[0].records[0].keys.length != 1 ? '6' : '24'"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
                   >
                     <pre
                       style="
@@ -662,25 +823,25 @@ store.state.topListTransmit<template>
                 </div>
               </template>
               <!-- 详情 -->
-              <div style="padding: 10px; overflow-y: auto" :style="{ height: isFullscreen ? '100vh' : '324px' }">
+              <div
+                style="padding: 10px; overflow-y: auto"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              >
                 <el-row style="flex-wrap: nowrap; display: flex">
                   <el-col
                     style="border-right: none; border: 1px dashed #666666"
                     class="td"
-                    v-for="(item5, index5) in item[0].records[0].keys"
+                    v-for="(item5, index5) in item.records[0].keys"
                     :key="index5"
-                    :span="item[0].records[0].keys.length != 1 ? 6 : 24"
+                    :span="item.records[0].keys.length != 1 ? 6 : 24"
                   >
                     {{ item5 }}
                   </el-col>
                 </el-row>
-                <el-row
-                  v-for="(item6, index6) in item[0].records"
-                  :key="index6"
-                >
+                <el-row v-for="(item6, index6) in item.records" :key="index6">
                   <el-col
                     class="td"
-                    :span="item[0].records[0].keys.length != 1 ? 6 : 24"
+                    :span="item.records[0].keys.length != 1 ? 6 : 24"
                     style="border-right: none; border: 1px dashed #666666"
                     v-for="(item7, index7) in item6._fields"
                     :key="index7"
@@ -702,25 +863,23 @@ store.state.topListTransmit<template>
                 </div>
               </template>
               <!-- 详情 -->
-              <!-- :style="{ height: isFullscreen ? '100vh' : '324px' }" -->
-
               <div style="padding: 10px; overflow-y: auto">
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server version</el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item[0].summary.server.agent }}
+                    {{ item.summary.server.agent }}
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server address</el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item[0].summary.server.address }}
+                    {{ item.summary.server.address }}
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col class="severTitle" :span="8"> Query </el-col>
                   <el-col :span="16" class="severContent">
-                    {{ item[0].summary.query.text }}
+                    {{ item.summary.query.text }}
                   </el-col>
                 </el-row>
                 <el-row>
@@ -734,7 +893,7 @@ store.state.topListTransmit<template>
                     :style="{ height: isunfold ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden"
                   >
-                    {{ item[0].summary }}
+                    {{ item.summary }}
                   </el-col>
                 </el-row>
                 <el-row>
@@ -748,7 +907,7 @@ store.state.topListTransmit<template>
                     :style="{ height: isres ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden"
                   >
-                    {{ item[0].records }}
+                    {{ item.records }}
                   </el-col>
                 </el-row>
               </div>
@@ -766,8 +925,7 @@ store.state.topListTransmit<template>
           padding-left: 16px;
         "
       >
-        Transmit {{ item[0].records.length }} records within
-        {{ item[0].resTime }}.
+        Transmit {{ item.records.length }} records within {{ item.resTime }}.
       </div>
     </el-row>
   </div>
@@ -792,14 +950,22 @@ import {
 import { ArrowLeftBold, CopyDocument } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import request from "../../utils/request.js";
+import mitts from "../../utils/bus.js";
 //变量
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 const store = useStore();
 const options = {};
-const graphRef = ref(null);
+const graphRef = ref<RelationGraph>();
 const isFullscreen = ref(false);
 const isunfold = ref(false);
 const isres = ref(false);
+const text = ref("");
+const inputValue = ref("");
+const overview = ref(false);
+const topList = ref([])
+const OverviewClick = () => {
+  overview.value = !overview.value;
+};
 const unfoldClick = () => {
   isunfold.value = !isunfold.value;
 };
@@ -807,23 +973,93 @@ const resClick = () => {
   isres.value = !isres.value;
 };
 // 置顶
-const topClick2 = (index:Number,item:any) => {
-  store.commit("top2", { index, item });
-};
+const topClick = (index: Number, item: any) => {
+  topList.value.splice(index,1)
+  mitts.emit('Data',item)
+};  
 //放大
 const toggleFullScreen = () => {
   isFullscreen.value = !isFullscreen.value;
 };
 //修改
-const nodeShow2 = async (text: any, index: Number) => {
+const nodeShow2 = async (record: any, index: Number) => {
   await nextTick();
-  if (text === "") {
+  if (inputValue.value === "") {
   } else {
-    let promiseData = request.fetchData("neo4j", "admin", text);
+    const startTime = performance.now();
+    let promiseData = request.fetchData("neo4j", "admin", inputValue.value);
     promiseData
       .then((result: any) => {
-        console.log("拿到的数据", result);
-        store.commit("revise", { index, result });
+        const endTime = performance.now();
+        const responseTime = endTime - startTime;
+        result.resTime = Math.round(responseTime) + "ms";
+        result.summary.query.text = inputValue.value;
+        result.id = generateRandomId();
+        result.show = false
+        topList.value[index] = result;
+        let textName = "";
+        let textTitle = "";
+        result.graphData = {
+          rootId: topList.value.length,
+          nodes: [],
+          lines: [],
+        };
+        result.records.forEach((item: any, index: Number) => {
+          if (
+            item.keys.indexOf("n") !== -1 &&
+            item.keys.indexOf("p") === -1 &&
+            item._fields[item.keys.indexOf("n")] &&
+            item._fields[item.keys.indexOf("n")].elementId &&
+            item._fields[item.keys.indexOf("n")].properties
+          ) {
+            for (const key in item._fields[item.keys.indexOf("n")].properties) {
+              textName = item._fields[item.keys.indexOf("n")].properties[key];
+            }
+            result.graphData.nodes.push({
+              id: item._fields[item.keys.indexOf("n")].elementId,
+              text: textName,
+              color: "#21a1ff",
+            });
+          } else if (
+            item.keys.indexOf("p") !== -1 &&
+            item._fields[0] &&
+            item._fields[item.keys.indexOf("p")].end &&
+            item._fields[item.keys.indexOf("p")].start
+          ) {
+            for (const key in item._fields[item.keys.indexOf("p")].start
+              .properties) {
+              textName =
+                item._fields[item.keys.indexOf("p")].start.properties[key];
+            }
+            for (const key in item._fields[item.keys.indexOf("p")].end
+              .properties) {
+              textTitle =
+                item._fields[item.keys.indexOf("p")].end.properties[key];
+            }
+            result.graphData.nodes.push({
+              id: item._fields[item.keys.indexOf("p")].start.elementId,
+              text: textName,
+              color: "#21a1ff",
+            });
+            result.graphData.nodes.push({
+              id: item._fields[item.keys.indexOf("p")].end.elementId,
+              text: textTitle,
+              color: "#21a1ff",
+            });
+            result.graphData.lines.push({
+              from: item._fields[item.keys.indexOf("p")].start.elementId,
+              to: item._fields[item.keys.indexOf("p")].end.elementId,
+              text: item._fields[item.keys.indexOf("p")].segments[0]
+                .relationship.type,
+              color: "#666666",
+            });
+          } else {
+            console.log("我是keys");
+          }
+        });
+        nextTick(() => {
+          graphRef.value[topList.value.length - 1].setJsonData(result.graphData);
+        });
       })
       .catch((error: any) => {
         console.log(error, 106);
@@ -846,81 +1082,26 @@ const tableCopy = (item4: any) => {
 };
 //删除
 const removeModule = (index: Number) => {
-  store.commit("remove2", index);
+  topList.value.splice(index, 1);
 };
-watch(store.state.toplist, async (newVal, oldVal) => {
-  await nextTick();
-  let num = undefined;
-  let record = undefined;
-  oldVal.forEach((item: any, index: Number) => {
-    if (item.length) {
-      record = item;
-      num = index;
-    }
+//生成数据唯一id
+const generateRandomId = () => {
+  const timestamp = new Date().getTime(); // 获取当前时间戳
+  const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
+  return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
+};
+//数据
+mitts.on("topData",(item:any)=>{
+  console.log(item,1095)
+  topList.value.push(item)
+  nextTick(() => {
+    graphRef.value[topList.value.length - 1].setJsonData(item.graphData);
   });
-  if (num !== undefined && record !== undefined) {
-    let obj = {
-      rootId: num,
-      nodes: [],
-      lines: [],
-    };
-    record[0].records.forEach((item) => {
-      let textName = "";
-      let textTitle = "";
-      if (
-        item.keys.indexOf("n") !== -1 &&
-        item.keys.indexOf("p") === -1 &&
-        item._fields[item.keys.indexOf("n")] &&
-        item._fields[item.keys.indexOf("n")].elementId &&
-        item._fields[item.keys.indexOf("n")].properties
-      ) {
-        for (const key in item._fields[item.keys.indexOf("n")].properties) {
-          textName = item._fields[item.keys.indexOf("n")].properties[key];
-        }
-        obj.nodes.push({
-          id: item._fields[item.keys.indexOf("n")].elementId,
-          text: textName,
-          color: "#21a1ff",
-        });
-      } else if (
-        item.keys.indexOf("p") !== -1 &&
-        item._fields[0] &&
-        item._fields[item.keys.indexOf("p")].end &&
-        item._fields[item.keys.indexOf("p")].start
-      ) {
-        for (const key in item._fields[item.keys.indexOf("p")].start
-          .properties) {
-          textName = item._fields[item.keys.indexOf("p")].start.properties[key];
-        }
-        for (const key in item._fields[item.keys.indexOf("p")].end.properties) {
-          textTitle = item._fields[item.keys.indexOf("p")].end.properties[key];
-        }
-        obj.nodes.push({
-          id: item._fields[item.keys.indexOf("p")].start.elementId,
-          text: textName,
-          color: "#21a1ff",
-        });
-        obj.nodes.push({
-          id: item._fields[item.keys.indexOf("p")].end.elementId,
-          text: textTitle,
-          color: "#21a1ff",
-        });
-        obj.lines.push({
-          from: item._fields[item.keys.indexOf("p")].start.elementId,
-          to: item._fields[item.keys.indexOf("p")].end.elementId,
-          text: item._fields[item.keys.indexOf("p")].segments[0].relationship
-            .type,
-          color: "#666666",
-        });
-      } else {
-      }
-    });
-    if (obj.nodes.length !== 0 || obj.lines.length !== 0) {
-      graphRef.value[num].setJsonData(obj);
-    }
-  }
-});
+})
 onMounted(() => {});
+const inputChange = (e: any) => {
+  inputValue.value = e.target.value;
+};
 </script>
 
 <style scoped>

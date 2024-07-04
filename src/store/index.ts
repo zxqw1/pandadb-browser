@@ -24,7 +24,7 @@ const store: StoreOptions<any> = {
             [],
             [],
             [],
-            [],
+            [] ,
             [],
             [],
             [],
