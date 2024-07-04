@@ -44,6 +44,16 @@
       @finish="onFinish"
       v-else
     >
+    
+    <a-input-group compact style="flex-direction: row;
+    justify-content: flex-end;align-items: center; margin-bottom: 20px;">
+    <div style="font-size: 15px;">地址：</div>
+      <a-select v-model:value="value5">
+        <a-select-option value="Option1">neo4j://</a-select-option>
+        <a-select-option value="Option2">bolt://</a-select-option>
+      </a-select>
+      <a-input v-model:value="value6" style="width: 60%" />
+    </a-input-group>
       <a-form-item label="用户名" name="username">
         <a-input
           v-model:value="formState.username"
@@ -80,6 +90,8 @@
 import { onMounted, reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from 'element-plus'
 const open = ref<boolean>(false);
+const value5 = ref<string>('');
+const value6 = ref<string>('');
 // 拿到输入内容
 const formState = reactive({
   username: "",
