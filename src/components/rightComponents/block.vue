@@ -997,12 +997,12 @@ const tableCopy = (item4: any) => {
 const removeModule = (index: Number) => {
   list.value.splice(index, 1);
 };
-// mitts.on("Data", (item: any) => {
-//   list.value.push(item);
-//   nextTick(() => {
-//     graphRef.value[list.value.length - 1].setJsonData(item.graphData);
-//   });
-// });
+mitts.on("Data", (item: any) => {
+  list.value.push(item);
+  nextTick(() => {
+    graphRef.value[list.value.length - 1].setJsonData(item.graphData);
+  });
+});
 //生成数据唯一id
 const generateRandomId = () => {
   const timestamp = new Date().getTime(); // 获取当前时间戳

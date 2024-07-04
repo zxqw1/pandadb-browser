@@ -59,74 +59,7 @@
         </div>
       </el-col>
       <!-- 搜索 -->
-      <el-row style="width: 100%; padding: 8px 16px 0 16px">
-        <el-col :span="22">
-          <div
-            class="searchBlock"
-            style="
-              background-color: #f6f6f6;
-              width: 100%;
-              border-radius: 5px;
-              border: 1px dashed #d2dabb;
-              min-height: 32px;
-              display: flex;
-              align-items: center;
-            "
-            :style="{
-              position: isFullscreen ? 'relative' : 'static',
-            }"
-          >
-            <!-- logo -->
-            <img
-              src="../../assets/img/logos.png"
-              style="width: 44px; height: 30px"
-              :style="{
-                position: isFullscreen ? 'absolute' : 'static',
-              }"
-              alt=""
-            />
-            <!-- 真实输入 -->
-            <input
-              :value="item.summary.query.text"
-              @input="inputChange($event)"
-              type="text"
-              autosize
-              style="
-                width: 93%;
-                font-size: 16px;
-                color: #666666;
-                background-color: rgb(246, 246, 246);
-                border: none;
-              "
-              class="searchText"
-              :style="{
-                position: isFullscreen ? 'absolute' : 'static',
-                left: isFullscreen ? '50px' : 'auto',
-              }"
-            />
-            <!-- 展示 -->
-            <CaretRightOutlined
-              style="color: #6a8322; font-size: 28px"
-              :style="{
-                position: isFullscreen ? 'absolute' : 'static',
-                right: isFullscreen ? '10px' : 'auto',
-              }"
-              @click="nodeShow2(item, index)"
-            />
-          </div>
-        </el-col>
-        <el-col
-          :span="2"
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-          "
-        >
-          <StarOutlined :style="{ fontSize: '20px' }" />
-          <VerticalAlignBottomOutlined :style="{ fontSize: '20px' }" />
-        </el-col>
-      </el-row>
+      <search3 :command="item.summary.query.text" :index="index" />
       <!-- 展示 -->
       <el-col
         style="height: 348px; margin-top: 12px"
@@ -940,7 +873,6 @@ import {
   DownOutlined,
   ExpandAltOutlined,
   CloseOutlined,
-  StarOutlined,
   CaretRightOutlined,
   CaretDownOutlined,
   VerticalAlignBottomOutlined,
@@ -951,6 +883,8 @@ import { ArrowLeftBold, CopyDocument } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import request from "../../utils/request.js";
 import mitts from "../../utils/bus.js";
+//组件
+import search3 from "../rightComponents/blockcomponents/search3.vue";
 //变量
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 const store = useStore();
@@ -974,101 +908,80 @@ const resClick = () => {
 };
 // 置顶
 const topClick = (index: Number, item: any) => {
-  topList.value.splice(index,1)
-  mitts.emit('Data',item)
-};  
+  topList.value.splice(index, 1);
+  mitts.emit("Data", item);
+};
 //放大
 const toggleFullScreen = () => {
   isFullscreen.value = !isFullscreen.value;
 };
 //修改
-const nodeShow2 = async (record: any, index: Number) => {
-  await nextTick();
-  if (inputValue.value === "") {
-  } else {
-    const startTime = performance.now();
-    let promiseData = request.fetchData("neo4j", "admin", inputValue.value);
-    promiseData
-      .then((result: any) => {
-        const endTime = performance.now();
-        const responseTime = endTime - startTime;
-        result.resTime = Math.round(responseTime) + "ms";
-        result.summary.query.text = inputValue.value;
-        result.id = generateRandomId();
-        result.show = false
-        topList.value[index] = result;
-        let textName = "";
-        let textTitle = "";
-        result.graphData = {
-          rootId: topList.value.length,
-          nodes: [],
-          lines: [],
-        };
-        result.records.forEach((item: any, index: Number) => {
-          if (
-            item.keys.indexOf("n") !== -1 &&
-            item.keys.indexOf("p") === -1 &&
-            item._fields[item.keys.indexOf("n")] &&
-            item._fields[item.keys.indexOf("n")].elementId &&
-            item._fields[item.keys.indexOf("n")].properties
-          ) {
-            for (const key in item._fields[item.keys.indexOf("n")].properties) {
-              textName = item._fields[item.keys.indexOf("n")].properties[key];
-            }
-            result.graphData.nodes.push({
-              id: item._fields[item.keys.indexOf("n")].elementId,
-              text: textName,
-              color: "#21a1ff",
-            });
-          } else if (
-            item.keys.indexOf("p") !== -1 &&
-            item._fields[0] &&
-            item._fields[item.keys.indexOf("p")].end &&
-            item._fields[item.keys.indexOf("p")].start
-          ) {
-            for (const key in item._fields[item.keys.indexOf("p")].start
-              .properties) {
-              textName =
-                item._fields[item.keys.indexOf("p")].start.properties[key];
-            }
-            for (const key in item._fields[item.keys.indexOf("p")].end
-              .properties) {
-              textTitle =
-                item._fields[item.keys.indexOf("p")].end.properties[key];
-            }
-            result.graphData.nodes.push({
-              id: item._fields[item.keys.indexOf("p")].start.elementId,
-              text: textName,
-              color: "#21a1ff",
-            });
-            result.graphData.nodes.push({
-              id: item._fields[item.keys.indexOf("p")].end.elementId,
-              text: textTitle,
-              color: "#21a1ff",
-            });
-            result.graphData.lines.push({
-              from: item._fields[item.keys.indexOf("p")].start.elementId,
-              to: item._fields[item.keys.indexOf("p")].end.elementId,
-              text: item._fields[item.keys.indexOf("p")].segments[0]
-                .relationship.type,
-              color: "#666666",
-            });
-          } else {
-            console.log("我是keys");
-          }
-        });
-        nextTick(() => {
-          graphRef.value[topList.value.length - 1].setJsonData(result.graphData);
-        });
-      })
-      .catch((error: any) => {
-        console.log(error, 106);
-        ElMessageBox.alert(error, "错误提示", {
-          confirmButtonText: "好的",
-        });
+mitts.on("revise2", (revieseResult: any) => {
+  revieseResult.id = generateRandomId();
+  revieseResult.show = false;
+  topList.value[revieseResult.number] = revieseResult;
+  let textName = "";
+  let textTitle = "";
+  revieseResult.graphData = {
+    rootId: topList.value.length,
+    nodes: [],
+    lines: [],
+  };
+  revieseResult.records.forEach((item: any, index: Number) => {
+    if (
+      item.keys.indexOf("n") !== -1 &&
+      item.keys.indexOf("p") === -1 &&
+      item._fields[item.keys.indexOf("n")] &&
+      item._fields[item.keys.indexOf("n")].elementId &&
+      item._fields[item.keys.indexOf("n")].properties
+    ) {
+      for (const key in item._fields[item.keys.indexOf("n")].properties) {
+        textName = item._fields[item.keys.indexOf("n")].properties[key];
+      }
+      revieseResult.graphData.nodes.push({
+        id: item._fields[item.keys.indexOf("n")].elementId,
+        text: textName,
+        color: "#21a1ff",
       });
-  }
-};
+    } else if (
+      item.keys.indexOf("p") !== -1 &&
+      item._fields[0] &&
+      item._fields[item.keys.indexOf("p")].end &&
+      item._fields[item.keys.indexOf("p")].start
+    ) {
+      for (const key in item._fields[item.keys.indexOf("p")].start.properties) {
+        textName = item._fields[item.keys.indexOf("p")].start.properties[key];
+      }
+      for (const key in item._fields[item.keys.indexOf("p")].end.properties) {
+        textTitle = item._fields[item.keys.indexOf("p")].end.properties[key];
+      }
+      revieseResult.graphData.nodes.push({
+        id: item._fields[item.keys.indexOf("p")].start.elementId,
+        text: textName,
+        color: "#21a1ff",
+      });
+      revieseResult.graphData.nodes.push({
+        id: item._fields[item.keys.indexOf("p")].end.elementId,
+        text: textTitle,
+        color: "#21a1ff",
+      });
+      revieseResult.graphData.lines.push({
+        from: item._fields[item.keys.indexOf("p")].start.elementId,
+        to: item._fields[item.keys.indexOf("p")].end.elementId,
+        text: item._fields[item.keys.indexOf("p")].segments[0].relationship
+          .type,
+        color: "#666666",
+      });
+    } else {
+      console.log("我是keys");
+    }
+  });
+  console.log(topList.value, "979");
+  nextTick(() => {
+    graphRef.value[revieseResult.number].setJsonData(revieseResult.graphData);
+  });
+});
+
 //复制
 const tableCopy = (item4: any) => {
   navigator.clipboard.writeText(
@@ -1090,6 +1003,7 @@ const generateRandomId = () => {
   const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
   return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
 };
+//数据
 //数据
 mitts.on("topData",(item:any)=>{
   console.log(item,1095)
