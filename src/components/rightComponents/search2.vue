@@ -166,7 +166,6 @@ computed((_height) => {
 //获取数据
 const funClick = async() => {
   await nextTick()
-  console.log(contentValue.value,183)
   if (contentValue.value === "") {
     console.log(111)
   } else {
@@ -180,7 +179,6 @@ const funClick = async() => {
         mitts.emit('params', result)
       })
       .catch((error: any) => {
-        console.log(error, 106);
         ElMessageBox.alert(error, "错误提示", {
           confirmButtonText: "好的",
         });

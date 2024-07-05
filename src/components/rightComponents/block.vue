@@ -168,13 +168,153 @@
                     </el-col>
                     <el-col style="margin: 0 0 0 10px">
                       <div style="font-weight: bold">Node labels</div>
-                      <el-tag effect="dark" round>*(0)</el-tag>
-                      <el-tag effect="dark" round style="margin-left: 10px"
-                        >123</el-tag
+                      <el-tag effect="dark" round
+                        >*({{ resultNodes.length }})</el-tag
                       >
+                      <el-popover
+                        placement="bottom"
+                        :width="260"
+                        trigger="click"
+                      >
+                        <template #reference>
+                          <el-tag
+                            effect="dark"
+                            round
+                            style="margin-left: 10px; cursor: pointer"
+                            v-for="(item8, index8) in newlabelList"
+                            >{{ item8 }}({{ resultNodes.length }})</el-tag
+                          >
+                        </template>
+                        <el-row>
+                          <el-col>
+                            <el-tag
+                              effect="dark"
+                              round
+                              style="width: 100%"
+                              v-for="(item8, index8) in newlabelList"
+                              >{{ item8 }}({{ resultNodes.length }})</el-tag
+                            >
+                          </el-col>
+                          <el-col style="display: flex; margin-top: 12px">
+                            <ul
+                              class="color"
+                              style="
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-around;
+                                width: 100%;
+                                padding-left: 0;
+                              "
+                            >
+                              <div>color:</div>
+                              <li
+                                style="background-color: rgb(96, 74, 14)"
+                              ></li>
+                              <li
+                                style="background-color: rgb(201, 144, 192)"
+                              ></li>
+                              <li
+                                style="background-color: rgb(247, 151, 103)"
+                              ></li>
+                              <li
+                                style="background-color: rgb(87, 199, 227)"
+                              ></li>
+                              <li
+                                style="background-color: rgb(241, 102, 103)"
+                              ></li>
+                              <li
+                                style="background-color: rgb(217, 200, 174)"
+                              ></li>
+                              <li
+                                style="background-color: rgb(141, 204, 147)"
+                              ></li>
+                              <li
+                                style="background-color: rgb(236, 181, 201)"
+                              ></li>
+                              <li
+                                style="background-color: rgb(76, 142, 218)"
+                              ></li>
+                              <li
+                                style="background-color: rgb(255, 196, 84)"
+                              ></li>
+                              <li
+                                style="background-color: rgb(218, 113, 148)"
+                              ></li>
+                              <li
+                                style="background-color: rgb(86, 148, 128)"
+                              ></li>
+                            </ul>
+                          </el-col>
+                          <el-col style="display: flex; margin-top: 12px">
+                            <ul
+                              class="size"
+                              style="
+                                display: flex;
+                                align-items: center;
+                                width: 100%;
+                                padding-left: 0;
+                              "
+                            >
+                              <div>size:</div>
+                              <li
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 12px;
+                                  height: 12px;
+                                  border-radius: 50%;
+                                "
+                              ></li>
+                              <li
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 14px;
+                                  height: 14px;
+                                  border-radius: 50%;
+                                "
+                              ></li>
+                              <li
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 16px;
+                                  height: 16px;
+                                  border-radius: 50%;
+                                "
+                              ></li>
+                              <li
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 18px;
+                                  height: 18px;
+                                  border-radius: 50%;
+                                "
+                              ></li>
+                              <li
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 20px;
+                                  height: 20px;
+                                  border-radius: 50%;
+                                "
+                              ></li>
+                            </ul>
+                          </el-col>
+                          <el-col
+                            style="
+                              display: flex;
+                              margin-top: 12px;
+                              align-items: center;
+                              width: 100%;
+                            "
+                          >
+                            <div>Caption:</div>
+                            <el-tag type="info" size="small"></el-tag>
+                          </el-col>
+                        </el-row>
+                      </el-popover>
                     </el-col>
                     <el-col style="margin: 10px 0 0 10px">
-                      Displaying nodes, 0 relationships.
+                      Displaying {{ resultNodes.length }} nodes, 0
+                      relationships.
                     </el-col>
                   </el-row>
                 </div>
@@ -887,16 +1027,16 @@ import mitts from "../../utils/bus.js";
 import search3 from "../rightComponents/blockcomponents/search3.vue";
 //变量
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
-const store = useStore();
 const options = {};
 const graphRef = ref<RelationGraph>();
 const isFullscreen = ref(false);
 const isunfold = ref(false);
 const isres = ref(false);
-const text = ref("");
-const inputValue = ref("");
 const overview = ref(false);
 const list = ref([]);
+const resultNodes = ref([]);
+const labelList = ref([]);
+const newlabelList = ref([]);
 const OverviewClick = () => {
   overview.value = !overview.value;
 };
@@ -976,7 +1116,6 @@ mitts.on("revise", (revieseResult: any) => {
       console.log("我是keys");
     }
   });
-  console.log(list.value, "979");
   nextTick(() => {
     graphRef.value[revieseResult.number].setJsonData(revieseResult.graphData);
   });
@@ -997,6 +1136,7 @@ const tableCopy = (item4: any) => {
 const removeModule = (index: Number) => {
   list.value.splice(index, 1);
 };
+//取消置顶
 mitts.on("Data", (item: any) => {
   list.value.push(item);
   nextTick(() => {
@@ -1020,6 +1160,7 @@ mitts.on("params", (result: any) => {
     nodes: [],
     lines: [],
   };
+
   result.records.forEach((item: any, index: Number) => {
     if (
       item.keys.indexOf("n") !== -1 &&
@@ -1035,6 +1176,7 @@ mitts.on("params", (result: any) => {
         id: item._fields[item.keys.indexOf("n")].elementId,
         text: textName,
         color: "#21a1ff",
+        label: item._fields[item.keys.indexOf("n")].labels,
       });
     } else if (
       item.keys.indexOf("p") !== -1 &&
@@ -1069,17 +1211,32 @@ mitts.on("params", (result: any) => {
       console.log("我是keys");
     }
   });
+  let set = new Set(result.graphData.nodes.map((item) => JSON.stringify(item)));
+  resultNodes.value = Array.from(set).map((strItem) => JSON.parse(strItem));
+  result.graphData.nodes.forEach((item: Object) => {
+    labelList.value.push(...item.label);
+  });
+  set = new Set(labelList.value);
+  newlabelList.value = Array.from(set);
+  console.log(list.value, 1221);
   nextTick(() => {
     graphRef.value[list.value.length - 1].setJsonData(result.graphData);
   });
 });
-onMounted(() => {});
-const inputChange = (e: any) => {
-  inputValue.value = e.target.value;
-};
 </script>
 
 <style scoped>
+.size li {
+  background-color: rgb(170, 170, 170);
+  list-style-type: none;
+  margin-left: 8px;
+}
+.color li {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  list-style-type: none;
+}
 ::v-deep.relation-graph .rel-toolbar-v-center {
   top: calc((100% - 240px) / 2) !important;
 }
