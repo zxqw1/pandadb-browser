@@ -16,6 +16,7 @@
         v-loading="loading"
       >
         <login></login>
+         <!-- <login2/> -->
         <block/>
         <blockTop/>
       </div>
@@ -27,6 +28,7 @@
 // import search from "./rightComponents/search.vue";
 import search2 from "./rightComponents/search2.vue"
 import login from "./rightComponents/login.vue";
+// import login2 from "./rightComponents/login2.vue"
 import block from "./rightComponents/block.vue"
 import blockTop from "./rightComponents/blockTop.vue";
 

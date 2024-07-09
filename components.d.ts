@@ -36,6 +36,7 @@ declare module 'vue' {
     Home: typeof import('./src/components/menuComponents/home.vue')['default']
     Home3: typeof import('./src/components/menuComponents/home3.vue')['default']
     Login: typeof import('./src/components/rightComponents/login.vue')['default']
+    Login2: typeof import('./src/components/rightComponents/login2.vue')['default']
     Menu: typeof import('./src/components/menu.vue')['default']
     Node: typeof import('./src/components/rightComponents/graph/node.vue')['default']
     Rightcontent: typeof import('./src/components/rightcontent.vue')['default']

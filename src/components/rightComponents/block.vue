@@ -181,7 +181,7 @@
                             effect="dark"
                             round
                             style="margin-left: 10px; cursor: pointer"
-                            v-for="(item8, index8) in newlabelList"
+                            v-for="(item8, index8) in item.labelList"
                             >{{ item8 }}({{ resultNodes.length }})</el-tag
                           >
                         </template>
@@ -191,7 +191,7 @@
                               effect="dark"
                               round
                               style="width: 100%"
-                              v-for="(item8, index8) in newlabelList"
+                              v-for="(item8, index8) in item.labelList"
                               >{{ item8 }}({{ resultNodes.length }})</el-tag
                             >
                           </el-col>
@@ -205,6 +205,7 @@
                                 width: 100%;
                                 padding-left: 0;
                               "
+                              @click="colorClick($event,index)"
                             >
                               <div>color:</div>
                               <li
@@ -303,12 +304,19 @@
                               display: flex;
                               margin-top: 12px;
                               align-items: center;
-                              width: 100%;
+                              /* width: 100%; */
+                              flex-wrap: wrap;
                             "
                           >
                             <div>Caption:</div>
-                            <el-tag type="info" size="small"></el-tag>
-                          </el-col>
+                            <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer " @click="idClick(index)">
+                             {{ "<id>" }}
+                            </el-tag>
+                            <el-tag type="info" size="small" 
+                            v-for="items in Object.keys(item.records[0]._fields[item.records[0].keys.indexOf('n')].properties)" style="margin-left: 10px;margin-top: 10px;cursor: pointer;"
+                            @click="propertiesClick($event,index)"
+                            >{{ items }}</el-tag>
+                          </el-col> 
                         </el-row>
                       </el-popover>
                     </el-col>
@@ -1136,6 +1144,44 @@ const tableCopy = (item4: any) => {
 const removeModule = (index: Number) => {
   list.value.splice(index, 1);
 };
+//修改颜色
+const colorClick = (e, index) => {
+  // console.log(e.target.style.backgroundColor, 1149);
+  window.sessionStorage.setItem("color",e.target.style.backgroundColor)
+  list.value[index].graphData.nodes.forEach((item) => {
+    item.color = e.target.style.backgroundColor
+  });
+  // console.log(list.value[index],1153)
+  nextTick(() => {
+    graphRef.value[index].setJsonData(list.value[index].graphData);
+  });
+};
+//修改字段properties
+const propertiesClick = (e, index) => {
+  // console.log(e.target.innerText,1148)
+  const text = e.target.innerText;
+  list.value[index].records.forEach((item) => {
+    list.value[index].graphData.nodes.forEach((item2) => {
+      item2.text =
+        item._fields[item.keys.indexOf("n")].properties[e.target.innerText];
+    });
+  });
+  nextTick(() => {
+    graphRef.value[index].setJsonData(list.value[index].graphData);
+  });
+};
+//修改字段 id
+const idClick = (index: Number) => {
+  // console.log(list.value[index])
+  list.value[index].records.forEach((item) => {
+    list.value[index].graphData.nodes.forEach((item2) => {
+      item2.text = item._fields[item.keys.indexOf("n")].elementId;
+    });
+  });
+  nextTick(() => {
+    graphRef.value[index].setJsonData(list.value[index].graphData);
+  });
+};
 //取消置顶
 mitts.on("Data", (item: any) => {
   list.value.push(item);
@@ -1152,6 +1198,7 @@ const generateRandomId = () => {
 //数据
 mitts.on("params", (result: any) => {
   result.id = generateRandomId();
+  result.labelList = []; //这个先去重？
   list.value.push(result);
   let textName = "";
   let textTitle = "";
@@ -1160,7 +1207,6 @@ mitts.on("params", (result: any) => {
     nodes: [],
     lines: [],
   };
-
   result.records.forEach((item: any, index: Number) => {
     if (
       item.keys.indexOf("n") !== -1 &&
@@ -1194,11 +1240,13 @@ mitts.on("params", (result: any) => {
         id: item._fields[item.keys.indexOf("p")].start.elementId,
         text: textName,
         color: "#21a1ff",
+        label: item._fields[item.keys.indexOf("p")].start.labels,
       });
       result.graphData.nodes.push({
         id: item._fields[item.keys.indexOf("p")].end.elementId,
         text: textTitle,
         color: "#21a1ff",
+        label: item._fields[item.keys.indexOf("p")].end.labels,
       });
       result.graphData.lines.push({
         from: item._fields[item.keys.indexOf("p")].start.elementId,
@@ -1211,14 +1259,18 @@ mitts.on("params", (result: any) => {
       console.log("我是keys");
     }
   });
-  let set = new Set(result.graphData.nodes.map((item) => JSON.stringify(item)));
-  resultNodes.value = Array.from(set).map((strItem) => JSON.parse(strItem));
+  resultNodes.value = [];
+  let set = new Set(result.graphData.nodes.map((item) => JSON.stringify(item))); //拿到这个渲染图的这个数据 遍历整个node 然后变成json
+  resultNodes.value = Array.from(set).map((strItem) => JSON.parse(strItem)); //将json去重
+  labelList.value = [];
   result.graphData.nodes.forEach((item: Object) => {
     labelList.value.push(...item.label);
   });
-  set = new Set(labelList.value);
-  newlabelList.value = Array.from(set);
-  console.log(list.value, 1221);
+  let set2 = new Set(labelList.value);
+  newlabelList.value = Array.from(set2);
+  list.value[list.value.length - 1].labelList = newlabelList.value;
+
+  console.log(list.value, 1227);
   nextTick(() => {
     graphRef.value[list.value.length - 1].setJsonData(result.graphData);
   });
