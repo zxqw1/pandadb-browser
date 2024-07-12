@@ -32,13 +32,13 @@ import { onMounted } from "vue";
 
 // };
 // 判断是否登录
-onMounted(()=>{
-  if(window.localStorage.getItem("username") === null){
-    ElMessageBox.alert('您还未登录，请先登录', '提示', {
-    confirmButtonText: 'OK'
-  })
-  }
-})
+// onMounted(()=>{
+//   if(window.localStorage.getItem("username") === null){
+//     ElMessageBox.alert('您还未登录，请先登录', '提示', {
+//     confirmButtonText: 'OK'
+//   })
+//   }
+// })
 </script>
 
 <style scoped>

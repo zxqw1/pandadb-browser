@@ -104,7 +104,6 @@ import help from "./menuComponents/help.vue";
 import about from "./menuComponents/about.vue";
 import setter from "./menuComponents/setter.vue";
 import favorate from "./menuComponents/Favorate.vue"
-import home3Vue from "./menuComponents/home3.vue";
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 // 左导航
 let tabsName = ref<string | undefined>(undefined);

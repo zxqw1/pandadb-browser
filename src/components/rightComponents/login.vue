@@ -21,15 +21,11 @@
       <a-col v-if="open" style="padding-left: 60px">
         <p>
           <span style="font-size: 20px"> 您已连接至用户</span>
-          <span style="padding-left: 20px; color: #6a8322; font-size: 20px">{{
-            userdata
-          }}</span>
+          <span style="padding-left: 20px; color: #6a8322; font-size: 20px">{{username }}</span>
         </p>
         <p>
           <span style="font-size: 20px"> 地址为</span>
-          <span style="padding-left: 20px; color: #6a8322; font-size: 20px">{{
-            href
-          }}</span>
+          <span style="padding-left: 20px; color: #6a8322; font-size: 20px">{{href}}</span>
         </p>
         <p>
           <span style="font-size: 20px"> 连接凭据存储在web浏览器中</span>
@@ -101,7 +97,9 @@ const select = ref("bolt://");
 const input3 = ref("");
 const input = ref("");
 const input2 = ref("");
-const href = window.location.href;
+const username = window.localStorage.getItem("username");
+const href = window.localStorage.getItem("address")
+// const href = window.location.href;
 //拿到输入内容
 const loginClick = () => {
   //非空校验
@@ -128,38 +126,15 @@ const loginClick = () => {
 
 //判段是否登录
 onMounted(() => {
-  if (window.localStorage.getItem("username")) {
+  if (window.localStorage.getItem("username") && window.localStorage.getItem("password")) {
     open.value = true;
+  }else{
+    // ElMessageBox.alert("您暂未登录哦，请登录", "提示", {
+    //   confirmButtonText: "好的",
+    // });
   }
-});
-// 拿到输入内容
-// const formState = reactive({
-//   username: "",
-//   password: "",
-//   remember: true,
-// // });
-// const userdata: any = window.localStorage.getItem("username");
-// const href = window.location.href;
-// const onFinish = (values: any) => {
-// if (values.username === "" || values.password === "") {
-// 非空校验
-//   ElMessageBox.alert('用户名和密码不能为空', '提示', {
-//   confirmButtonText: '好的',
-// })
+}); 
 
-//   } else {
-//     window.localStorage.setItem("username", values.username);
-//     window.localStorage.setItem("password", values.password);
-//     window.location.reload();
-//   }
-// };
-
-//判断是否登录
-// onMounted(() => {
-//   if (window.localStorage.getItem("username")) {
-//     open.value = true;
-//   }
-// });
 </script>
 
 <style scoped>

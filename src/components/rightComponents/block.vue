@@ -28,16 +28,16 @@
         "
       >
         <div class="topIcon">
-          <PushpinOutlined
+          <Pushpin-outlined
             style="margin-left: 16px"
             @click="topClick(index, item)"
           />
-          <DownOutlined
+          <Down-outlined
             style="margin-left: 16px"
             v-if="item.show"
             @click="item.show = false"
           />
-          <UpOutlined
+          <Up-outlined
             v-else
             style="margin-left: 16px"
             @click="item.show = true"
@@ -160,6 +160,7 @@
                     "
                     @click="OverviewClick"
                   />
+                  <!-- overview展开 -->
                   <el-row>
                     <el-col
                       style="margin: 10px; font-size: 18px; font-weight: 500"
@@ -168,8 +169,7 @@
                     </el-col>
                     <el-col style="margin: 0 0 0 10px">
                       <div style="font-weight: bold">Node labels</div>
-                      <el-tag effect="dark" round
-                        >*({{ resultNodes.length }})</el-tag
+                      <el-tag effect="dark" round >*({{ resultNodes.length }})</el-tag
                       >
                       <el-popover
                         placement="bottom"
@@ -178,12 +178,12 @@
                       >
                         <template #reference>
                           <el-tag
+                            @click="tagClick(item8)"
                             effect="dark"
                             round
                             style="margin-left: 10px; cursor: pointer"
                             v-for="(item8, index8) in item.labelList"
-                            >{{ item8 }}({{ resultNodes.length }})</el-tag
-                          >
+                            >{{ item8 }}({{ resultNodes.length }})</el-tag>
                         </template>
                         <el-row>
                           <el-col>
@@ -209,40 +209,52 @@
                             >
                               <div>color:</div>
                               <li
-                                style="background-color: rgb(96, 74, 14)"
+                                style="background-color: rgb(96, 74, 14);cursor: pointer;"
+                                class="li"
                               ></li>
                               <li
-                                style="background-color: rgb(201, 144, 192)"
+                                style="background-color: rgb(201, 144, 192);cursor: pointer;"
+                                class="li"
                               ></li>
                               <li
-                                style="background-color: rgb(247, 151, 103)"
+                                style="background-color: rgb(247, 151, 103);cursor: pointer;"
+                                class="li"
                               ></li>
                               <li
-                                style="background-color: rgb(87, 199, 227)"
+                                style="background-color: rgb(87, 199, 227);cursor: pointer;"
+                                class="li"
                               ></li>
                               <li
-                                style="background-color: rgb(241, 102, 103)"
+                                style="background-color: rgb(241, 102, 103);cursor: pointer;"
+                                class="li"
                               ></li>
                               <li
-                                style="background-color: rgb(217, 200, 174)"
+                                style="background-color: rgb(217, 200, 174);cursor: pointer;"
+                                class="li"
                               ></li>
                               <li
-                                style="background-color: rgb(141, 204, 147)"
+                                style="background-color: rgb(141, 204, 147);cursor: pointer;"
+                                class="li"
                               ></li>
                               <li
-                                style="background-color: rgb(236, 181, 201)"
+                                style="background-color: rgb(236, 181, 201);cursor: pointer;"
+                                class="li"
                               ></li>
                               <li
-                                style="background-color: rgb(76, 142, 218)"
+                                style="background-color: rgb(76, 142, 218);cursor: pointer;"
+                                class="li"
                               ></li>
                               <li
-                                style="background-color: rgb(255, 196, 84)"
+                                style="background-color: rgb(255, 196, 84);cursor: pointer;"
+                                class="li"
                               ></li>
                               <li
-                                style="background-color: rgb(218, 113, 148)"
+                                style="background-color: rgb(218, 113, 148);cursor: pointer;"
+                                class="li"
                               ></li>
                               <li
-                                style="background-color: rgb(86, 148, 128)"
+                                style="background-color: rgb(86, 148, 128);cursor: pointer;"
+                                class="li"
                               ></li>
                             </ul>
                           </el-col>
@@ -304,7 +316,6 @@
                               display: flex;
                               margin-top: 12px;
                               align-items: center;
-                              /* width: 100%; */
                               flex-wrap: wrap;
                             "
                           >
@@ -558,6 +569,7 @@
                 "
                 :style="{ height: isFullscreen ? '100vh' : '324px' }"
               >
+                <!-- overview按钮 -->
                 <div
                   style="
                     background-color: #dcdcdc30;
@@ -588,6 +600,7 @@
                   "
                   v-else
                 >
+                <!-- overview展开 -->
                   <ArrowLeftBold
                     color="#999999"
                     style="
@@ -608,14 +621,328 @@
                       Overview
                     </el-col>
                     <el-col style="margin: 0 0 0 10px">
-                      <div style="font-weight: bold">Node labels</div>
-                      <el-tag effect="dark" round>*(0)</el-tag>
-                      <el-tag effect="dark" round style="margin-left: 10px"
-                        >123</el-tag
+                      <div style="font-weight: bold;">Node labels</div>
+                      <el-tag effect="dark" round style="margin-right: 10px;margin-top: 10px;"
+                        >*({{ relationList.length }})</el-tag>
+                      <el-popover
+                        v-for="(item8, index8) in item.labelList"
+                        placement="bottom"
+                        :width="260"
+                        trigger="click"
                       >
+                        <template #reference>
+                          <el-tag
+                          @click="tagClick(item8)"
+                            effect="dark"
+                            round
+                            style="margin-right: 10px; cursor: pointer;margin-top: 10px;"
+                            >{{ item8 }}({{ resultNodes.length }})</el-tag>
+                        </template>
+                        <el-row>
+                          <el-col>
+                            <el-tag effect="dark" round style="width: 100%">{{ item8 }}</el-tag>
+                          </el-col>
+                          <el-col style="display: flex; margin-top: 12px">
+                            <ul
+                              class="color"
+                              style="
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-around;
+                                width: 100%;
+                                padding-left: 0;
+                              "
+                              @click="colorClick($event,index)"
+                            >
+                              <div>color:</div>
+                              <li
+                                style="background-color: rgb(96, 74, 14);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(201, 144, 192);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(247, 151, 103);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(87, 199, 227);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(241, 102, 103);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(217, 200, 174);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(141, 204, 147);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(236, 181, 201);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(76, 142, 218);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(255, 196, 84);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(218, 113, 148);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(86, 148, 128);cursor: pointer;"
+                                class="li"
+                              ></li>
+                            </ul>
+                          </el-col>
+                          <el-col style="display: flex; margin-top: 12px">
+                            <ul
+                              class="size"
+                              style="
+                                display: flex;
+                                align-items: center;
+                                width: 100%;
+                                padding-left: 0;
+                              "
+                            >
+                              <div>size:</div>
+                              <li
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 12px;
+                                  height: 12px;
+                                  border-radius: 50%;
+                                "
+                              ></li>
+                              <li
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 14px;
+                                  height: 14px;
+                                  border-radius: 50%;
+                                "
+                              ></li>
+                              <li
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 16px;
+                                  height: 16px;
+                                  border-radius: 50%;
+                                "
+                              ></li>
+                              <li
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 18px;
+                                  height: 18px;
+                                  border-radius: 50%;
+                                "
+                              ></li>
+                              <li
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 20px;
+                                  height: 20px;
+                                  border-radius: 50%;
+                                "
+                              ></li>
+                            </ul>
+                          </el-col>
+                          <el-col
+                            style="
+                              display: flex;
+                              margin-top: 12px;
+                              align-items: center;
+                              flex-wrap: wrap;
+                            "
+                          >
+                            <div>Caption:</div>
+                            <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer " @click="idClick(index)">
+                             {{ "<id>" }}
+                            </el-tag>
+                            <el-tag type="info" size="small" 
+                            v-for="items in Object.keys(item.records[0]._fields[item.records[0].keys.indexOf('p')].start.properties)" style="margin-left: 10px;margin-top: 10px;cursor: pointer;">
+                            {{ items }}</el-tag>
+                          </el-col> 
+                        </el-row>
+                      </el-popover>
+                    </el-col>
+                    <el-col style="margin: 0 0 0 10px">
+                      <div style="font-weight: bold;margin-top: 10px">Relationship types</div>
+                      <el-tag effect="dark" round style="margin-top: 10px">*({{ relationList.length }})</el-tag
+                      >
+                      <el-popover
+                        placement="bottom"
+                        :width="260"
+                        trigger="click"
+                         v-for="(item9, index9) in item.relationList"
+                      >
+                        <template #reference>
+                          <el-tag
+                            effect="dark"
+                            round
+                            style="margin-left: 10px; cursor: pointer;margin-top: 10px" 
+                            >{{ item9 }}({{ newrelationList.length }})</el-tag>
+                        </template>
+                        <el-row>
+                          <el-col>
+                            <el-tag
+                              effect="dark"
+                              round
+                              style="width: 100%"
+                              v-for="(item8, index8) in item.labelList"
+                              >{{ item8 }}({{ resultNodes.length }})</el-tag
+                            >
+                          </el-col>
+                          <el-col style="display: flex; margin-top: 12px">
+                            <ul
+                              class="color"
+                              style="
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-around;
+                                width: 100%;
+                                padding-left: 0;
+                              "
+                              @click="colorClick($event,index)"
+                            >
+                              <div>color:</div>
+                              <li
+                                style="background-color: rgb(96, 74, 14);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(201, 144, 192);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(247, 151, 103);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(87, 199, 227);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(241, 102, 103);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(217, 200, 174);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(141, 204, 147);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(236, 181, 201);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(76, 142, 218);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(255, 196, 84);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(218, 113, 148);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(86, 148, 128);cursor: pointer;"
+                                class="li"
+                              ></li>
+                            </ul>
+                          </el-col>
+                          <el-col style="display: flex; margin-top: 12px">
+                            <ul
+                              class="size"
+                              style="
+                                display: flex;
+                                align-items: center;
+                                width: 100%;
+                                padding-left: 0;
+                              "
+                            >
+                              <div>size:</div>
+                              <li
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 12px;
+                                  height: 12px;
+                                  border-radius: 50%;
+                                "
+                              ></li>
+                              <li
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 14px;
+                                  height: 14px;
+                                  border-radius: 50%;
+                                "
+                              ></li>
+                              <li
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 16px;
+                                  height: 16px;
+                                  border-radius: 50%;
+                                "
+                              ></li>
+                              <li
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 18px;
+                                  height: 18px;
+                                  border-radius: 50%;
+                                "
+                              ></li>
+                              <li
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 20px;
+                                  height: 20px;
+                                  border-radius: 50%;
+                                "
+                              ></li>
+                            </ul>
+                          </el-col>
+                          <el-col
+                            style="
+                              display: flex;
+                              margin-top: 12px;
+                              align-items: center;
+                              flex-wrap: wrap;
+                            "
+                          >
+                            <div>Caption:</div>
+                            <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer " @click="idClick(index)">
+                             {{ "<id>" }}
+                            </el-tag>
+                            <el-tag type="info" size="small" 
+                            v-for="items in Object.keys(item.records[0]._fields[item.records[0].keys.indexOf('p')].start.properties)" style="margin-left: 10px;margin-top: 10px;cursor: pointer;">
+                            {{ items }}</el-tag>
+                          </el-col> 
+                        </el-row>
+                        
+                      </el-popover>
                     </el-col>
                     <el-col style="margin: 10px 0 0 10px">
-                      Displaying nodes, 0 relationships.
+                      Displaying {{ resultNodes.length }} nodes, 0
+                      relationships.
                     </el-col>
                   </el-row>
                 </div>
@@ -1013,8 +1340,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, nextTick } from "vue";
-import { useStore } from "vuex";
+import { ref, nextTick } from "vue";
+// import { useStore } from "vuex";
 import RelationGraph from "relation-graph/vue3";
 import {
   PushpinOutlined,
@@ -1029,7 +1356,6 @@ import {
 } from "@ant-design/icons-vue";
 import { ArrowLeftBold, CopyDocument } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import request from "../../utils/request.js";
 import mitts from "../../utils/bus.js";
 //组件
 import search3 from "../rightComponents/blockcomponents/search3.vue";
@@ -1045,6 +1371,14 @@ const list = ref([]);
 const resultNodes = ref([]);
 const labelList = ref([]);
 const newlabelList = ref([]);
+const relationList = ref([]); //关系overview
+const newrelationList = ref([]); //去重后
+const tagName = ref("");
+//拿到标签名
+const tagClick = (name) => {
+  tagName.value = name
+  console.log(tagName.value,'1380')
+};
 const OverviewClick = () => {
   overview.value = !overview.value;
 };
@@ -1145,30 +1479,51 @@ const removeModule = (index: Number) => {
   list.value.splice(index, 1);
 };
 //修改颜色
-const colorClick = (e, index) => {
-  // console.log(e.target.style.backgroundColor, 1149);
-  window.sessionStorage.setItem("color",e.target.style.backgroundColor)
-  list.value[index].graphData.nodes.forEach((item) => {
-    item.color = e.target.style.backgroundColor
-  });
-  // console.log(list.value[index],1153)
-  nextTick(() => {
-    graphRef.value[index].setJsonData(list.value[index].graphData);
-  });
+const colorClick = (e) => {
+  if (e.target.className === "li") {
+    // window.localStorage.setItem("color", e.target.style.backgroundColor);
+    list.value.forEach((item,index) => {
+      item.graphData.nodes.forEach(item2 => {
+        item2.label.forEach(item3=>{
+          if(item3 === tagName.value){
+            item2.color = e.target.style.backgroundColor
+          }
+        })
+      })
+      nextTick(() => {
+      graphRef.value[index].setJsonData(item.graphData);
+    });
+    });
+  }
 };
 //修改字段properties
 const propertiesClick = (e, index) => {
-  // console.log(e.target.innerText,1148)
-  const text = e.target.innerText;
-  list.value[index].records.forEach((item) => {
-    list.value[index].graphData.nodes.forEach((item2) => {
-      item2.text =
-        item._fields[item.keys.indexOf("n")].properties[e.target.innerText];
+list.value.forEach((item,index) => {
+      item.graphData.nodes.forEach(item2 => {
+        item2.label.forEach(item3=>{
+          if(item3 === tagName.value){
+            // item2.text = item._fields[item.keys.indexOf("n")].properties[e.target.innerText];
+            item.records.forEach(item4=>{
+              
+            })
+          }
+        })
+      })
+    //   nextTick(() => {
+    //   graphRef.value[index].setJsonData(item.graphData);
+    // });
     });
-  });
-  nextTick(() => {
-    graphRef.value[index].setJsonData(list.value[index].graphData);
-  });
+
+  // const text = e.target.innerText;
+  // list.value[index].records.forEach((item) => {
+  //   list.value[index].graphData.nodes.forEach((item2) => {
+  //     item2.text =
+  //       item._fields[item.keys.indexOf("n")].properties[e.target.innerText];
+  //   });
+  // });
+  // nextTick(() => {
+  //   graphRef.value[index].setJsonData(list.value[index].graphData);
+  // });
 };
 //修改字段 id
 const idClick = (index: Number) => {
@@ -1198,7 +1553,8 @@ const generateRandomId = () => {
 //数据
 mitts.on("params", (result: any) => {
   result.id = generateRandomId();
-  result.labelList = []; //这个先去重？
+  result.labelList = [];
+  result.relationList = [];
   list.value.push(result);
   let textName = "";
   let textTitle = "";
@@ -1251,14 +1607,16 @@ mitts.on("params", (result: any) => {
       result.graphData.lines.push({
         from: item._fields[item.keys.indexOf("p")].start.elementId,
         to: item._fields[item.keys.indexOf("p")].end.elementId,
-        text: item._fields[item.keys.indexOf("p")].segments[0].relationship
-          .type,
+        text: item._fields[item.keys.indexOf("p")].segments[
+          item.keys.indexOf("p")
+        ].relationship.type,
         color: "#666666",
       });
     } else {
       console.log("我是keys");
     }
   });
+  //overview nodes
   resultNodes.value = [];
   let set = new Set(result.graphData.nodes.map((item) => JSON.stringify(item))); //拿到这个渲染图的这个数据 遍历整个node 然后变成json
   resultNodes.value = Array.from(set).map((strItem) => JSON.parse(strItem)); //将json去重
@@ -1269,8 +1627,16 @@ mitts.on("params", (result: any) => {
   let set2 = new Set(labelList.value);
   newlabelList.value = Array.from(set2);
   list.value[list.value.length - 1].labelList = newlabelList.value;
-
-  console.log(list.value, 1227);
+  //overview relation
+  relationList.value = [];
+  result.graphData.lines.map((item) => {
+    relationList.value.push(item.text);
+  });
+  let set3 = new Set(relationList.value);
+  newrelationList.value = Array.from(set3);
+  list.value[list.value.length - 1].relationList = newrelationList.value;
+  // console.log(newrelationList.value,1605)
+  console.log(list.value, 1603);
   nextTick(() => {
     graphRef.value[list.value.length - 1].setJsonData(result.graphData);
   });
