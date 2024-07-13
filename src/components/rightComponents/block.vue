@@ -410,7 +410,7 @@
                       "
                     >
                   <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;" @click="tableCopy(item4)"/>
-                  {{ JSON.stringify(item4 === null ? null : item4, null, 2)}}
+                  {{ JSON.stringify(item4 === null ? null : item4, null, 1)}}
                 </pre>
                   </a-col>
                 </a-row>
@@ -623,7 +623,7 @@
                     <el-col style="margin: 0 0 0 10px">
                       <div style="font-weight: bold;">Node labels</div>
                       <el-tag effect="dark" round style="margin-right: 10px;margin-top: 10px;"
-                        >*({{ relationList.length }})</el-tag>
+                        >*({{ resultNodes.length }})</el-tag>
                       <el-popover
                         v-for="(item8, index8) in item.labelList"
                         placement="bottom"
@@ -792,7 +792,7 @@
                             effect="dark"
                             round
                             style="margin-left: 10px; cursor: pointer;margin-top: 10px" 
-                            >{{ item9 }}({{ newrelationList.length }})</el-tag>
+                            >{{ item9 }}({{ resultNodes.length }})</el-tag>
                         </template>
                         <el-row>
                           <el-col>
@@ -801,8 +801,7 @@
                               round
                               style="width: 100%"
                               v-for="(item8, index8) in item.labelList"
-                              >{{ item8 }}({{ resultNodes.length }})</el-tag
-                            >
+                              >{{ item8 }}</el-tag>
                           </el-col>
                           <el-col style="display: flex; margin-top: 12px">
                             <ul
@@ -1620,12 +1619,20 @@ mitts.on("params", (result: any) => {
   resultNodes.value = [];
   let set = new Set(result.graphData.nodes.map((item) => JSON.stringify(item))); //拿到这个渲染图的这个数据 遍历整个node 然后变成json
   resultNodes.value = Array.from(set).map((strItem) => JSON.parse(strItem)); //将json去重
+  console.log(resultNodes.value,'1622')
   labelList.value = [];
-  result.graphData.nodes.forEach((item: Object) => {
+  resultNodes.value.forEach((item: Object) => {
     labelList.value.push(...item.label);
   });
+  console.log(labelList.value,'1627')
+  labelList.value.forEach(item=>{//遍历计数
+    
+
+  })
   let set2 = new Set(labelList.value);
-  newlabelList.value = Array.from(set2);
+  newlabelList.value = Array.from(set2);  
+  console.log(newlabelList.value,'1630')
+
   list.value[list.value.length - 1].labelList = newlabelList.value;
   //overview relation
   relationList.value = [];
@@ -1635,7 +1642,6 @@ mitts.on("params", (result: any) => {
   let set3 = new Set(relationList.value);
   newrelationList.value = Array.from(set3);
   list.value[list.value.length - 1].relationList = newrelationList.value;
-  // console.log(newrelationList.value,1605)
   console.log(list.value, 1603);
   nextTick(() => {
     graphRef.value[list.value.length - 1].setJsonData(result.graphData);

@@ -38,7 +38,7 @@
         justify-content: space-around;
       "
     >
-      <StarOutlined style="font-size: 20px" />
+      <StarOutlined style="font-size: 20px"  @click="collectClick"/>
       <VerticalAlignBottomOutlined
         style="font-size: 20px"
       />
@@ -115,6 +115,40 @@ const opt = ref({
     "CodeMirror-lint-markers",
   ],
 });
+//获取数据
+const funClick = async () => {
+  await nextTick();
+  if (contentValue.value === "") {
+    console.log(111);
+  } else {
+    const startTime = performance.now();
+    let promiseData = request.fetchData("neo4j", "admin", contentValue.value);
+    promiseData
+      .then((result: any) => {
+        const endTime = performance.now();
+        const responseTime = endTime - startTime;
+        result.resTime = Math.round(responseTime) + "ms";
+        result.number = props.index
+        console.log(result,166)
+        mitts.emit("revise", result);
+        mitts.emit("revise2", result);
+      })
+      .catch((error: any) => {
+        console.log(error, 106);
+        ElMessageBox.alert(error, "错误提示", {
+          confirmButtonText: "好的",
+        });
+      });
+  }
+};
+//删除
+const deleteClick = () => {
+  editorInstance.setValue("");
+};
+//收藏
+const collectClick = ()=>{
+  console.log(contentValue.value,'150')
+}
 onMounted(() => {
   CodeMirror.defineMode("javascript", function () {
     return {
@@ -150,36 +184,7 @@ onMounted(() => {
 computed((_height) => {
   return Number(height.value) ? Number(height.value) + "px" : height.value;
 });
-//获取数据
-const funClick = async () => {
-  await nextTick();
-  if (contentValue.value === "") {
-    console.log(111);
-  } else {
-    const startTime = performance.now();
-    let promiseData = request.fetchData("neo4j", "admin", contentValue.value);
-    promiseData
-      .then((result: any) => {
-        const endTime = performance.now();
-        const responseTime = endTime - startTime;
-        result.resTime = Math.round(responseTime) + "ms";
-        result.number = props.index
-        console.log(result,166)
-        mitts.emit("revise", result);
-        mitts.emit("revise2", result);
-      })
-      .catch((error: any) => {
-        console.log(error, 106);
-        ElMessageBox.alert(error, "错误提示", {
-          confirmButtonText: "好的",
-        });
-      });
-  }
-};
-//删除
-const deleteClick = () => {
-  editorInstance.setValue("");
-};
+
 </script>
 
 <style scoped>

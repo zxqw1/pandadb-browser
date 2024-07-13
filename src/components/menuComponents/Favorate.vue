@@ -14,12 +14,6 @@
         <div class="name">本地</div>
       </a-col>
       <a-col>
-        <a-directory-tree
-          v-model:expandedKeys="expandedKeys"
-          v-model:selectedKeys="selectedKeys"
-          multiple
-          :tree-data="treeData"
-        ></a-directory-tree>
       </a-col>
       <a-col style="margin-top: 30px; display: flex; align-items: center">
         <div class="circle"></div>
@@ -35,27 +29,7 @@
 import type { TreeProps } from 'ant-design-vue';
 import { ref } from 'vue';
 
-const expandedKeys = ref<string[]>(['0-0', '0-1']);
-const selectedKeys = ref<string[]>([]);
-const treeData: TreeProps['treeData'] = [
-  {
-    title: 'newfolder',
-    key: '0-0',
-    children: [
-      {
-        title: 'leaf 0-0',
-        key: '0-0-0',
-        isLeaf: true,
-      },
-    ],
-  },
-  {
-    title: 'parent 1',
-    key: '0-1',
-    children: [
-    ],
-  },
-];
+
 </script>
 
 <style scoped>
