@@ -119,9 +119,9 @@ const loginClick = () => {
     window.localStorage.setItem("address",select.value + input3.value)
     window.localStorage.setItem("username",input.value)
     window.localStorage.setItem("password",input2.value)
+    window.location.reload();
+    open.value = true;
   }
-  window.location.reload();
-  open.value = true;
 };
 
 //判段是否登录

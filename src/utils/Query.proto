@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option java_package = "org.grapheco.pandadb.network";
+
+package org.grapheco.pandadb.network;
+import "google/protobuf/any.proto";
+
+service PandaQueryService {
+  rpc QueryWithJson(JSQueryRequest) returns (stream QueryJsonResponse) {}
+}
+
+message JSQueryRequest {
+  string statement = 1;
+  map<string, google.protobuf.Any> parameters = 2;
+}
+
+message QueryJsonResponse {
+  string resultInJson = 1;
+}

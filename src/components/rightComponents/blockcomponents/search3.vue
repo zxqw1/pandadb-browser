@@ -148,6 +148,7 @@ const deleteClick = () => {
 //收藏
 const collectClick = ()=>{
   console.log(contentValue.value,'150')
+  mitts.emit('command',contentValue.value )
 }
 onMounted(() => {
   CodeMirror.defineMode("javascript", function () {

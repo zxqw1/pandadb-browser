@@ -70,16 +70,7 @@
       >
         <!-- node -->
         <el-col
-          v-if="
-            item.records[0].keys.indexOf('n') !== -1 &&
-            item.records[0].keys.indexOf('p') === -1 &&
-            item.records[0]._fields[item.records[0].keys.indexOf('n')] &&
-            item.records[0]._fields[item.records[0].keys.indexOf('n')]
-              .elementId &&
-            item.records[0]._fields[item.records[0].keys.indexOf('n')]
-              .properties
-          "
-        >
+          v-if="item.flagshowN">
           <el-tabs
             :tab-position="tabPosition"
             class="demo-tabs graphMenu"
@@ -182,8 +173,8 @@
                             effect="dark"
                             round
                             style="margin-left: 10px; cursor: pointer"
-                            v-for="(item8, index8) in item.labelList"
-                            >{{ item8 }}({{ resultNodes.length }})</el-tag>
+                            v-for="(value, key) in item.labelList" :key="key"
+                            >{{ key }}({{ value }})</el-tag>
                         </template>
                         <el-row>
                           <el-col>
@@ -191,8 +182,8 @@
                               effect="dark"
                               round
                               style="width: 100%"
-                              v-for="(item8, index8) in item.labelList"
-                              >{{ item8 }}({{ resultNodes.length }})</el-tag
+                              v-for="(value, key) in item.labelList" :key="key"
+                              >{{ key }}({{ value }})</el-tag
                             >
                           </el-col>
                           <el-col style="display: flex; margin-top: 12px">
@@ -525,14 +516,9 @@
             </el-tab-pane>
           </el-tabs>
         </el-col>
-        <!-- relation -->
+        <!-- path -->
         <el-col
-          v-else-if="
-            item.records[0].keys.indexOf('p') !== -1 &&
-            item.records[0]._fields[0] &&
-            item.records[0]._fields[item.records[0].keys.indexOf('p')].end &&
-            item.records[0]._fields[item.records[0].keys.indexOf('p')].start
-          "
+          v-if="item.flagshowP"
         >
           <el-tabs
             :tab-position="tabPosition"
@@ -625,7 +611,7 @@
                       <el-tag effect="dark" round style="margin-right: 10px;margin-top: 10px;"
                         >*({{ resultNodes.length }})</el-tag>
                       <el-popover
-                        v-for="(item8, index8) in item.labelList"
+                        v-for="(item8, index8) in item.labelList" :key="index8"
                         placement="bottom"
                         :width="260"
                         trigger="click"
@@ -636,7 +622,7 @@
                             effect="dark"
                             round
                             style="margin-right: 10px; cursor: pointer;margin-top: 10px;"
-                            >{{ item8 }}({{ resultNodes.length }})</el-tag>
+                            >{{ index8 }}({{ item8 }})</el-tag>
                         </template>
                         <el-row>
                           <el-col>
@@ -785,14 +771,14 @@
                         placement="bottom"
                         :width="260"
                         trigger="click"
-                         v-for="(item9, index9) in item.relationList"
+                         v-for="(key, value) in item.relationList" :key="key"
                       >
                         <template #reference>
                           <el-tag
                             effect="dark"
                             round
                             style="margin-left: 10px; cursor: pointer;margin-top: 10px" 
-                            >{{ item9 }}({{ resultNodes.length }})</el-tag>
+                            >{{ value }}({{ key }})</el-tag>
                         </template>
                         <el-row>
                           <el-col>
@@ -940,7 +926,7 @@
                       </el-popover>
                     </el-col>
                     <el-col style="margin: 10px 0 0 10px">
-                      Displaying {{ resultNodes.length }} nodes, 0
+                      Displaying {{ resultNodes.length }} nodes, {{relationList.length}}
                       relationships.
                     </el-col>
                   </el-row>
@@ -1057,19 +1043,9 @@
                     v-for="(item7, index7) in item6._fields"
                     :key="index7"
                   >
+                    
                     {{
-                      item7 === null
-                        ? "null"
-                        : item7.start
-                        ? item7.start.properties
-                        : item7
-                    }}
-                    {{
-                      item7 === null
-                        ? "null"
-                        : item7.start
-                        ? item7.end.properties
-                        : item7
+                      item7 === null ? "null" : item7.start && item7.start.properties ? [item7.start.properties,item7.end.properties] : item7.properties ? item7.properties : item7
                     }}
                   </el-col>
                 </el-row>
@@ -1139,8 +1115,190 @@
             </el-tab-pane>
           </el-tabs>
         </el-col>
+         <!-- keys -->
+         <el-col v-if="item.flagshowR">
+          <el-tabs
+            :tab-position="tabPosition"
+            class="demo-tabs graphMenu"
+            :style="{ height: isFullscreen ? '100vh' : '324px' }"
+          >
+            <el-tab-pane label="table">
+              <template #label>
+                <div>
+                  <img
+                    src="../../assets/img/表格.png"
+                    alt=""
+                    style="width: 24px; height: 24px"
+                  />
+                  <div style="font-weight: 600; color: #666666">table</div>
+                </div>
+              </template>
+              <!-- 详情 -->
+              <div
+                style="overflow-y: auto"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              >
+                <a-row
+                  style="
+                    font-size: 16px;
+                    color: #666666;
+                    height: 32px;
+                    background-color: #ffffff;
+                    border-bottom: 1px #999999 dashed;
+                    padding-left: 16px;
+                    z-index: 1;
+                    position: sticky;
+                    top: 0;
+                    flex-wrap: nowrap;
+                  "
+                >
+                  <a-col
+                    v-for="(item2, index2) in item.records[0].keys"
+                    :key="index2"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
+                  >
+                    {{ item2 }}
+                  </a-col>
+                </a-row>
+                <a-row
+                  v-for="(item3, index3) in item.records"
+                  :key="index3"
+                  style="
+                    flex-wrap: nowrap;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: flex-start;
+                  "
+                >
+                  <a-col
+                    v-for="(item4, index4) in item3._fields"
+                    :key="index4"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
+                  >
+                    <pre
+                      style="
+                        margin-bottom: 10px;
+                        padding: 10px;
+                        margin-top: 10px;
+                        margin-right: 30px;
+                        background-color: rgb(239, 239, 239);
+                        border-bottom: 1px solid #000000;
+                        position: relative;
+                      "
+                    >
+                    <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;" @click="tableCopy(item4)"/>
+                  {{
+                        JSON.stringify(item4 === null ? "null" : item4, null, 2)
+                      }}</pre>
+                  </a-col>
+                </a-row>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane label="text">
+              <template #label>
+                <div>
+                  <img
+                    src="../../assets/img/文字.png"
+                    alt=""
+                    style="width: 24px; height: 24px"
+                  />
+                  <div style="font-weight: 600; color: #666666">text</div>
+                </div>
+              </template>
+              <!-- 详情 -->
+              <div
+                style="padding: 10px; overflow-y: auto"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }"
+              >
+                <el-row style="flex-wrap: nowrap; display: flex">
+                  <el-col
+                    style="border-right: none; border: 1px dashed #666666"
+                    class="td"
+                    v-for="(item5, index5) in item.records[0].keys"
+                    :key="index5"
+                    :span="item.records[0].keys.length != 1 ? 6 : 24"
+                  >
+                    {{ item5 }}
+                  </el-col>
+                </el-row>
+                <el-row v-for="(item6, index6) in item.records" :key="index6">
+                  <el-col
+                    class="td"
+                    :span="item.records[0].keys.length != 1 ? 6 : 24"
+                    style="border-right: none; border: 1px dashed #666666"
+                    v-for="(item7, index7) in item6._fields"
+                    :key="index7"
+                  >
+                    {{ item7 === null ? "null" : item7.properties }}
+                  </el-col>
+                </el-row>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane label="code">
+              <template #label>
+                <div>
+                  <img
+                    src="../../assets/img/代码.png"
+                    alt=""
+                    style="width: 24px; height: 24px"
+                  />
+                  <div style="font-weight: 600; color: #666666">code</div>
+                </div>
+              </template>
+              <!-- 详情 -->
+              <div style="padding: 10px; overflow-y: auto">
+                <el-row>
+                  <el-col class="severTitle" :span="8"> Server version</el-col>
+                  <el-col :span="16" class="severContent">
+                    {{ item.summary.server.agent }}
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col class="severTitle" :span="8"> Server address</el-col>
+                  <el-col :span="16" class="severContent">
+                    {{ item.summary.server.address }}
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col class="severTitle" :span="8"> Query </el-col>
+                  <el-col :span="16" class="severContent">
+                    {{ item.summary.query.text }}
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col class="severTitle" :span="8">
+                    Summary
+                    <CaretRightOutlined v-if="!isunfold" @click="unfoldClick" />
+                    <CaretDownOutlined v-else @click="unfoldClick" />
+                  </el-col>
+                  <el-col
+                    :span="16"
+                    :style="{ height: isunfold ? '100%' : '30px' }"
+                    style="font-size: 16px; color: #666666; overflow: hidden"
+                  >
+                    {{ item.summary }}
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col class="severTitle" :span="8">
+                    Response
+                    <CaretRightOutlined v-if="!isres" @click="resClick" />
+                    <CaretDownOutlined v-else @click="resClick"
+                  /></el-col>
+                  <el-col
+                    :span="16"
+                    :style="{ height: isres ? '100%' : '30px' }"
+                    style="font-size: 16px; color: #666666; overflow: hidden"
+                  >
+                    {{ item.records }}
+                  </el-col>
+                </el-row>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
+        </el-col>
         <!-- keys -->
-        <el-col v-else>
+        <el-col v-if="item.flagshowE">
           <el-tabs
             :tab-position="tabPosition"
             class="demo-tabs graphMenu"
@@ -1369,14 +1527,14 @@ const overview = ref(false);
 const list = ref([]);
 const resultNodes = ref([]);
 const labelList = ref([]);
-const newlabelList = ref([]);
-const relationList = ref([]); //关系overview
-const newrelationList = ref([]); //去重后
+const resultRelation = ref([]);
+const relationList = ref([]); 
 const tagName = ref("");
+const text = ref("");
 //拿到标签名
 const tagClick = (name) => {
-  tagName.value = name
-  console.log(tagName.value,'1380')
+  tagName.value = name;
+  console.log(tagName.value, "1380");
 };
 const OverviewClick = () => {
   overview.value = !overview.value;
@@ -1481,37 +1639,35 @@ const removeModule = (index: Number) => {
 const colorClick = (e) => {
   if (e.target.className === "li") {
     // window.localStorage.setItem("color", e.target.style.backgroundColor);
-    list.value.forEach((item,index) => {
-      item.graphData.nodes.forEach(item2 => {
-        item2.label.forEach(item3=>{
-          if(item3 === tagName.value){
-            item2.color = e.target.style.backgroundColor
+    list.value.forEach((item, index) => {
+      item.graphData.nodes.forEach((item2) => {
+        item2.label.forEach((item3) => {
+          if (item3 === tagName.value) {
+            item2.color = e.target.style.backgroundColor;
           }
-        })
-      })
+        });
+      });
       nextTick(() => {
-      graphRef.value[index].setJsonData(item.graphData);
-    });
+        graphRef.value[index].setJsonData(item.graphData);
+      });
     });
   }
 };
 //修改字段properties
 const propertiesClick = (e, index) => {
-list.value.forEach((item,index) => {
-      item.graphData.nodes.forEach(item2 => {
-        item2.label.forEach(item3=>{
-          if(item3 === tagName.value){
-            // item2.text = item._fields[item.keys.indexOf("n")].properties[e.target.innerText];
-            item.records.forEach(item4=>{
-              
-            })
-          }
-        })
-      })
+  list.value.forEach((item, index) => {
+    item.graphData.nodes.forEach((item2) => {
+      item2.label.forEach((item3) => {
+        if (item3 === tagName.value) {
+          // item2.text = item._fields[item.keys.indexOf("n")].properties[e.target.innerText];
+          item.records.forEach((item4) => {});
+        }
+      });
+    });
     //   nextTick(() => {
     //   graphRef.value[index].setJsonData(item.graphData);
     // });
-    });
+  });
 
   // const text = e.target.innerText;
   // list.value[index].records.forEach((item) => {
@@ -1552,8 +1708,12 @@ const generateRandomId = () => {
 //数据
 mitts.on("params", (result: any) => {
   result.id = generateRandomId();
-  result.labelList = [];
+  result.labelList = {};
   result.relationList = [];
+  result.flagshowN = undefined;
+  result.flagshowP = undefined;
+  result.flagshowR = undefined;
+  result.flagshowE = undefined;
   list.value.push(result);
   let textName = "";
   let textTitle = "";
@@ -1563,89 +1723,116 @@ mitts.on("params", (result: any) => {
     lines: [],
   };
   result.records.forEach((item: any, index: Number) => {
-    if (
-      item.keys.indexOf("n") !== -1 &&
-      item.keys.indexOf("p") === -1 &&
-      item._fields[item.keys.indexOf("n")] &&
-      item._fields[item.keys.indexOf("n")].elementId &&
-      item._fields[item.keys.indexOf("n")].properties
-    ) {
-      for (const key in item._fields[item.keys.indexOf("n")].properties) {
-        textName = item._fields[item.keys.indexOf("n")].properties[key];
+    // console.log(item, "1655");
+    let flag = undefined;
+    for (let i = 0; i < item._fields.length; i++) {
+      if (
+        !item._fields[i].start &&
+        !item._fields[i].end &&
+        item._fields[i].labels
+      ) {
+        // flag = "node";
+        for (const key in item._fields[i].properties) {
+          textName = item._fields[i].properties[key];
+        }
+        result.graphData.nodes.push({
+          id: item._fields[i].elementId,
+          text: textName,
+          color: "#21a1ff",
+          label: item._fields[item.keys.indexOf("n")].labels,
+        });
+        result.flagshowN = true;
+        break;
+      } else if (item._fields[i].segments) {
+        // flag = "path";
+        for (const key in item._fields[i].start.properties) {
+          textName = item._fields[i].start.properties[key];
+        }
+        for (const key in item._fields[i].end.properties) {
+          textTitle = item._fields[i].end.properties[key];
+        }
+        result.graphData.nodes.push({
+          id: item._fields[i].start.elementId,
+          text: textName,
+          color: "#21a1ff",
+          label: item._fields[i].start.labels,
+        });
+        result.graphData.nodes.push({
+          id: item._fields[i].end.elementId,
+          text: textTitle,
+          color: "#21a1ff",
+          label: item._fields[i].end.labels,
+        });
+        result.graphData.lines.push({
+          from: item._fields[i].start.elementId,
+          to: item._fields[i].end.elementId,
+          text: item._fields[i].segments[i].relationship.type,
+          color: "#666666",
+        });
+        result.flagshowP = true;
+        break;
+      } else if (
+        item._fields[i].endNodeElementId &&
+        item._fields[i].startNodeElementId &&
+        !item._fields[i].labels &&
+        !item._fields[i].segments
+      ) {
+        // flag = "relation";
+        result.flagshowR = true;
+        break;
+      } else {
+        result.flagshowE = true;
+        break;
       }
-      result.graphData.nodes.push({
-        id: item._fields[item.keys.indexOf("n")].elementId,
-        text: textName,
-        color: "#21a1ff",
-        label: item._fields[item.keys.indexOf("n")].labels,
-      });
-    } else if (
-      item.keys.indexOf("p") !== -1 &&
-      item._fields[0] &&
-      item._fields[item.keys.indexOf("p")].end &&
-      item._fields[item.keys.indexOf("p")].start
-    ) {
-      for (const key in item._fields[item.keys.indexOf("p")].start.properties) {
-        textName = item._fields[item.keys.indexOf("p")].start.properties[key];
-      }
-      for (const key in item._fields[item.keys.indexOf("p")].end.properties) {
-        textTitle = item._fields[item.keys.indexOf("p")].end.properties[key];
-      }
-      result.graphData.nodes.push({
-        id: item._fields[item.keys.indexOf("p")].start.elementId,
-        text: textName,
-        color: "#21a1ff",
-        label: item._fields[item.keys.indexOf("p")].start.labels,
-      });
-      result.graphData.nodes.push({
-        id: item._fields[item.keys.indexOf("p")].end.elementId,
-        text: textTitle,
-        color: "#21a1ff",
-        label: item._fields[item.keys.indexOf("p")].end.labels,
-      });
-      result.graphData.lines.push({
-        from: item._fields[item.keys.indexOf("p")].start.elementId,
-        to: item._fields[item.keys.indexOf("p")].end.elementId,
-        text: item._fields[item.keys.indexOf("p")].segments[
-          item.keys.indexOf("p")
-        ].relationship.type,
-        color: "#666666",
-      });
-    } else {
-      console.log("我是keys");
     }
   });
   //overview nodes
   resultNodes.value = [];
-  let set = new Set(result.graphData.nodes.map((item) => JSON.stringify(item))); //拿到这个渲染图的这个数据 遍历整个node 然后变成json
-  resultNodes.value = Array.from(set).map((strItem) => JSON.parse(strItem)); //将json去重
-  console.log(resultNodes.value,'1622')
-  labelList.value = [];
-  resultNodes.value.forEach((item: Object) => {
+  let set = new Set(result.graphData.nodes.map((item) => JSON.stringify(item)));
+  resultNodes.value = Array.from(set).map((strItem) => JSON.parse(strItem)); //将所有node节点去重
+  labelList.value = [];//节点
+  resultNodes.value.forEach((item) => {
     labelList.value.push(...item.label);
   });
-  console.log(labelList.value,'1627')
-  labelList.value.forEach(item=>{//遍历计数
-    
+  result.labelList = labelList.value.reduce((acc, curr) => {
+    // 如果当前元素已经在累加器中，则增加其计数
+    if (acc[curr]) {
+      acc[curr]++;
+    }
+    // 否则，将其添加到累加器中，并设置计数为1
+    else {
+      acc[curr] = 1;
+    }
+    return acc;
+  }, {});
+  // console.log(list.value,'1886')
+  //overview Relationship 
 
-  })
-  let set2 = new Set(labelList.value);
-  newlabelList.value = Array.from(set2);  
-  console.log(newlabelList.value,'1630')
-
-  list.value[list.value.length - 1].labelList = newlabelList.value;
-  //overview relation
-  relationList.value = [];
-  result.graphData.lines.map((item) => {
+  resultRelation.value = [];
+  let set2 = new Set(result.graphData.lines.map((item) => JSON.stringify(item)));
+  resultRelation.value = Array.from(set2).map((strItem) => JSON.parse(strItem)); //将所有node节点去重
+  relationList.value = [];//关系
+  resultRelation.value.forEach((item) => {
     relationList.value.push(item.text);
   });
-  let set3 = new Set(relationList.value);
-  newrelationList.value = Array.from(set3);
-  list.value[list.value.length - 1].relationList = newrelationList.value;
-  console.log(list.value, 1603);
-  nextTick(() => {
+  result.relationList = relationList.value.reduce((acc, curr) => {
+    // 如果当前元素已经在累加器中，则增加其计数
+    if (acc[curr]) {
+      acc[curr]++;
+    }
+    // 否则，将其添加到累加器中，并设置计数为1
+    else {
+      acc[curr] = 1;
+    }
+    return acc;
+  }, {});
+  //渲染图形
+  if(result.graphData.nodes.length !== 0){
+    nextTick(() => {
     graphRef.value[list.value.length - 1].setJsonData(result.graphData);
   });
+  }
+ 
 });
 </script>
 

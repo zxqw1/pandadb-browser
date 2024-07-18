@@ -13,5 +13,6 @@
       "vuex/types/index",
       "nodes"
     ]
-  }
+  },
+  "noEmit":true
 }

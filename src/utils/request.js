@@ -1,4 +1,5 @@
 import neo4j from 'neo4j-driver';
+
 const request = {
   async fetchData(userName, password,Cypher) {
     // 替换为Neo4j实例的URI、用户名和密码

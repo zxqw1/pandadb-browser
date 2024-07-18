@@ -173,6 +173,7 @@ const funClick = async() => {
     let promiseData = request.fetchData("neo4j", "admin", contentValue.value );
     promiseData
       .then((result: any) => {
+        console.log(result,176)
         const endTime = performance.now();
         const responseTime = endTime - startTime;
         result.resTime = Math.round(responseTime) + "ms";
