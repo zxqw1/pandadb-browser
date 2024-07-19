@@ -24,7 +24,7 @@
           <div class="name">本地</div>
         </div>
         <el-icon @click="addfileClick">
-          <FolderAdd style="width: 20px; height: 20px; cursor: pointer"/>
+          <FolderAdd style="width: 20px; height: 20px; cursor: pointer" />
         </el-icon>
       </a-col>
       <a-col>
@@ -46,11 +46,32 @@
         >
           <template #default="scoped">
             <div style="width: 100%; display: flex" id:scoped.data.id>
-              <div v-if="scoped.data.show" style=" display: flex">
-                <Folder style="width: 22px; height: 22px" />
-                <p>{{ scoped.node.label }}</p>
+              <div style="display: flex; flex: 1">
+                <Folder
+                  style="width: 22px; height: 22px"
+                  v-if="scoped.data.type === 'files'"
+                />
+                <p
+                  v-if="scoped.data.show"
+                  style="
+                    flex: 1;
+                    width: 1px;
+                    margin-right: 1px;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                  "
+                  :title="scoped.node.label"
+                >
+                  {{ scoped.node.label }}
+                </p>
+                <el-input
+                  style="width: 90%"
+                  v-else
+                  v-model="scoped.data.label"
+                  @blur="handleEnter(scoped)"
+                ></el-input>
               </div>
-              <el-input style="width: 90%;" v-else v-model="scoped.data.label" @keydown.enter="handleEnter(scoped)"></el-input>
               <el-popover
                 placement="bottom"
                 title=""
@@ -58,20 +79,18 @@
                 trigger="click"
                 content=""
               >
-                <div class="hoverText" @click="RenameClick(scoped)">Rename folder</div>
-                <div class="hoverText" @click="deleteClick(scoped)">Delete folder</div>
+                <div class="hoverText" @click="RenameClick(scoped)">
+                  Rename folder
+                </div>
+                <div class="hoverText" @click="deleteClick(scoped)">
+                  Delete folder
+                </div>
                 <div class="hoverText">Export scripts as .zip file</div>
                 <div class="hoverText">Export scripts as .cypher file</div>
                 <template #reference>
-                  <el-icon
-                    style="
-                      height: 22px;
-                      width: 22px;
-                      position: absolute;
-                      right: 0;
-                    "
+                  <el-icon style="height: 22px; width: 22px"
                     ><MoreFilled
-                      style="width: 100%; height: 100%"
+                      style="width: 22px; height: 22px"
                       @click="showPopover"
                   /></el-icon>
                 </template>
@@ -80,7 +99,7 @@
           </template>
         </el-tree>
       </a-col>
-      
+
       <!-- <a-col style="margin-top: 30px; display: flex; align-items: center">
         <div class="circle"></div>
         <div class="name">示例</div>
@@ -103,46 +122,44 @@ import type {
   NodeDropType,
 } from "element-plus/es/components/tree/src/tree.type";
 const buttonRef = ref(false);
-const input = ref('')
-const renameFlag = ref(false)
+const input = ref("");
+const renameFlag = ref(false);
 const TreeData = ref([]);
 //删除
-const deleteClick = (scoped)=>{
- TreeData.value =  TreeData.value.filter(item=>{
-   return item.id !== scoped.data.id
-  })
-}
+const deleteClick = (scoped) => {
+  TreeData.value = TreeData.value.filter((item) => {
+    return item.id !== scoped.data.id;
+  });
+};
 
-const RenameClick = (scoped)=>{
-  // console.log('修改名字')
-  // renameFlag.value = !renameFlag.value
-  scoped.data.show = !scoped.data.show
-}
-console.log(TreeData.value,'112')
+const RenameClick = (scoped) => {
+  scoped.data.show = !scoped.data.show;
+};
+console.log(TreeData.value, "112");
 const handleEnter = (scoped) => {
-  // scoped.data.label = 
+  // scoped.data.label =
   // console.log(input.value,'119')
   // console.log(scoped,'120')
   // TreeData.value.forEach(item=>{
   //   if(item.id === scoped.data.id){
   //     item.label = input.value
-      RenameClick(scoped)
+  RenameClick(scoped);
   //   }
   // })
-}
+};
 //没有子元素也有箭头显示
-if(TreeData.value.length!==0){
-function ensureChildren(nodes) {  
-  nodes.forEach(node => {  
-    if (!node.children) {  
-      node.children = [];  
-    }  
-    if (node.children && node.children.length > 0) {  
-      ensureChildren(node.children);  
-    }  
-  });  
-}    
-ensureChildren(TreeData);
+if (TreeData.value.length !== 0) {
+  function ensureChildren(nodes) {
+    nodes.forEach((node) => {
+      if (!node.children) {
+        node.children = [];
+      }
+      if (node.children && node.children.length > 0) {
+        ensureChildren(node.children);
+      }
+    });
+  }
+  ensureChildren(TreeData);
 }
 // const renderContent = (h, { node, data, store })=>{
 // if(data.editable){
@@ -202,7 +219,7 @@ const handleDragEnd = (
   dropType: NodeDropType,
   ev: DragEvents
 ) => {
-  console.log("tree drag end:", dropNode && dropNode.label, dropType);
+  console.log("tree drag end:", draggingNode, dropNode, dropType, ev);
 };
 const handleDrop = (
   draggingNode: Node,
@@ -210,7 +227,13 @@ const handleDrop = (
   dropType: NodeDropType,
   ev: DragEvents
 ) => {
-  console.log("tree drop:", dropNode.label, dropType);
+  if (dropNode.level >= 2 && dropType !== "before" && dropType !== "after") {
+    // 1.文件夹不允许拖拽
+    // 2.文件拖到文件夹才可以，文件和文件不允许合并对
+    dropNode.parent.data.children[0].children = [];
+    TreeData.value.push(draggingNode.data);
+    alert("操作失败，最多添加两级！")
+  }
 };
 const allowDrop = (draggingNode: Node, dropNode: Node, type: AllowDropType) => {
   if (dropNode.data.label === "Level two 3-1") {
@@ -223,24 +246,32 @@ const allowDrag = (draggingNode: Node) => {
   return !draggingNode.data.label.includes("Level three 3-1-1");
 };
 
-
 //新增文件夹
 const addfileClick = () => {
   TreeData.value.push({
-    id:TreeData.value.length + 1,
+    id: TreeData.value.length + 1,
     label: "New Folder",
-    show:true,
+    show: true,
     editable: false,
     editInput: null,
+    type: "files",
   });
+  console.log(TreeData, "242");
 };
 const showPopover = () => {
   buttonRef.value = true;
 };
 //拿到收藏数据
-mitts.on("command", (contentValue: any) => {
-  console.log(contentValue, "34");
-  // const contentValue = contentValue
+mitts.on("recommand", (contentValue: any) => {
+  TreeData.value.push({
+    id: TreeData.value.length + 1,
+    label: contentValue,
+    show: true,
+    editable: false,
+    editInput: null,
+    type: "file",
+  });
+  console.log(TreeData, "256");
 });
 </script>
 
@@ -250,15 +281,14 @@ mitts.on("command", (contentValue: any) => {
 .ant-tree-node-content-wrapper:not(.ant-tree-node-disabled):hover {
   background-color: #6a8322; /* 你想要的任何颜色 */
 }
-.hoverText{
+.hoverText {
   padding-left: 4px;
 }
-.hoverText:hover{
+.hoverText:hover {
   cursor: pointer;
   background-color: #eeeeee;
 }
 .el-input {
   height: 24px;
 }
-
 </style>

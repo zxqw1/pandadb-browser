@@ -31,7 +31,7 @@
     </el-col>
     <el-col
       :span="2"
-       style="
+      style="
         padding: 0 10px;
         display: flex;
         align-items: center;
@@ -63,7 +63,7 @@
 
 <script setup lang="ts">
 import { computed, markRaw, nextTick, onMounted, ref, reactive } from "vue";
-import mitts from '../../utils/bus.js';
+import mitts from "../../utils/bus.js";
 import {
   CaretRightOutlined,
   ExpandAltOutlined,
@@ -71,7 +71,7 @@ import {
   ShrinkOutlined,
 } from "@ant-design/icons-vue";
 import { ElMessageBox } from "element-plus";
-import request from "../../utils/request.js"; 
+import request from "../../utils/request.js";
 //框架
 import CodeMirror from "codemirror";
 import "codemirror/lib/codemirror.css";
@@ -82,7 +82,7 @@ const mode = "javascript"; // 编译语言
 const height = ref(150);
 const theme = "idea"; // 主题语言
 const textarea = ref(null);
-let editorInstance = null
+let editorInstance = null;
 const contentValue = ref("");
 const isFullscreen = ref<boolean>(false);
 const keywords = ref([
@@ -149,7 +149,7 @@ onMounted(() => {
   });
   editorInstance = markRaw(CodeMirror.fromTextArea(textarea.value, opt.value));
   editorInstance.on("change", (coder, data) => {
-    contentValue.value = coder.getValue(); 
+    contentValue.value = coder.getValue();
   });
   // 输入或者粘贴时触发
   editorInstance.on("inputRead", (coder) => {
@@ -164,27 +164,27 @@ computed((_height) => {
   return Number(height.value) ? Number(height.value) + "px" : height.value;
 });
 //获取数据
-const funClick = async() => {
-  await nextTick()
+const funClick = async () => {
+  await nextTick();
   if (contentValue.value === "") {
-    console.log(111)
+    console.log(111);
   } else {
     const startTime = performance.now();
-    let promiseData = request.fetchData("neo4j", "admin", contentValue.value );
+    let promiseData = request.fetchData("neo4j", "admin", contentValue.value);
     promiseData
       .then((result: any) => {
-        console.log(result,176)
+    console.log(result,'175')
         const endTime = performance.now();
         const responseTime = endTime - startTime;
         result.resTime = Math.round(responseTime) + "ms";
-        mitts.emit('params', result)
+        mitts.emit("params", result);
       })
       .catch((error: any) => {
         ElMessageBox.alert(error, "错误提示", {
           confirmButtonText: "好的",
         });
       });
-      deleteClick()
+    deleteClick();
   }
 };
 // 全屏
@@ -193,7 +193,7 @@ const toggleFullScreen = () => {
 };
 //删除
 const deleteClick = () => {
-  editorInstance.setValue("")
+  editorInstance.setValue("");
 };
 </script>
 

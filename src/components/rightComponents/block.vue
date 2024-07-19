@@ -169,7 +169,7 @@
                       >
                         <template #reference>
                           <el-tag
-                            @click="tagClick(item8)"
+                            @click="tagClick(key)"
                             effect="dark"
                             round
                             style="margin-left: 10px; cursor: pointer"
@@ -1115,7 +1115,7 @@
             </el-tab-pane>
           </el-tabs>
         </el-col>
-         <!-- keys -->
+         <!-- relaion -->
          <el-col v-if="item.flagshowR">
           <el-tabs
             :tab-position="tabPosition"
@@ -1528,13 +1528,13 @@ const list = ref([]);
 const resultNodes = ref([]);
 const labelList = ref([]);
 const resultRelation = ref([]);
-const relationList = ref([]); 
+const relationList = ref([]);
 const tagName = ref("");
 const text = ref("");
 //拿到标签名
 const tagClick = (name) => {
   tagName.value = name;
-  console.log(tagName.value, "1380");
+  console.log(name, "1537");
 };
 const OverviewClick = () => {
   overview.value = !overview.value;
@@ -1639,11 +1639,13 @@ const removeModule = (index: Number) => {
 const colorClick = (e) => {
   if (e.target.className === "li") {
     // window.localStorage.setItem("color", e.target.style.backgroundColor);
+    // console.log(e.target.style.backgroundColor,'1641')
     list.value.forEach((item, index) => {
       item.graphData.nodes.forEach((item2) => {
         item2.label.forEach((item3) => {
           if (item3 === tagName.value) {
             item2.color = e.target.style.backgroundColor;
+            // window.localStorage.setItem(tagName.value,e.target.style.backgroundColor)
           }
         });
       });
@@ -1723,74 +1725,103 @@ mitts.on("params", (result: any) => {
     lines: [],
   };
   result.records.forEach((item: any, index: Number) => {
-    // console.log(item, "1655");
-    let flag = undefined;
     for (let i = 0; i < item._fields.length; i++) {
       if (
+        item._fields[i] !== null &&
         !item._fields[i].start &&
         !item._fields[i].end &&
         item._fields[i].labels
       ) {
-        // flag = "node";
-        for (const key in item._fields[i].properties) {
-          textName = item._fields[i].properties[key];
-        }
-        result.graphData.nodes.push({
-          id: item._fields[i].elementId,
-          text: textName,
-          color: "#21a1ff",
-          label: item._fields[item.keys.indexOf("n")].labels,
-        });
         result.flagshowN = true;
-        break;
-      } else if (item._fields[i].segments) {
-        // flag = "path";
-        for (const key in item._fields[i].start.properties) {
-          textName = item._fields[i].start.properties[key];
-        }
-        for (const key in item._fields[i].end.properties) {
-          textTitle = item._fields[i].end.properties[key];
-        }
-        result.graphData.nodes.push({
-          id: item._fields[i].start.elementId,
-          text: textName,
-          color: "#21a1ff",
-          label: item._fields[i].start.labels,
-        });
-        result.graphData.nodes.push({
-          id: item._fields[i].end.elementId,
-          text: textTitle,
-          color: "#21a1ff",
-          label: item._fields[i].end.labels,
-        });
-        result.graphData.lines.push({
-          from: item._fields[i].start.elementId,
-          to: item._fields[i].end.elementId,
-          text: item._fields[i].segments[i].relationship.type,
-          color: "#666666",
-        });
+      } else if (item._fields[i] !== null && item._fields[i].segments) {
         result.flagshowP = true;
-        break;
       } else if (
+        item._fields[i] !== null &&
         item._fields[i].endNodeElementId &&
         item._fields[i].startNodeElementId &&
         !item._fields[i].labels &&
         !item._fields[i].segments
       ) {
-        // flag = "relation";
         result.flagshowR = true;
-        break;
       } else {
         result.flagshowE = true;
-        break;
       }
     }
   });
+  if (result.flagshowP) {
+    result.records.forEach((item: any, index: Number) => {
+      for (let i = 0; i < item._fields.length; i++) {
+        if (item._fields[i] !== null && item._fields[i].segments) {
+          for (const key in item._fields[i].start.properties) {
+            textName = item._fields[i].start.properties[key];
+          }
+          for (const key in item._fields[i].end.properties) {
+            textTitle = item._fields[i].end.properties[key];
+          }
+          result.graphData.nodes.push({
+            id: item._fields[i].start.elementId,
+            text: textName,
+            color: "#21a1ff",
+            label: item._fields[i].start.labels,
+          });
+          result.graphData.nodes.push({
+            id: item._fields[i].end.elementId,
+            text: textTitle,
+            color: "#21a1ff",
+            label: item._fields[i].end.labels,
+          });
+          result.graphData.lines.push({
+            from: item._fields[i].start.elementId,
+            to: item._fields[i].end.elementId,
+            text: item._fields[i].segments[0].relationship.type,
+            color: "#666666",
+          });
+          break;
+        }
+      }
+    });
+    result.flagshowN = false;
+    result.flagshowR = false;
+    result.flagshowE = false;
+  } else if (result.flagshowN) {
+    result.records.forEach((item: any, index: Number) => {
+      for (let i = 0; i < item._fields.length; i++) {
+        if (
+          item._fields[i] !== null &&
+          !item._fields[i].start &&
+          !item._fields[i].end &&
+          item._fields[i].labels
+        ) {
+          for (const key in item._fields[i].properties) {
+            textName = item._fields[i].properties[key];
+          }
+          result.graphData.nodes.push({
+            id: item._fields[i].elementId,
+            text: textName,
+            color: "#21a1ff",
+            label: item._fields[item.keys.indexOf("n")].labels,
+          });
+          break;
+        }
+      }
+    });
+    result.flagshowP = false;
+    result.flagshowR = false;
+    result.flagshowE = false;
+  } else if (result.flagshowR) {
+    result.flagshowP = false;
+    result.flagshowN = false;
+    result.flagshowE = false;
+  } else {
+    result.flagshowP = false;
+    result.flagshowN = false;
+    result.flagshowR = false;
+  }
   //overview nodes
   resultNodes.value = [];
   let set = new Set(result.graphData.nodes.map((item) => JSON.stringify(item)));
   resultNodes.value = Array.from(set).map((strItem) => JSON.parse(strItem)); //将所有node节点去重
-  labelList.value = [];//节点
+  labelList.value = []; //节点
   resultNodes.value.forEach((item) => {
     labelList.value.push(...item.label);
   });
@@ -1805,13 +1836,14 @@ mitts.on("params", (result: any) => {
     }
     return acc;
   }, {});
-  // console.log(list.value,'1886')
-  //overview Relationship 
+  //overview Relationship
 
   resultRelation.value = [];
-  let set2 = new Set(result.graphData.lines.map((item) => JSON.stringify(item)));
+  let set2 = new Set(
+    result.graphData.lines.map((item) => JSON.stringify(item))
+  );
   resultRelation.value = Array.from(set2).map((strItem) => JSON.parse(strItem)); //将所有node节点去重
-  relationList.value = [];//关系
+  relationList.value = []; //关系
   resultRelation.value.forEach((item) => {
     relationList.value.push(item.text);
   });
@@ -1827,12 +1859,11 @@ mitts.on("params", (result: any) => {
     return acc;
   }, {});
   //渲染图形
-  if(result.graphData.nodes.length !== 0){
+  if (result.graphData.nodes.length !== 0) {
     nextTick(() => {
-    graphRef.value[list.value.length - 1].setJsonData(result.graphData);
-  });
+      graphRef.value[list.value.length - 1].setJsonData(result.graphData);
+    });
   }
- 
 });
 </script>
 
