@@ -326,11 +326,10 @@
                             <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer " @click="idClick($event)">
                              {{ "<id>" }}
                             </el-tag>
-                            {{ item.records[0]._fields }}
                             <el-tag type="info" size="small" 
-                            v-for="items in Object.keys(item.records[0]._fields[item.records[0].keys.indexOf('n')].properties)" style="margin-left: 10px;margin-top: 10px;cursor: pointer;"
+                            v-for="(key3,value3) in item.properties" :key="key3"style="margin-left: 10px;margin-top: 10px;cursor: pointer;"
                             @click="propertiesClick($event,index)"
-                            >{{ items }}</el-tag>
+                            >{{ value3 }}</el-tag>
                           </el-col> 
                         </el-row>
                       </el-popover>
@@ -778,7 +777,7 @@
                             "
                           >
                             <div>Caption:</div>
-                            <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer " @click="idClick($event)">
+                            <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer" @click="idClick($event)">
                              {{ "<id>" }}
                             </el-tag>
                             <el-tag type="info" size="small" 
@@ -800,19 +799,19 @@
                       >
                         <template #reference>
                           <el-tag
+                            @click="tagClick(value)"
                             effect="dark"
-                            round
-                            style="margin-left: 10px; cursor: pointer;margin-top: 10px" 
+                            style="margin-left: 10px; cursor: pointer;margin-top: 10px;border: none" 
+                            :color="getLineColor(value)"
                             >{{ value }}({{ key }})</el-tag>
                         </template>
                         <el-row>
                           <el-col>
                             <el-tag
                               effect="dark"
-                              round
-                              style="width: 100%"
-                              v-for="(item8, index8) in item.labelList"
-                              >{{ item8 }}</el-tag>
+                              :color="getLineColor(value)"
+                              style="width: 100%;border: none"
+                              >{{ value }}</el-tag>
                           </el-col>
                           <el-col style="display: flex; margin-top: 12px">
                             <ul
@@ -824,6 +823,7 @@
                                 width: 100%;
                                 padding-left: 0;
                               "
+                              @click="colorRelaClick($event)"
                             >
                               <div>color:</div>
                               <li
@@ -885,47 +885,71 @@
                                 width: 100%;
                                 padding-left: 0;
                               "
+                              @click="sizeRelaClick($event)"
                             >
-                              <div>size:</div>
+                              <div>Line width:</div>
                               <li
+                              class="sizeLi"
                                 style="
                                   background-color: rgb(170, 170, 170);
-                                  width: 12px;
+                                  width: 5px;
                                   height: 12px;
-                                  border-radius: 50%;
                                 "
+                                data-size= '1'
                               ></li>
                               <li
+                              class="sizeLi"
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 8px;
+                                  height: 12px;
+                                "
+                                data-size= '3'
+                              ></li>
+                              <li
+                              class="sizeLi"
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 11px;
+                                  height: 12px;
+                                "
+                                data-size= '5'
+                              ></li>
+                              <li
+                              class="sizeLi"
                                 style="
                                   background-color: rgb(170, 170, 170);
                                   width: 14px;
-                                  height: 14px;
-                                  border-radius: 50%;
+                                  height: 12px;
                                 "
+                                data-size= '7'
                               ></li>
                               <li
+                              class="sizeLi"
                                 style="
                                   background-color: rgb(170, 170, 170);
-                                  width: 16px;
-                                  height: 16px;
-                                  border-radius: 50%;
+                                  width: 17px;
+                                  height: 12px;
                                 "
+                                data-size= '8'
                               ></li>
                               <li
-                                style="
-                                  background-color: rgb(170, 170, 170);
-                                  width: 18px;
-                                  height: 18px;
-                                  border-radius: 50%;
-                                "
-                              ></li>
-                              <li
+                              class="sizeLi"
                                 style="
                                   background-color: rgb(170, 170, 170);
                                   width: 20px;
-                                  height: 20px;
-                                  border-radius: 50%;
+                                  height: 12px;
                                 "
+                                data-size= '10'
+                              ></li>
+                              <li
+                              class="sizeLi"
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 23px;
+                                  height: 12px;
+                                "
+                                data-size= '12'
                               ></li>
                             </ul>
                           </el-col>
@@ -1561,6 +1585,12 @@ const getTagColor = (key) => {
     : "#21a1ff";
   return color;
 };
+const getLineColor = (key) => {
+  const color = window.localStorage.getItem(key+'linecolor')
+    ? window.localStorage.getItem(key + 'linecolor')
+    : "#999999";
+  return color;
+};
 //拿到标签名
 const tagClick = (name) => {
   tagName.value = name;
@@ -1670,7 +1700,7 @@ const removeModule = (index: Number) => {
 const colorClick = (e)=>{
 if(e.target.className === 'li'){
   window.localStorage.setItem(tagName.value + 'color',e.target.style.backgroundColor)
-  list.value.forEach((item) => {
+  list.value.forEach((item,index) => {
       item.graphData.nodes.forEach((item2) => {
         item2.label.forEach((item3) => {
           if (item3 === tagName.value) {
@@ -1679,18 +1709,32 @@ if(e.target.className === 'li'){
         });
       });
       nextTick(() => {
-        graphRef.value[list.value.length - 1].setJsonData(item.graphData);
+        graphRef.value[index].setJsonData(item.graphData);
       });
     });
 }
+}
+//lines修改颜色
+const colorRelaClick = (e)=>{
+  if(e.target.className === 'li')
+  window.localStorage.setItem(tagName.value + 'linecolor',e.target.style.backgroundColor)
+  list.value.forEach((item,index) => {
+      item.graphData.lines.forEach((item2) => {
+          if (item2.text === tagName.value) {
+            item2.color = window.localStorage.getItem(tagName.value + 'linecolor')
+          }
+      });
+      nextTick(() => {
+        graphRef.value[index].setJsonData(item.graphData);
+      });
+    });
 }
 //修改大小
 const sizeClick = (e)=>{
 if(e.target.className === "sizeLi"){
   window.localStorage.setItem(tagName.value + 'size',e.target.dataset.size)
-  list.value.forEach((item) => {
+  list.value.forEach((item,index) => {
       item.graphData.nodes.forEach((item2) => {
-        console.log(item2)
         item2.label.forEach((item3) => {
           if (item3 === tagName.value) {
             item2.width = window.localStorage.getItem(tagName.value + 'size')
@@ -1699,38 +1743,27 @@ if(e.target.className === "sizeLi"){
         });
       });
       nextTick(() => {
-        graphRef.value[list.value.length - 1].setJsonData(item.graphData);
+        graphRef.value[index].setJsonData(item.graphData);
       });
     });
 }
 }
-//修改字段properties
-// const propertiesClick = (e, index) => {
-//   list.value.forEach((item, index) => {
-//     item.graphData.nodes.forEach((item2) => {
-//       item2.label.forEach((item3) => {
-//         if (item3 === tagName.value) {
-//           // item2.text = item._fields[item.keys.indexOf("n")].properties[e.target.innerText];
-//           item.records.forEach((item4) => {});
-//         }
-//       });
-//     });
-//     //   nextTick(() => {
-//     //   graphRef.value[index].setJsonData(item.graphData);
-//     // });
-//   });
-
-//   // const text = e.target.innerText;
-//   // list.value[index].records.forEach((item) => {
-//   //   list.value[index].graphData.nodes.forEach((item2) => {
-//   //     item2.text =
-//   //       item._fields[item.keys.indexOf("n")].properties[e.target.innerText];
-//   //   });
-//   // });
-//   // nextTick(() => {
-//   //   graphRef.value[index].setJsonData(list.value[index].graphData);
-//   // });
-// };
+//lines修改大小
+const sizeRelaClick = (e)=>{
+if(e.target.className === "sizeLi"){
+  window.localStorage.setItem(tagName.value + 'linesize',e.target.dataset.size)
+  list.value.forEach((item,index) => {
+      item.graphData.lines.forEach((item2) => {
+        if (item2.text === tagName.value) {
+            item2.lineWidth = window.localStorage.getItem(tagName.value + 'linesize')
+          }
+      });
+      nextTick(() => {
+        graphRef.value[index].setJsonData(item.graphData);
+      });
+    });
+}
+}
 //修改字段 id
 const idClick = (e) => {
   window.localStorage.setItem(tagName.value ,'id')
@@ -1767,6 +1800,7 @@ mitts.on("params", (result: any) => {
   result.id = generateRandomId();
   result.labelList = {};
   result.relationList = [];
+  result.properties = {}
   result.flagshowN = undefined;
   result.flagshowP = undefined;
   result.flagshowR = undefined;
@@ -1834,7 +1868,8 @@ mitts.on("params", (result: any) => {
             from: item._fields[i].start.elementId,
             to: item._fields[i].end.elementId,
             text: item._fields[i].segments[0].relationship.type,
-            color: "#666666",
+            lineWidth: window.localStorage.getItem(item._fields[i].segments[0].relationship.type + 'linesi  ze') ? window.localStorage.getItem(item._fields[i].segments[0].relationship.type + 'linesize') : 1,
+            color: window.localStorage.getItem(item._fields[i].segments[0].relationship.type + 'linecolor') ? window.localStorage.getItem(item._fields[i].segments[0].relationship.type + 'linecolor') :  '#666666',
           });
           break;
         }
@@ -1860,7 +1895,6 @@ mitts.on("params", (result: any) => {
             id: item._fields[i].elementId,
             text: textName,
             label: item._fields[i].labels,
-            properties:item._fields[i].properties,
             color:window.localStorage.getItem(item._fields[i].labels[0] + 'color') ? window.localStorage.getItem(item._fields[i].labels[0] + 'color') :  "#21a1ff",
             width:window.localStorage.getItem(item._fields[i].labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].labels[0] + 'size') :  "80",
             height:window.localStorage.getItem(item._fields[i].labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].labels[0] + 'size') :  "80",
@@ -1882,6 +1916,20 @@ mitts.on("params", (result: any) => {
     result.flagshowR = false;
   }
   //overview nodes
+  result.records.forEach(item=>{
+    item._fields.forEach(item2=>{
+      if( item2 !== null &&
+          !item2.start &&
+          !item2.end &&
+          item2.labels){
+            result.properties = item2.properties
+          }
+          // else if(item2 !== null && item2.segments){
+          //   result.properties = 
+          // }
+    })
+  })
+  console.log(result.properties,'1896')
   resultNodes.value = [];
   let set = new Set(result.graphData.nodes.map((item) => JSON.stringify(item)));
   resultNodes.value = Array.from(set).map((strItem) => JSON.parse(strItem)); //将所有node节点去重
