@@ -176,7 +176,7 @@
                             v-for="(value, key) in item.labelList" :key="key"
                             >{{ key }}({{ value }})</el-tag>
                         </template>
-                        <el-row @click="reClick($event)">
+                        <el-row >
                           <el-col>
                             <el-tag
                               effect="dark"
@@ -197,6 +197,7 @@
                                 width: 100%;
                                 padding-left: 0;
                               "
+                              @click="colorClick($event)"
                             >
                               <div>color:</div>
                               <li
@@ -258,6 +259,7 @@
                                 width: 100%;
                                 padding-left: 0;
                               "
+                              @click="sizeClick($event)"
                             >
                               <div>size:</div>
                               <li
@@ -321,9 +323,10 @@
                             "
                           >
                             <div>Caption:</div>
-                            <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer " @click="idClick(index)">
+                            <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer " @click="idClick($event)">
                              {{ "<id>" }}
                             </el-tag>
+                            {{ item.records[0]._fields }}
                             <el-tag type="info" size="small" 
                             v-for="items in Object.keys(item.records[0]._fields[item.records[0].keys.indexOf('n')].properties)" style="margin-left: 10px;margin-top: 10px;cursor: pointer;"
                             @click="propertiesClick($event,index)"
@@ -635,174 +638,9 @@
                             style="margin-right: 10px; cursor: pointer;margin-top: 10px;border: none"
                             >{{ key2 }}({{ value2 }})</el-tag>
                         </template>
-                        <el-row @click="reClick($event)">
+                        <el-row >
                           <el-col>
                             <el-tag effect="dark" round style="width: 100%;border: none" :color="getTagColor(key2)">{{ key2 }}({{ value2 }})</el-tag>
-                          </el-col>
-                          <el-col style="display: flex; margin-top: 12px">
-                            <ul
-                              class="color"
-                              style="
-                                display: flex;
-                                align-items: center;
-                                justify-content: space-around;
-                                width: 100%;
-                                padding-left: 0;
-                              "
-                            >
-                              <div>color:</div>
-                              <li
-                                style="background-color: rgb(96, 74, 14);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(201, 144, 192);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(247, 151, 103);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(87, 199, 227);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(241, 102, 103);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(217, 200, 174);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(141, 204, 147);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(236, 181, 201);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(76, 142, 218);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(255, 196, 84);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(218, 113, 148);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(86, 148, 128);cursor: pointer;"
-                                class="li"
-                              ></li>
-                            </ul>
-                          </el-col>
-                          <el-col style="display: flex; margin-top: 12px">
-                            <ul
-                              class="size"
-                              style="
-                                display: flex;
-                                align-items: center;
-                                width: 100%;
-                                padding-left: 0;
-                              "
-                            >
-                              <div>size:</div>
-                              <li
-                              class="sizeLi"
-                                style="
-                                  background-color: rgb(170, 170, 170);
-                                  width: 12px;
-                                  height: 12px;
-                                  border-radius: 50%;
-                                "
-                              ></li>
-                              <li
-                              class="sizeLi"
-                                style="
-                                  background-color: rgb(170, 170, 170);
-                                  width: 14px;
-                                  height: 14px;
-                                  border-radius: 50%;
-                                "
-                              ></li>
-                              <li
-                              class="sizeLi"
-                                style="
-                                  background-color: rgb(170, 170, 170);
-                                  width: 16px;
-                                  height: 16px;
-                                  border-radius: 50%;
-                                "
-                              ></li>
-                              <li
-                              class="sizeLi"
-                                style="
-                                  background-color: rgb(170, 170, 170);
-                                  width: 18px;
-                                  height: 18px;
-                                  border-radius: 50%;
-                                "
-                              ></li>
-                              <li
-                              class="sizeLi"
-                                style="
-                                  background-color: rgb(170, 170, 170);
-                                  width: 20px;
-                                  height: 20px;
-                                  border-radius: 50%;
-                                "
-                              ></li>
-                            </ul>
-                          </el-col>
-                          <el-col
-                            style="
-                              display: flex;
-                              margin-top: 12px;
-                              align-items: center;
-                              flex-wrap: wrap;
-                            "
-                          >
-                            <div>Caption:</div>
-                            <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer " @click="idClick(index)">
-                             {{ "<id>" }}
-                            </el-tag>
-                            <el-tag type="info" size="small" 
-                            v-for="items in Object.keys(item.records[0]._fields[item.records[0].keys.indexOf('p')].start.properties)" style="margin-left: 10px;margin-top: 10px;cursor: pointer;">
-                            {{ items }}</el-tag>
-                          </el-col> 
-                        </el-row>
-                      </el-popover>
-                    </el-col>
-                    <el-col style="margin: 0 0 0 10px">
-                      <div style="font-weight: bold;margin-top: 10px">Relationship types</div>
-                      <el-tag effect="dark" round style="margin-top: 10px">*({{ relationList.length }})</el-tag
-                      >
-                      <el-popover
-                        placement="bottom"
-                        :width="260"
-                        trigger="click"
-                         v-for="(key, value) in item.relationList" :key="key"
-                      >
-                        <template #reference>
-                          <el-tag
-                            effect="dark"
-                            round
-                            style="margin-left: 10px; cursor: pointer;margin-top: 10px" 
-                            >{{ value }}({{ key }})</el-tag>
-                        </template>
-                        <el-row>
-                          <el-col>
-                            <el-tag
-                              effect="dark"
-                              round
-                              style="width: 100%"
-                              v-for="(item8, index8) in item.labelList"
-                              >{{ item8 }}</el-tag>
                           </el-col>
                           <el-col style="display: flex; margin-top: 12px">
                             <ul
@@ -876,6 +714,177 @@
                                 width: 100%;
                                 padding-left: 0;
                               "
+                              @click="sizeClick($event)"
+                            >
+                              <div>size:</div>
+                              <li
+                              class="sizeLi"
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 12px;
+                                  height: 12px;
+                                  border-radius: 50%;
+                                "
+                                data-size="40"
+                              ></li>
+                              <li
+                              class="sizeLi"
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 14px;
+                                  height: 14px;
+                                  border-radius: 50%;
+                                "
+                                data-size="60"
+                              ></li>
+                              <li
+                              class="sizeLi"
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 16px;
+                                  height: 16px;
+                                  border-radius: 50%;
+                                "
+                                data-size="80"
+                              ></li>
+                              <li
+                              class="sizeLi"
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 18px;
+                                  height: 18px;
+                                  border-radius: 50%;
+                                "
+                                data-size="100"
+                              ></li>
+                              <li
+                              class="sizeLi"
+                                style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 20px;
+                                  height: 20px;
+                                  border-radius: 50%;
+                                "
+                                data-size="120"
+                              ></li>
+                            </ul>
+                          </el-col>
+                          <el-col
+                            style="
+                              display: flex;
+                              margin-top: 12px;
+                              align-items: center;
+                              flex-wrap: wrap;
+                            "
+                          >
+                            <div>Caption:</div>
+                            <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer " @click="idClick($event)">
+                             {{ "<id>" }}
+                            </el-tag>
+                            <el-tag type="info" size="small" 
+                            v-for="items in Object.keys(item.records[0]._fields[item.records[0].keys.indexOf('p')].start.properties)" style="margin-left: 10px;margin-top: 10px;cursor: pointer;">
+                            {{ items }}</el-tag>
+                          </el-col> 
+                        </el-row>
+                      </el-popover>
+                    </el-col>
+                    <el-col style="margin: 0 0 0 10px">
+                      <div style="font-weight: bold;margin-top: 10px">Relationship types</div>
+                      <el-tag effect="dark" round style="margin-top: 10px">*({{ relationList.length }})</el-tag
+                      >
+                      <el-popover
+                        placement="bottom"
+                        :width="260"
+                        trigger="click"
+                         v-for="(key, value) in item.relationList" :key="key"
+                      >
+                        <template #reference>
+                          <el-tag
+                            effect="dark"
+                            round
+                            style="margin-left: 10px; cursor: pointer;margin-top: 10px" 
+                            >{{ value }}({{ key }})</el-tag>
+                        </template>
+                        <el-row>
+                          <el-col>
+                            <el-tag
+                              effect="dark"
+                              round
+                              style="width: 100%"
+                              v-for="(item8, index8) in item.labelList"
+                              >{{ item8 }}</el-tag>
+                          </el-col>
+                          <el-col style="display: flex; margin-top: 12px">
+                            <ul
+                              class="color"
+                              style="
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-around;
+                                width: 100%;
+                                padding-left: 0;
+                              "
+                            >
+                              <div>color:</div>
+                              <li
+                                style="background-color: rgb(96, 74, 14);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(201, 144, 192);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(247, 151, 103);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(87, 199, 227);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(241, 102, 103);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(217, 200, 174);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(141, 204, 147);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(236, 181, 201);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(76, 142, 218);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(255, 196, 84);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(218, 113, 148);cursor: pointer;"
+                                class="li"
+                              ></li>
+                              <li
+                                style="background-color: rgb(86, 148, 128);cursor: pointer;"
+                                class="li"
+                              ></li>
+                            </ul>
+                          </el-col>
+                          <el-col style="display: flex; margin-top: 12px">
+                            <ul
+                              class="size"
+                              style="
+                                display: flex;
+                                align-items: center;
+                                width: 100%;
+                                padding-left: 0;
+                              "
                             >
                               <div>size:</div>
                               <li
@@ -929,7 +938,7 @@
                             "
                           >
                             <div>Caption:</div>
-                            <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer " @click="idClick(index)">
+                            <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer " @click="idClick($event)">
                              {{ "<id>" }}
                             </el-tag>
                             <el-tag type="info" size="small" 
@@ -1545,19 +1554,17 @@ const labelList = ref([]);
 const resultRelation = ref([]);
 const relationList = ref([]);
 const tagName = ref("");
-const text = ref("");
-const localColor = ref("");
 //标签颜色
 const getTagColor = (key) => {
-  const color = window.localStorage.getItem(key)
-    ? JSON.parse(window.localStorage.getItem(key)).color
+  const color = window.localStorage.getItem(key+'color')
+    ? window.localStorage.getItem(key + 'color')
     : "#21a1ff";
   return color;
 };
 //拿到标签名
 const tagClick = (name) => {
   tagName.value = name;
-  // console.log(name, "1537");
+  
 };
 const OverviewClick = () => {
   overview.value = !overview.value;
@@ -1658,97 +1665,89 @@ const tableCopy = (item4: any) => {
 const removeModule = (index: Number) => {
   list.value.splice(index, 1);
 };
-//overview修改
-// const reClick = (e) => {
-//   //修改颜色
-//   if (e.target.className === "li") {
-//     localColor.value = e.target.style.backgroundColor;
-//     window.localStorage.setItem(
-//       tagName.value,
-//       JSON.stringify({ color: localColor.value, size: "" })
-//     );
-//     list.value.forEach((item) => {
-//       item.graphData.nodes.forEach((item2) => {
-//         item2.label.forEach((item3) => {
-//           if (item3 === tagName.value) {
-//             item2.color = JSON.parse(
-//               window.localStorage.getItem(tagName.value)
-//             ).color;
-//           }
-//         });
-//       });
-//       nextTick(() => {
-//         graphRef.value[list.value.length - 1].setJsonData(item.graphData);
-//       });
-//     });
-//   }
-//   //修改大小
-//   if (e.target.className === "sizeLi") {
-//     window.localStorage.setItem(
-//       tagName.value,
-//       JSON.stringify({
-//         color: localColor.value === "" ? "#21a1ff " : localColor.value,
-//         size: e.target.dataset.size,
-//       })
-//     );
-//     list.value.forEach((item) => {
-//       item.graphData.nodes.forEach((item2) => {
-//         item2.label.forEach((item3) => {
-//           if (item3 === tagName.value) {
-//             item2.width = JSON.parse(
-//               window.localStorage.getItem(tagName.value)
-//             ).size;
-//             item2.height = JSON.parse(
-//               window.localStorage.getItem(tagName.value)
-//             ).size;
-//           }
-//         });
-//       });
-//       nextTick(() => {
-//         graphRef.value[list.value.length - 1].setJsonData(item.graphData);
-//       });
-//     });
-//   }
-// };
 
-//修改字段properties
-const propertiesClick = (e, index) => {
-  list.value.forEach((item, index) => {
-    item.graphData.nodes.forEach((item2) => {
-      item2.label.forEach((item3) => {
-        if (item3 === tagName.value) {
-          // item2.text = item._fields[item.keys.indexOf("n")].properties[e.target.innerText];
-          item.records.forEach((item4) => {});
-        }
+//overview修改颜色
+const colorClick = (e)=>{
+if(e.target.className === 'li'){
+  window.localStorage.setItem(tagName.value + 'color',e.target.style.backgroundColor)
+  list.value.forEach((item) => {
+      item.graphData.nodes.forEach((item2) => {
+        item2.label.forEach((item3) => {
+          if (item3 === tagName.value) {
+            item2.color = window.localStorage.getItem(tagName.value + 'color')
+          }
+        });
+      });
+      nextTick(() => {
+        graphRef.value[list.value.length - 1].setJsonData(item.graphData);
       });
     });
-    //   nextTick(() => {
-    //   graphRef.value[index].setJsonData(item.graphData);
-    // });
-  });
-
-  // const text = e.target.innerText;
-  // list.value[index].records.forEach((item) => {
-  //   list.value[index].graphData.nodes.forEach((item2) => {
-  //     item2.text =
-  //       item._fields[item.keys.indexOf("n")].properties[e.target.innerText];
-  //   });
-  // });
-  // nextTick(() => {
-  //   graphRef.value[index].setJsonData(list.value[index].graphData);
-  // });
-};
-//修改字段 id
-const idClick = (index: Number) => {
-  // console.log(list.value[index])
-  list.value[index].records.forEach((item) => {
-    list.value[index].graphData.nodes.forEach((item2) => {
-      item2.text = item._fields[item.keys.indexOf("n")].elementId;
+}
+}
+//修改大小
+const sizeClick = (e)=>{
+if(e.target.className === "sizeLi"){
+  window.localStorage.setItem(tagName.value + 'size',e.target.dataset.size)
+  list.value.forEach((item) => {
+      item.graphData.nodes.forEach((item2) => {
+        console.log(item2)
+        item2.label.forEach((item3) => {
+          if (item3 === tagName.value) {
+            item2.width = window.localStorage.getItem(tagName.value + 'size')
+            item2.height = window.localStorage.getItem(tagName.value + 'size')
+          }
+        });
+      });
+      nextTick(() => {
+        graphRef.value[list.value.length - 1].setJsonData(item.graphData);
+      });
     });
-  });
-  nextTick(() => {
-    graphRef.value[index].setJsonData(list.value[index].graphData);
-  });
+}
+}
+//修改字段properties
+// const propertiesClick = (e, index) => {
+//   list.value.forEach((item, index) => {
+//     item.graphData.nodes.forEach((item2) => {
+//       item2.label.forEach((item3) => {
+//         if (item3 === tagName.value) {
+//           // item2.text = item._fields[item.keys.indexOf("n")].properties[e.target.innerText];
+//           item.records.forEach((item4) => {});
+//         }
+//       });
+//     });
+//     //   nextTick(() => {
+//     //   graphRef.value[index].setJsonData(item.graphData);
+//     // });
+//   });
+
+//   // const text = e.target.innerText;
+//   // list.value[index].records.forEach((item) => {
+//   //   list.value[index].graphData.nodes.forEach((item2) => {
+//   //     item2.text =
+//   //       item._fields[item.keys.indexOf("n")].properties[e.target.innerText];
+//   //   });
+//   // });
+//   // nextTick(() => {
+//   //   graphRef.value[index].setJsonData(list.value[index].graphData);
+//   // });
+// };
+//修改字段 id
+const idClick = (e) => {
+  window.localStorage.setItem(tagName.value ,'id')
+  console.log(e,'1737')
+  // list.value.forEach((item) => {
+  //     item.graphData.nodes.forEach((item2) => {
+  //       item2.label.forEach((item3) => {
+  //         console.log(item,1740)
+  //         if (item3 === tagName.value) {
+  //           item2.text = item._fields[]
+  //         }
+  //       });
+  //     });
+  //     nextTick(() => {
+  //       graphRef.value[list.value.length - 1].setJsonData(item.graphData);
+  //     });
+  //   });
 };
 //取消置顶
 mitts.on("Data", (item: any) => {
@@ -1804,6 +1803,7 @@ mitts.on("params", (result: any) => {
       }
     }
   });
+  //path
   if (result.flagshowP) {
     result.records.forEach((item: any, index: Number) => {
       for (let i = 0; i < item._fields.length; i++) {
@@ -1814,46 +1814,21 @@ mitts.on("params", (result: any) => {
           for (const key in item._fields[i].end.properties) {
             textTitle = item._fields[i].end.properties[key];
           }
-
           result.graphData.nodes.push({
             id: item._fields[i].start.elementId,
             text: textName,
-            color: window.localStorage.getItem(...item._fields[i].start.labels)
-              ? JSON.parse(
-                  window.localStorage.getItem(...item._fields[i].start.labels)
-                ).color
-              : "#21a1ff",
+            color:window.localStorage.getItem(item._fields[i].start.labels[0] + 'color') ? window.localStorage.getItem(item._fields[i].start.labels[0] + 'color') :  "#21a1ff",
             label: item._fields[i].start.labels,
-            width: window.localStorage.getItem(...item._fields[i].start.labels)
-              ? JSON.parse(
-                  window.localStorage.getItem(...item._fields[i].start.labels)
-                ).size
-              : 80,
-            height: window.localStorage.getItem(...item._fields[i].start.labels)
-              ? JSON.parse(
-                  window.localStorage.getItem(...item._fields[i].start.labels)
-                ).size
-              : 80,
+            width: window.localStorage.getItem(item._fields[i].start.labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].start.labels[0] + 'size') :  80,
+            height: window.localStorage.getItem(item._fields[i].start.labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].start.labels[0] + 'size') :  80,
           });
           result.graphData.nodes.push({
             id: item._fields[i].end.elementId,
             text: textTitle,
-            color: window.localStorage.getItem(...item._fields[i].end.labels)
-              ? JSON.parse(
-                  window.localStorage.getItem(...item._fields[i].end.labels)
-                ).color
-              : "#21a1ff",
+            color:window.localStorage.getItem(item._fields[i].end.labels[0] + 'color') ? window.localStorage.getItem(item._fields[i].end.labels[0] + 'color') :  "#21a1ff",
             label: item._fields[i].end.labels,
-            width: window.localStorage.getItem(...item._fields[i].start.labels)
-              ? JSON.parse(
-                  window.localStorage.getItem(...item._fields[i].start.labels)
-                ).size
-              : 80,
-            height: window.localStorage.getItem(...item._fields[i].start.labels)
-              ? JSON.parse(
-                  window.localStorage.getItem(...item._fields[i].start.labels)
-                ).size
-              : 80,
+            width: window.localStorage.getItem(item._fields[i].end.labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].end.labels[0] + 'size') :  80,
+            height: window.localStorage.getItem(item._fields[i].end.labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].end.labels[0] + 'size') :  80,
           });
           result.graphData.lines.push({
             from: item._fields[i].start.elementId,
@@ -1869,6 +1844,7 @@ mitts.on("params", (result: any) => {
     result.flagshowR = false;
     result.flagshowE = false;
   } else if (result.flagshowN) {
+    //nodes
     result.records.forEach((item: any, index: Number) => {
       for (let i = 0; i < item._fields.length; i++) {
         if (
@@ -1883,22 +1859,11 @@ mitts.on("params", (result: any) => {
           result.graphData.nodes.push({
             id: item._fields[i].elementId,
             text: textName,
-            color: window.localStorage.getItem(...item._fields[i].labels)
-              ? JSON.parse(
-                  window.localStorage.getItem(...item._fields[i].labels)
-                ).color
-              : "#21a1ff",
             label: item._fields[i].labels,
-            width: window.localStorage.getItem(...item._fields[i].labels)
-              ? JSON.parse(
-                  window.localStorage.getItem(...item._fields[i].labels)
-                ).size
-              : 80,
-            height: window.localStorage.getItem(...item._fields[i].labels)
-              ? JSON.parse(
-                  window.localStorage.getItem(...item._fields[i].labels)
-                ).size
-              : 80,
+            properties:item._fields[i].properties,
+            color:window.localStorage.getItem(item._fields[i].labels[0] + 'color') ? window.localStorage.getItem(item._fields[i].labels[0] + 'color') :  "#21a1ff",
+            width:window.localStorage.getItem(item._fields[i].labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].labels[0] + 'size') :  "80",
+            height:window.localStorage.getItem(item._fields[i].labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].labels[0] + 'size') :  "80",
           });
           break;
         }
