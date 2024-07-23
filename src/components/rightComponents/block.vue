@@ -176,14 +176,14 @@
                             v-for="(value, key) in item.labelList" :key="key"
                             >{{ key }}({{ value }})</el-tag>
                         </template>
-                        <el-row >
+                        <el-row 
+                        v-for="(value, key) in item.labelList" :key="key">
                           <el-col>
                             <el-tag
                               effect="dark"
                               round
                               :color="getTagColor(key)"
                               style="width: 100%;border: none"
-                              v-for="(value, key) in item.labelList" :key="key"
                               >{{ key }}({{ value }})</el-tag
                             >
                           </el-col>
@@ -326,10 +326,13 @@
                             <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer " @click="idClick($event)">
                              {{ "<id>" }}
                             </el-tag>
-                            <el-tag type="info" size="small" 
-                            v-for="(key3,value3) in item.properties" :key="key3"style="margin-left: 10px;margin-top: 10px;cursor: pointer;"
-                            @click="propertiesClick($event,index)"
-                            >{{ value3 }}</el-tag>
+                            <div v-for="(pathTagItem,pathTagIndex) in item.records[0]._fields">
+                                <div v-if="pathTagItem.labels">
+                                  <div v-if="pathTagItem.labels.indexOf(key) !== -1">
+                                    <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" v-for="(value4,key4) in pathTagItem.properties " :key="key4">{{ key4 }}</el-tag>
+                                  </div>
+                                </div>
+                              </div>
                           </el-col> 
                         </el-row>
                       </el-popover>
@@ -777,12 +780,16 @@
                             "
                           >
                             <div>Caption:</div>
-                            <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer" @click="idClick($event)">
-                             {{ "<id>" }}
-                            </el-tag>
-                            <el-tag type="info" size="small" 
-                            v-for="items in Object.keys(item.records[0]._fields[item.records[0].keys.indexOf('p')].start.properties)" style="margin-left: 10px;margin-top: 10px;cursor: pointer;">
-                            {{ items }}</el-tag>
+                              <div v-for="(pathTagItem,pathTagIndex) in item.records[0]._fields">
+                                <div v-if="pathTagItem.segments">
+                                  <div v-if="pathTagItem.end.labels.indexOf(key2) !== -1">
+                                    <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" v-for="(value4,key4) in pathTagItem.end.properties " :key="key4">{{ key4 }}</el-tag>
+                                  </div>
+                                  <div v-if="pathTagItem.start.labels.indexOf(key2) !== -1">
+                                    <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" v-for="(value4,key4) in pathTagItem.start.properties " :key="key4">{{ key4 }}</el-tag>
+                                  </div>
+                                </div>
+                              </div>
                           </el-col> 
                         </el-row>
                       </el-popover>
@@ -962,12 +969,30 @@
                             "
                           >
                             <div>Caption:</div>
-                            <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer " @click="idClick($event)">
+                            <div v-for="(pathTagItem,pathTagIndex) in item.records[0]._fields">
+                                <div v-if="pathTagItem.segments">
+                                  <el-tag type="info" size="small" style="margin-top: 10px;margin-left: 10px;cursor:pointer"> {{ "<id>" }}</el-tag>
+                                  <el-tag type="info" size="small" style="margin-top: 10px;margin-left: 10px;cursor:pointer"> {{ "<type>" }}</el-tag>
+                                 <div v-for="items3 in pathTagItem.segments">
+                                  <div v-if="items3.relationship">
+                                    <el-tag v-for="(key5,value5) in items3.relationship.properties" :key="key5" type="info" size="small" style="margin-top: 10px;margin-left: 10px;cursor:pointer">{{ value5 }}</el-tag>
+                                  </div>
+                                 </div>
+                                  <!-- <div v-if="pathTagItem.end.labels.indexOf(key2) !== -1">
+                                    <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" v-for="(value4,key4) in pathTagItem.end.properties " :key="key4">{{ key4 }}</el-tag>
+                                  </div>
+                                  <div v-if="pathTagItem.start.labels.indexOf(key2) !== -1">
+                                    <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" v-for="(value4,key4) in pathTagItem.start.properties " :key="key4">{{ key4 }}</el-tag>
+                                  </div> -->
+                                </div>
+                              </div>
+
+                            <!-- <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer " @click="idClick($event)">
                              {{ "<id>" }}
                             </el-tag>
                             <el-tag type="info" size="small" 
                             v-for="items in Object.keys(item.records[0]._fields[item.records[0].keys.indexOf('p')].start.properties)" style="margin-left: 10px;margin-top: 10px;cursor: pointer;">
-                            {{ items }}</el-tag>
+                            {{ items }}</el-tag> -->
                           </el-col> 
                         </el-row>
                         
@@ -1917,6 +1942,7 @@ mitts.on("params", (result: any) => {
   }
   //overview nodes
   result.records.forEach(item=>{
+    console.log(item,'1920')
     item._fields.forEach(item2=>{
       if( item2 !== null &&
           !item2.start &&
@@ -1924,9 +1950,9 @@ mitts.on("params", (result: any) => {
           item2.labels){
             result.properties = item2.properties
           }
-          // else if(item2 !== null && item2.segments){
-          //   result.properties = 
-          // }
+          else if(item2 !== null && item2.segments){
+            // result.properties = 
+          }
     })
   })
   console.log(result.properties,'1896')
