@@ -160,8 +160,7 @@
                     </el-col>
                     <el-col style="margin: 0 0 0 10px">
                       <div style="font-weight: bold">Node labels</div>
-                      <el-tag effect="dark" round >*({{ resultNodes.length }})</el-tag
-                      >
+                      <el-tag effect="dark" round >*({{ resultNodes.length }})</el-tag>
                       <el-popover
                         placement="bottom"
                         :width="260"
@@ -172,21 +171,23 @@
                             @click="tagClick(key)"
                             effect="dark"
                             round
-                            style="margin-left: 10px; cursor: pointer"
+                            :color="getTagColor(key)"
+                            style="margin-left: 10px; cursor: pointer;border: none"
                             v-for="(value, key) in item.labelList" :key="key"
                             >{{ key }}({{ value }})</el-tag>
                         </template>
-                        <el-row>
+                        <el-row @click="reClick($event)">
                           <el-col>
                             <el-tag
                               effect="dark"
                               round
-                              style="width: 100%"
+                              :color="getTagColor(key)"
+                              style="width: 100%;border: none"
                               v-for="(value, key) in item.labelList" :key="key"
                               >{{ key }}({{ value }})</el-tag
                             >
                           </el-col>
-                          <el-col style="display: flex; margin-top: 12px">
+                          <el-col style="display: flex; margin-top: 12px" >
                             <ul
                               class="color"
                               style="
@@ -196,7 +197,6 @@
                                 width: 100%;
                                 padding-left: 0;
                               "
-                              @click="colorClick($event,index)"
                             >
                               <div>color:</div>
                               <li
@@ -261,44 +261,54 @@
                             >
                               <div>size:</div>
                               <li
+                                class="sizeLi"
                                 style="
                                   background-color: rgb(170, 170, 170);
                                   width: 12px;
                                   height: 12px;
                                   border-radius: 50%;
                                 "
+                                data-size="40"
                               ></li>
                               <li
+                              class="sizeLi"
                                 style="
                                   background-color: rgb(170, 170, 170);
                                   width: 14px;
                                   height: 14px;
                                   border-radius: 50%;
                                 "
+                                data-size="60"
                               ></li>
                               <li
+                              class="sizeLi"
                                 style="
                                   background-color: rgb(170, 170, 170);
                                   width: 16px;
                                   height: 16px;
                                   border-radius: 50%;
                                 "
+                                data-size="80"
                               ></li>
                               <li
+                              class="sizeLi"
                                 style="
                                   background-color: rgb(170, 170, 170);
                                   width: 18px;
                                   height: 18px;
                                   border-radius: 50%;
                                 "
+                                data-size="100"
                               ></li>
                               <li
+                              class="sizeLi"
                                 style="
                                   background-color: rgb(170, 170, 170);
                                   width: 20px;
                                   height: 20px;
                                   border-radius: 50%;
                                 "
+                                data-size="120"
                               ></li>
                             </ul>
                           </el-col>
@@ -611,22 +621,23 @@
                       <el-tag effect="dark" round style="margin-right: 10px;margin-top: 10px;"
                         >*({{ resultNodes.length }})</el-tag>
                       <el-popover
-                        v-for="(item8, index8) in item.labelList" :key="index8"
+                        v-for="(value2, key2) in item.labelList" :key="key2"
                         placement="bottom"
                         :width="260"
                         trigger="click"
                       >
                         <template #reference>
                           <el-tag
-                          @click="tagClick(item8)"
+                          @click="tagClick(key2)"
                             effect="dark"
                             round
-                            style="margin-right: 10px; cursor: pointer;margin-top: 10px;"
-                            >{{ index8 }}({{ item8 }})</el-tag>
+                            :color="getTagColor(key2)"
+                            style="margin-right: 10px; cursor: pointer;margin-top: 10px;border: none"
+                            >{{ key2 }}({{ value2 }})</el-tag>
                         </template>
-                        <el-row>
+                        <el-row @click="reClick($event)">
                           <el-col>
-                            <el-tag effect="dark" round style="width: 100%">{{ item8 }}</el-tag>
+                            <el-tag effect="dark" round style="width: 100%;border: none" :color="getTagColor(key2)">{{ key2 }}({{ value2 }})</el-tag>
                           </el-col>
                           <el-col style="display: flex; margin-top: 12px">
                             <ul
@@ -638,7 +649,6 @@
                                 width: 100%;
                                 padding-left: 0;
                               "
-                              @click="colorClick($event,index)"
                             >
                               <div>color:</div>
                               <li
@@ -703,6 +713,7 @@
                             >
                               <div>size:</div>
                               <li
+                              class="sizeLi"
                                 style="
                                   background-color: rgb(170, 170, 170);
                                   width: 12px;
@@ -711,6 +722,7 @@
                                 "
                               ></li>
                               <li
+                              class="sizeLi"
                                 style="
                                   background-color: rgb(170, 170, 170);
                                   width: 14px;
@@ -719,6 +731,7 @@
                                 "
                               ></li>
                               <li
+                              class="sizeLi"
                                 style="
                                   background-color: rgb(170, 170, 170);
                                   width: 16px;
@@ -727,6 +740,7 @@
                                 "
                               ></li>
                               <li
+                              class="sizeLi"
                                 style="
                                   background-color: rgb(170, 170, 170);
                                   width: 18px;
@@ -735,6 +749,7 @@
                                 "
                               ></li>
                               <li
+                              class="sizeLi"
                                 style="
                                   background-color: rgb(170, 170, 170);
                                   width: 20px;
@@ -799,7 +814,7 @@
                                 width: 100%;
                                 padding-left: 0;
                               "
-                              @click="colorClick($event,index)"
+                              @click="colorClick($event)"
                             >
                               <div>color:</div>
                               <li
@@ -1531,10 +1546,18 @@ const resultRelation = ref([]);
 const relationList = ref([]);
 const tagName = ref("");
 const text = ref("");
+const localColor = ref("");
+//标签颜色
+const getTagColor = (key) => {
+  const color = window.localStorage.getItem(key)
+    ? JSON.parse(window.localStorage.getItem(key)).color
+    : "#21a1ff";
+  return color;
+};
 //拿到标签名
 const tagClick = (name) => {
   tagName.value = name;
-  console.log(name, "1537");
+  // console.log(name, "1537");
 };
 const OverviewClick = () => {
   overview.value = !overview.value;
@@ -1635,26 +1658,59 @@ const tableCopy = (item4: any) => {
 const removeModule = (index: Number) => {
   list.value.splice(index, 1);
 };
-//修改颜色
-const colorClick = (e) => {
-  if (e.target.className === "li") {
-    // window.localStorage.setItem("color", e.target.style.backgroundColor);
-    // console.log(e.target.style.backgroundColor,'1641')
-    list.value.forEach((item, index) => {
-      item.graphData.nodes.forEach((item2) => {
-        item2.label.forEach((item3) => {
-          if (item3 === tagName.value) {
-            item2.color = e.target.style.backgroundColor;
-            // window.localStorage.setItem(tagName.value,e.target.style.backgroundColor)
-          }
-        });
-      });
-      nextTick(() => {
-        graphRef.value[index].setJsonData(item.graphData);
-      });
-    });
-  }
-};
+//overview修改
+// const reClick = (e) => {
+//   //修改颜色
+//   if (e.target.className === "li") {
+//     localColor.value = e.target.style.backgroundColor;
+//     window.localStorage.setItem(
+//       tagName.value,
+//       JSON.stringify({ color: localColor.value, size: "" })
+//     );
+//     list.value.forEach((item) => {
+//       item.graphData.nodes.forEach((item2) => {
+//         item2.label.forEach((item3) => {
+//           if (item3 === tagName.value) {
+//             item2.color = JSON.parse(
+//               window.localStorage.getItem(tagName.value)
+//             ).color;
+//           }
+//         });
+//       });
+//       nextTick(() => {
+//         graphRef.value[list.value.length - 1].setJsonData(item.graphData);
+//       });
+//     });
+//   }
+//   //修改大小
+//   if (e.target.className === "sizeLi") {
+//     window.localStorage.setItem(
+//       tagName.value,
+//       JSON.stringify({
+//         color: localColor.value === "" ? "#21a1ff " : localColor.value,
+//         size: e.target.dataset.size,
+//       })
+//     );
+//     list.value.forEach((item) => {
+//       item.graphData.nodes.forEach((item2) => {
+//         item2.label.forEach((item3) => {
+//           if (item3 === tagName.value) {
+//             item2.width = JSON.parse(
+//               window.localStorage.getItem(tagName.value)
+//             ).size;
+//             item2.height = JSON.parse(
+//               window.localStorage.getItem(tagName.value)
+//             ).size;
+//           }
+//         });
+//       });
+//       nextTick(() => {
+//         graphRef.value[list.value.length - 1].setJsonData(item.graphData);
+//       });
+//     });
+//   }
+// };
+
 //修改字段properties
 const propertiesClick = (e, index) => {
   list.value.forEach((item, index) => {
@@ -1758,17 +1814,46 @@ mitts.on("params", (result: any) => {
           for (const key in item._fields[i].end.properties) {
             textTitle = item._fields[i].end.properties[key];
           }
+
           result.graphData.nodes.push({
             id: item._fields[i].start.elementId,
             text: textName,
-            color: "#21a1ff",
+            color: window.localStorage.getItem(...item._fields[i].start.labels)
+              ? JSON.parse(
+                  window.localStorage.getItem(...item._fields[i].start.labels)
+                ).color
+              : "#21a1ff",
             label: item._fields[i].start.labels,
+            width: window.localStorage.getItem(...item._fields[i].start.labels)
+              ? JSON.parse(
+                  window.localStorage.getItem(...item._fields[i].start.labels)
+                ).size
+              : 80,
+            height: window.localStorage.getItem(...item._fields[i].start.labels)
+              ? JSON.parse(
+                  window.localStorage.getItem(...item._fields[i].start.labels)
+                ).size
+              : 80,
           });
           result.graphData.nodes.push({
             id: item._fields[i].end.elementId,
             text: textTitle,
-            color: "#21a1ff",
+            color: window.localStorage.getItem(...item._fields[i].end.labels)
+              ? JSON.parse(
+                  window.localStorage.getItem(...item._fields[i].end.labels)
+                ).color
+              : "#21a1ff",
             label: item._fields[i].end.labels,
+            width: window.localStorage.getItem(...item._fields[i].start.labels)
+              ? JSON.parse(
+                  window.localStorage.getItem(...item._fields[i].start.labels)
+                ).size
+              : 80,
+            height: window.localStorage.getItem(...item._fields[i].start.labels)
+              ? JSON.parse(
+                  window.localStorage.getItem(...item._fields[i].start.labels)
+                ).size
+              : 80,
           });
           result.graphData.lines.push({
             from: item._fields[i].start.elementId,
@@ -1798,8 +1883,22 @@ mitts.on("params", (result: any) => {
           result.graphData.nodes.push({
             id: item._fields[i].elementId,
             text: textName,
-            color: "#21a1ff",
-            label: item._fields[item.keys.indexOf("n")].labels,
+            color: window.localStorage.getItem(...item._fields[i].labels)
+              ? JSON.parse(
+                  window.localStorage.getItem(...item._fields[i].labels)
+                ).color
+              : "#21a1ff",
+            label: item._fields[i].labels,
+            width: window.localStorage.getItem(...item._fields[i].labels)
+              ? JSON.parse(
+                  window.localStorage.getItem(...item._fields[i].labels)
+                ).size
+              : 80,
+            height: window.localStorage.getItem(...item._fields[i].labels)
+              ? JSON.parse(
+                  window.localStorage.getItem(...item._fields[i].labels)
+                ).size
+              : 80,
           });
           break;
         }
