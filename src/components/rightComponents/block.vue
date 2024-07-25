@@ -269,6 +269,7 @@
                                   width: 12px;
                                   height: 12px;
                                   border-radius: 50%;
+                                  cursor: pointer;
                                 "
                                 data-size="40"
                               ></li>
@@ -279,6 +280,7 @@
                                   width: 14px;
                                   height: 14px;
                                   border-radius: 50%;
+                                  cursor: pointer;
                                 "
                                 data-size="60"
                               ></li>
@@ -289,6 +291,7 @@
                                   width: 16px;
                                   height: 16px;
                                   border-radius: 50%;
+                                  cursor: pointer;
                                 "
                                 data-size="80"
                               ></li>
@@ -299,6 +302,7 @@
                                   width: 18px;
                                   height: 18px;
                                   border-radius: 50%;
+                                  cursor: pointer;
                                 "
                                 data-size="100"
                               ></li>
@@ -309,6 +313,7 @@
                                   width: 20px;
                                   height: 20px;
                                   border-radius: 50%;
+                                  cursor: pointer;
                                 "
                                 data-size="120"
                               ></li>
@@ -320,6 +325,7 @@
                               margin-top: 12px;
                               align-items: center;
                               flex-wrap: wrap;
+                              cursor: pointer;
                             "
                           >
                             <div>Caption:</div>
@@ -329,7 +335,7 @@
                             <div v-for="(pathTagItem,pathTagIndex) in item.records[0]._fields">
                                 <div v-if="pathTagItem.labels">
                                   <div v-if="pathTagItem.labels.indexOf(key) !== -1">
-                                    <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" v-for="(value4,key4) in pathTagItem.properties " :key="key4">{{ key4 }}</el-tag>
+                                    <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" v-for="(value4,key4) in pathTagItem.properties " :key="key4" @click="fileClick($event,value4)">{{ key4 }}</el-tag>
                                   </div>
                                 </div>
                               </div>
@@ -780,13 +786,14 @@
                             "
                           >
                             <div>Caption:</div>
+                            <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" @click="idClick($event)">{{ "<id>" }}</el-tag>
                               <div v-for="(pathTagItem,pathTagIndex) in item.records[0]._fields">
                                 <div v-if="pathTagItem.segments">
                                   <div v-if="pathTagItem.end.labels.indexOf(key2) !== -1">
-                                    <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" v-for="(value4,key4) in pathTagItem.end.properties " :key="key4">{{ key4 }}</el-tag>
+                                    <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" v-for="(value4,key4) in pathTagItem.end.properties " :key="key4" @click="fileClick($event)">{{ key4 }}</el-tag>
                                   </div>
                                   <div v-if="pathTagItem.start.labels.indexOf(key2) !== -1">
-                                    <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" v-for="(value4,key4) in pathTagItem.start.properties " :key="key4">{{ key4 }}</el-tag>
+                                    <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" v-for="(value4,key4) in pathTagItem.start.properties " :key="key4"  @click="fileClick($event)">{{ key4 }}</el-tag>
                                   </div>
                                 </div>
                               </div>
@@ -809,7 +816,7 @@
                             @click="tagClick(value)"
                             effect="dark"
                             style="margin-left: 10px; cursor: pointer;margin-top: 10px;border: none" 
-                            :color="getLineColor(value)"
+                            :color="getLineColor(value)" 
                             >{{ value }}({{ key }})</el-tag>
                         </template>
                         <el-row>
@@ -901,6 +908,7 @@
                                   background-color: rgb(170, 170, 170);
                                   width: 5px;
                                   height: 12px;
+                                  cursor: pointer
                                 "
                                 data-size= '1'
                               ></li>
@@ -910,6 +918,7 @@
                                   background-color: rgb(170, 170, 170);
                                   width: 8px;
                                   height: 12px;
+                                  cursor: pointer
                                 "
                                 data-size= '3'
                               ></li>
@@ -919,6 +928,7 @@
                                   background-color: rgb(170, 170, 170);
                                   width: 11px;
                                   height: 12px;
+                                  cursor: pointer
                                 "
                                 data-size= '5'
                               ></li>
@@ -928,6 +938,7 @@
                                   background-color: rgb(170, 170, 170);
                                   width: 14px;
                                   height: 12px;
+                                  cursor: pointer
                                 "
                                 data-size= '7'
                               ></li>
@@ -937,6 +948,7 @@
                                   background-color: rgb(170, 170, 170);
                                   width: 17px;
                                   height: 12px;
+                                  cursor: pointer
                                 "
                                 data-size= '8'
                               ></li>
@@ -946,6 +958,7 @@
                                   background-color: rgb(170, 170, 170);
                                   width: 20px;
                                   height: 12px;
+                                  cursor: pointer
                                 "
                                 data-size= '10'
                               ></li>
@@ -955,6 +968,7 @@
                                   background-color: rgb(170, 170, 170);
                                   width: 23px;
                                   height: 12px;
+                                  cursor: pointer
                                 "
                                 data-size= '12'
                               ></li>
@@ -971,28 +985,15 @@
                             <div>Caption:</div>
                             <div v-for="(pathTagItem,pathTagIndex) in item.records[0]._fields">
                                 <div v-if="pathTagItem.segments">
-                                  <el-tag type="info" size="small" style="margin-top: 10px;margin-left: 10px;cursor:pointer"> {{ "<id>" }}</el-tag>
-                                  <el-tag type="info" size="small" style="margin-top: 10px;margin-left: 10px;cursor:pointer"> {{ "<type>" }}</el-tag>
+                                  <el-tag type="info" size="small" style="margin-top: 10px;margin-left: 10px;cursor:pointer" @click="lineIdClick($event)"> {{ "<id>" }}</el-tag>
+                                  <el-tag type="info" size="small" style="margin-top: 10px;margin-left: 10px;cursor:pointer" @click="lineTypeClick($event)"> {{ "<type>" }}</el-tag>
                                  <div v-for="items3 in pathTagItem.segments">
                                   <div v-if="items3.relationship">
-                                    <el-tag v-for="(key5,value5) in items3.relationship.properties" :key="key5" type="info" size="small" style="margin-top: 10px;margin-left: 10px;cursor:pointer">{{ value5 }}</el-tag>
+                                    <el-tag v-for="(key5,value5) in items3.relationship.properties" :key="key5" type="info" size="small" style="margin-top: 10px;margin-left: 10px;cursor:pointer" @click="lineFileClick($event)">{{ value5 }}</el-tag>
                                   </div>
                                  </div>
-                                  <!-- <div v-if="pathTagItem.end.labels.indexOf(key2) !== -1">
-                                    <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" v-for="(value4,key4) in pathTagItem.end.properties " :key="key4">{{ key4 }}</el-tag>
-                                  </div>
-                                  <div v-if="pathTagItem.start.labels.indexOf(key2) !== -1">
-                                    <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" v-for="(value4,key4) in pathTagItem.start.properties " :key="key4">{{ key4 }}</el-tag>
-                                  </div> -->
                                 </div>
                               </div>
-
-                            <!-- <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer " @click="idClick($event)">
-                             {{ "<id>" }}
-                            </el-tag>
-                            <el-tag type="info" size="small" 
-                            v-for="items in Object.keys(item.records[0]._fields[item.records[0].keys.indexOf('p')].start.properties)" style="margin-left: 10px;margin-top: 10px;cursor: pointer;">
-                            {{ items }}</el-tag> -->
                           </el-col> 
                         </el-row>
                         
@@ -1570,7 +1571,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from "vue";
+import { ref, nextTick,watch} from "vue";
 // import { useStore } from "vuex";
 import RelationGraph from "relation-graph/vue3";
 import {
@@ -1603,6 +1604,14 @@ const labelList = ref([]);
 const resultRelation = ref([]);
 const relationList = ref([]);
 const tagName = ref("");
+//置顶
+// watch(() => list.value,(newValue,oldValue) => {
+//   mitts.emit(list)
+// })
+//控制list条数
+if(list.value.length > 30){
+  list.value.splice(list.value.length - 1,1)
+}
 //标签颜色
 const getTagColor = (key) => {
   const color = window.localStorage.getItem(key+'color')
@@ -1741,7 +1750,7 @@ if(e.target.className === 'li'){
 }
 //lines修改颜色
 const colorRelaClick = (e)=>{
-  if(e.target.className === 'li')
+  if(e.target.className === 'li'){
   window.localStorage.setItem(tagName.value + 'linecolor',e.target.style.backgroundColor)
   list.value.forEach((item,index) => {
       item.graphData.lines.forEach((item2) => {
@@ -1753,6 +1762,7 @@ const colorRelaClick = (e)=>{
         graphRef.value[index].setJsonData(item.graphData);
       });
     });
+  }
 }
 //修改大小
 const sizeClick = (e)=>{
@@ -1792,21 +1802,104 @@ if(e.target.className === "sizeLi"){
 //修改字段 id
 const idClick = (e) => {
   window.localStorage.setItem(tagName.value ,'id')
-  console.log(e,'1737')
-  // list.value.forEach((item) => {
-  //     item.graphData.nodes.forEach((item2) => {
-  //       item2.label.forEach((item3) => {
-  //         console.log(item,1740)
-  //         if (item3 === tagName.value) {
-  //           item2.text = item._fields[]
-  //         }
-  //       });
-  //     });
-  //     nextTick(() => {
-  //       graphRef.value[list.value.length - 1].setJsonData(item.graphData);
-  //     });
-  //   });
+  list.value.forEach((item) => {
+      item.graphData.nodes.forEach((item2) => {
+        item2.label.forEach((item3) => {
+          if (item3 === tagName.value) {
+            item.records.forEach(item4=>{
+              item4._fields.forEach(item5=>{
+                if(
+                  item5 !== null &&
+                  !item5.start &&
+                  !item5.end &&
+                  item5.labels){
+                    item2.text = item2.id
+                  }
+                  else if(item5 !== null && item5.segments){
+                    console.log(111)
+                    item2.text = item2.id 
+                  }
+              })
+            })
+          }
+        });
+      });
+      nextTick(() => {
+        graphRef.value[list.value.length - 1].setJsonData(item.graphData);
+      });
+    });
 };
+//修改字段properties
+const fileClick = (e)=>{
+window.localStorage.setItem(tagName.value,e.target.innerText)
+list.value.forEach((item) => {
+      item.graphData.nodes.forEach((item2) => {
+        item2.label.forEach((item3) => {
+          if (item3 === tagName.value) {
+            item.records.forEach(item4=>{
+              item4._fields.forEach(item5=>{
+                if(
+                  item5 !== null &&
+                  !item5.start &&
+                  !item5.end &&
+                  item5.labels){
+                    item2.text = item2.properties[e.target.innerText]
+                  }
+                  else if(item5 !== null && item5.segments){
+                    item2.text = item2.properties[e.target.innerText]
+                  }
+              })
+            })
+          }
+        });
+      });
+      nextTick(() => {
+        graphRef.value[list.value.length - 1].setJsonData(item.graphData);
+      });
+    });
+}
+//修改line字段 id
+const lineIdClick = (e)=>{
+  window.localStorage.setItem(tagName.value,'id')
+  list.value.forEach((item,index) => {
+      item.graphData.lines.forEach((item2) => {
+          if (item2.type === tagName.value) {
+            item2.text = item2.id
+          }
+      });
+      nextTick(() => {
+        graphRef.value[index].setJsonData(item.graphData);
+      });
+    });
+}
+//修改字段line type
+const lineTypeClick = (e)=>{
+  window.localStorage.setItem(tagName.value,'type')
+  list.value.forEach((item,index) => {
+      item.graphData.lines.forEach((item2) => {
+          if (item2.type === tagName.value) {
+            item2.text = item2.type
+          }
+      });
+      nextTick(() => {
+        graphRef.value[index].setJsonData(item.graphData);
+      });
+    });
+}
+//修改字段 line properties
+const lineFileClick = (e)=>{
+  window.localStorage.setItem(tagName.value,e.target.innerText)
+  list.value.forEach((item,index) => {
+      item.graphData.lines.forEach((item2) => {
+          if (item2.type === tagName.value) {
+            item2.text = item2.properties[e.target.innerText]
+          }
+      });
+      nextTick(() => {
+        graphRef.value[index].setJsonData(item.graphData);
+      });
+    });
+}
 //取消置顶
 mitts.on("Data", (item: any) => {
   list.value.push(item);
@@ -1820,12 +1913,12 @@ const generateRandomId = () => {
   const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
   return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
 };
+
 //数据
 mitts.on("params", (result: any) => {
   result.id = generateRandomId();
   result.labelList = {};
   result.relationList = [];
-  result.properties = {}
   result.flagshowN = undefined;
   result.flagshowP = undefined;
   result.flagshowR = undefined;
@@ -1833,6 +1926,7 @@ mitts.on("params", (result: any) => {
   list.value.push(result);
   let textName = "";
   let textTitle = "";
+  let lineText = "";
   result.graphData = {
     rootId: list.value.length,
     nodes: [],
@@ -1867,17 +1961,46 @@ mitts.on("params", (result: any) => {
     result.records.forEach((item: any, index: Number) => {
       for (let i = 0; i < item._fields.length; i++) {
         if (item._fields[i] !== null && item._fields[i].segments) {
-          for (const key in item._fields[i].start.properties) {
+          
+          if(window.localStorage.getItem(item._fields[i].start.labels[0])){
+            if(window.localStorage.getItem(item._fields[i].start.labels[0]) === "id"){
+              textName = item._fields[i].start.elementId
+            }else{
+              textName = item._fields[i].start.properties[window.localStorage.getItem(item._fields[i].start.labels[0])]
+            }
+          }else{
+            for (const key in item._fields[i].start.properties) {
             textName = item._fields[i].start.properties[key];
           }
-          for (const key in item._fields[i].end.properties) {
-            textTitle = item._fields[i].end.properties[key];
+          }
+          if(window.localStorage.getItem(item._fields[i].end.labels[0])){
+            if(window.localStorage.getItem(item._fields[i].end.labels[0]) === "id"){
+              textTitle = item._fields[i].end.elementId
+            }else{
+              textTitle = item._fields[i].end.properties[window.localStorage.getItem(item._fields[i].end.labels[0])]
+            }
+          }else{
+            for (const key in item._fields[i].end.properties) {
+              textTitle = item._fields[i].end.properties[key];
+          }
+          }
+          if(window.localStorage.getItem(item._fields[i].segments[0].relationship.type)){
+            if(window.localStorage.getItem(item._fields[i].segments[0].relationship.type) === "id"){
+              lineText = item._fields[i].segments[0].relationship.elementId
+            }else if(window.localStorage.getItem(item._fields[i].segments[0].relationship.type) === "type"){
+              lineText = item._fields[i].segments[0].relationship.type
+            }else{
+              lineText = item._fields[i].segments[0].relationship.properties[window.localStorage.getItem(item._fields[i].segments[0].relationship.type)]
+            }
+          }else{
+            lineText = item._fields[i].segments[0].relationship.type
           }
           result.graphData.nodes.push({
             id: item._fields[i].start.elementId,
             text: textName,
             color:window.localStorage.getItem(item._fields[i].start.labels[0] + 'color') ? window.localStorage.getItem(item._fields[i].start.labels[0] + 'color') :  "#21a1ff",
             label: item._fields[i].start.labels,
+            properties:item._fields[i].start.properties,
             width: window.localStorage.getItem(item._fields[i].start.labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].start.labels[0] + 'size') :  80,
             height: window.localStorage.getItem(item._fields[i].start.labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].start.labels[0] + 'size') :  80,
           });
@@ -1886,16 +2009,26 @@ mitts.on("params", (result: any) => {
             text: textTitle,
             color:window.localStorage.getItem(item._fields[i].end.labels[0] + 'color') ? window.localStorage.getItem(item._fields[i].end.labels[0] + 'color') :  "#21a1ff",
             label: item._fields[i].end.labels,
+            properties:item._fields[i].end.properties,
             width: window.localStorage.getItem(item._fields[i].end.labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].end.labels[0] + 'size') :  80,
             height: window.localStorage.getItem(item._fields[i].end.labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].end.labels[0] + 'size') :  80,
           });
-          result.graphData.lines.push({
-            from: item._fields[i].start.elementId,
-            to: item._fields[i].end.elementId,
-            text: item._fields[i].segments[0].relationship.type,
-            lineWidth: window.localStorage.getItem(item._fields[i].segments[0].relationship.type + 'linesi  ze') ? window.localStorage.getItem(item._fields[i].segments[0].relationship.type + 'linesize') : 1,
-            color: window.localStorage.getItem(item._fields[i].segments[0].relationship.type + 'linecolor') ? window.localStorage.getItem(item._fields[i].segments[0].relationship.type + 'linecolor') :  '#666666',
-          });
+          // result.graphData.lines.push({
+          //   // id:item._fields[i].segments[0].relationship.elementId,
+          //   // id:item._fields[i].segments.length !== 0 : 
+          //   //要不写两个for循环想这个i是的 给labels和segment都循环一下
+          //   //这都不能是0
+          //   // 如果fields只有一条，那你这个i就是0.那你也取不到segments的下标1啊不是啊，我的意思是，在fields里不是判断n和p了吗 当为n的时候 写个for循环循环这个label，我分析label也不带只有一个的 
+          //   //如果是p 写个for循环循环segment和start和end的labels，你觉得呢 等下，我看看啊
+          //   // 1.segments是个数组吧对，有时候不只是1条吧对，你是不是都取0是不对的对，你不就是想按顺序取么对，还有我发现了，虽然我不懂这个玩意，但是所有的0都不对，都得遍历取你说呢嗯咋改
+          //   type:item._fields[i].segments[0].relationship.type,
+          //   properties:item._fields[i].segments[0].relationship.properties,
+          //   from: item._fields[i].start.elementId,
+          //   to: item._fields[i].end.elementId,
+          //   text: lineText,
+          //   lineWidth: window.localStorage.getItem(item._fields[i].segments[0].relationship.type + 'linesize') ? window.localStorage.getItem(item._fields[i].segments[0].relationship.type + 'linesize') : 1,
+          //   color: window.localStorage.getItem(item._fields[i].segments[0].relationship.type + 'linecolor') ? window.localStorage.getItem(item._fields[i].segments[0].relationship.type + 'linecolor') :  '#666666',
+          // });
           break;
         }
       }
@@ -1913,13 +2046,23 @@ mitts.on("params", (result: any) => {
           !item._fields[i].end &&
           item._fields[i].labels
         ) {
-          for (const key in item._fields[i].properties) {
+          if(window.localStorage.getItem(item._fields[i].labels[0])){
+            if(window.localStorage.getItem(item._fields[i].labels[0]) === "id"){
+              textName = item._fields[i].elementId
+            }else{
+              textName = item._fields[i].properties[window.localStorage.getItem(item._fields[i].labels[0])]
+            }
+          }else{
+            for (const key in item._fields[i].properties) {
             textName = item._fields[i].properties[key];
           }
+          }
+          
           result.graphData.nodes.push({
             id: item._fields[i].elementId,
-            text: textName,
+            text:textName,
             label: item._fields[i].labels,
+            properties:item._fields[i].properties,
             color:window.localStorage.getItem(item._fields[i].labels[0] + 'color') ? window.localStorage.getItem(item._fields[i].labels[0] + 'color') :  "#21a1ff",
             width:window.localStorage.getItem(item._fields[i].labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].labels[0] + 'size') :  "80",
             height:window.localStorage.getItem(item._fields[i].labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].labels[0] + 'size') :  "80",
@@ -1941,21 +2084,6 @@ mitts.on("params", (result: any) => {
     result.flagshowR = false;
   }
   //overview nodes
-  result.records.forEach(item=>{
-    console.log(item,'1920')
-    item._fields.forEach(item2=>{
-      if( item2 !== null &&
-          !item2.start &&
-          !item2.end &&
-          item2.labels){
-            result.properties = item2.properties
-          }
-          else if(item2 !== null && item2.segments){
-            // result.properties = 
-          }
-    })
-  })
-  console.log(result.properties,'1896')
   resultNodes.value = [];
   let set = new Set(result.graphData.nodes.map((item) => JSON.stringify(item)));
   resultNodes.value = Array.from(set).map((strItem) => JSON.parse(strItem)); //将所有node节点去重
