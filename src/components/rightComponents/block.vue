@@ -1571,7 +1571,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick,watch} from "vue";
+import { ref, nextTick, watch } from "vue";
 // import { useStore } from "vuex";
 import RelationGraph from "relation-graph/vue3";
 import {
@@ -1609,26 +1609,25 @@ const tagName = ref("");
 //   mitts.emit(list)
 // })
 //控制list条数
-if(list.value.length > 30){
-  list.value.splice(list.value.length - 1,1)
+if (list.value.length > 30) {
+  list.value.splice(list.value.length - 1, 1);
 }
 //标签颜色
 const getTagColor = (key) => {
-  const color = window.localStorage.getItem(key+'color')
-    ? window.localStorage.getItem(key + 'color')
+  const color = window.localStorage.getItem(key + "color")
+    ? window.localStorage.getItem(key + "color")
     : "#21a1ff";
   return color;
 };
 const getLineColor = (key) => {
-  const color = window.localStorage.getItem(key+'linecolor')
-    ? window.localStorage.getItem(key + 'linecolor')
+  const color = window.localStorage.getItem(key + "linecolor")
+    ? window.localStorage.getItem(key + "linecolor")
     : "#999999";
   return color;
 };
 //拿到标签名
 const tagClick = (name) => {
   tagName.value = name;
-  
 };
 const OverviewClick = () => {
   overview.value = !overview.value;
@@ -1731,175 +1730,188 @@ const removeModule = (index: Number) => {
 };
 
 //overview修改颜色
-const colorClick = (e)=>{
-if(e.target.className === 'li'){
-  window.localStorage.setItem(tagName.value + 'color',e.target.style.backgroundColor)
-  list.value.forEach((item,index) => {
+const colorClick = (e) => {
+  if (e.target.className === "li") {
+    window.localStorage.setItem(
+      tagName.value + "color",
+      e.target.style.backgroundColor
+    );
+    list.value.forEach((item, index) => {
       item.graphData.nodes.forEach((item2) => {
         item2.label.forEach((item3) => {
           if (item3 === tagName.value) {
-            item2.color = window.localStorage.getItem(tagName.value + 'color')
+            item2.color = window.localStorage.getItem(tagName.value + "color");
           }
         });
-      });
-      nextTick(() => {
-        graphRef.value[index].setJsonData(item.graphData);
-      });
-    });
-}
-}
-//lines修改颜色
-const colorRelaClick = (e)=>{
-  if(e.target.className === 'li'){
-  window.localStorage.setItem(tagName.value + 'linecolor',e.target.style.backgroundColor)
-  list.value.forEach((item,index) => {
-      item.graphData.lines.forEach((item2) => {
-          if (item2.text === tagName.value) {
-            item2.color = window.localStorage.getItem(tagName.value + 'linecolor')
-          }
       });
       nextTick(() => {
         graphRef.value[index].setJsonData(item.graphData);
       });
     });
   }
-}
-//修改大小
-const sizeClick = (e)=>{
-if(e.target.className === "sizeLi"){
-  window.localStorage.setItem(tagName.value + 'size',e.target.dataset.size)
-  list.value.forEach((item,index) => {
-      item.graphData.nodes.forEach((item2) => {
-        item2.label.forEach((item3) => {
-          if (item3 === tagName.value) {
-            item2.width = window.localStorage.getItem(tagName.value + 'size')
-            item2.height = window.localStorage.getItem(tagName.value + 'size')
-          }
-        });
-      });
-      nextTick(() => {
-        graphRef.value[index].setJsonData(item.graphData);
-      });
-    });
-}
-}
-//lines修改大小
-const sizeRelaClick = (e)=>{
-if(e.target.className === "sizeLi"){
-  window.localStorage.setItem(tagName.value + 'linesize',e.target.dataset.size)
-  list.value.forEach((item,index) => {
+};
+//lines修改颜色
+const colorRelaClick = (e) => {
+  if (e.target.className === "li") {
+    window.localStorage.setItem(
+      tagName.value + "linecolor",
+      e.target.style.backgroundColor
+    );
+    list.value.forEach((item, index) => {
       item.graphData.lines.forEach((item2) => {
         if (item2.text === tagName.value) {
-            item2.lineWidth = window.localStorage.getItem(tagName.value + 'linesize')
-          }
+          item2.color = window.localStorage.getItem(
+            tagName.value + "linecolor"
+          );
+        }
       });
       nextTick(() => {
         graphRef.value[index].setJsonData(item.graphData);
       });
     });
-}
-}
+  }
+};
+//修改大小
+const sizeClick = (e) => {
+  if (e.target.className === "sizeLi") {
+    window.localStorage.setItem(tagName.value + "size", e.target.dataset.size);
+    list.value.forEach((item, index) => {
+      item.graphData.nodes.forEach((item2) => {
+        item2.label.forEach((item3) => {
+          if (item3 === tagName.value) {
+            item2.width = window.localStorage.getItem(tagName.value + "size");
+            item2.height = window.localStorage.getItem(tagName.value + "size");
+          }
+        });
+      });
+      nextTick(() => {
+        graphRef.value[index].setJsonData(item.graphData);
+      });
+    });
+  }
+};
+//lines修改大小
+const sizeRelaClick = (e) => {
+  if (e.target.className === "sizeLi") {
+    window.localStorage.setItem(
+      tagName.value + "linesize",
+      e.target.dataset.size
+    );
+    list.value.forEach((item, index) => {
+      item.graphData.lines.forEach((item2) => {
+        if (item2.text === tagName.value) {
+          item2.lineWidth = window.localStorage.getItem(
+            tagName.value + "linesize"
+          );
+        }
+      });
+      nextTick(() => {
+        graphRef.value[index].setJsonData(item.graphData);
+      });
+    });
+  }
+};
 //修改字段 id
 const idClick = (e) => {
-  window.localStorage.setItem(tagName.value ,'id')
+  window.localStorage.setItem(tagName.value, "id");
   list.value.forEach((item) => {
-      item.graphData.nodes.forEach((item2) => {
-        item2.label.forEach((item3) => {
-          if (item3 === tagName.value) {
-            item.records.forEach(item4=>{
-              item4._fields.forEach(item5=>{
-                if(
-                  item5 !== null &&
-                  !item5.start &&
-                  !item5.end &&
-                  item5.labels){
-                    item2.text = item2.id
-                  }
-                  else if(item5 !== null && item5.segments){
-                    console.log(111)
-                    item2.text = item2.id 
-                  }
-              })
-            })
-          }
-        });
-      });
-      nextTick(() => {
-        graphRef.value[list.value.length - 1].setJsonData(item.graphData);
+    item.graphData.nodes.forEach((item2) => {
+      item2.label.forEach((item3) => {
+        if (item3 === tagName.value) {
+          item.records.forEach((item4) => {
+            item4._fields.forEach((item5) => {
+              if (
+                item5 !== null &&
+                !item5.start &&
+                !item5.end &&
+                item5.labels
+              ) {
+                item2.text = item2.id;
+              } else if (item5 !== null && item5.segments) {
+                console.log(111);
+                item2.text = item2.id;
+              }
+            });
+          });
+        }
       });
     });
+    nextTick(() => {
+      graphRef.value[list.value.length - 1].setJsonData(item.graphData);
+    });
+  });
 };
 //修改字段properties
-const fileClick = (e)=>{
-window.localStorage.setItem(tagName.value,e.target.innerText)
-list.value.forEach((item) => {
-      item.graphData.nodes.forEach((item2) => {
-        item2.label.forEach((item3) => {
-          if (item3 === tagName.value) {
-            item.records.forEach(item4=>{
-              item4._fields.forEach(item5=>{
-                if(
-                  item5 !== null &&
-                  !item5.start &&
-                  !item5.end &&
-                  item5.labels){
-                    item2.text = item2.properties[e.target.innerText]
-                  }
-                  else if(item5 !== null && item5.segments){
-                    item2.text = item2.properties[e.target.innerText]
-                  }
-              })
-            })
-          }
-        });
-      });
-      nextTick(() => {
-        graphRef.value[list.value.length - 1].setJsonData(item.graphData);
+const fileClick = (e) => {
+  window.localStorage.setItem(tagName.value, e.target.innerText);
+  list.value.forEach((item) => {
+    item.graphData.nodes.forEach((item2) => {
+      item2.label.forEach((item3) => {
+        if (item3 === tagName.value) {
+          item.records.forEach((item4) => {
+            item4._fields.forEach((item5) => {
+              if (
+                item5 !== null &&
+                !item5.start &&
+                !item5.end &&
+                item5.labels
+              ) {
+                item2.text = item2.properties[e.target.innerText];
+              } else if (item5 !== null && item5.segments) {
+                item2.text = item2.properties[e.target.innerText];
+              }
+            });
+          });
+        }
       });
     });
-}
+    nextTick(() => {
+      graphRef.value[list.value.length - 1].setJsonData(item.graphData);
+    });
+  });
+};
 //修改line字段 id
-const lineIdClick = (e)=>{
-  window.localStorage.setItem(tagName.value,'id')
-  list.value.forEach((item,index) => {
-      item.graphData.lines.forEach((item2) => {
-          if (item2.type === tagName.value) {
-            item2.text = item2.id
-          }
-      });
-      nextTick(() => {
-        graphRef.value[index].setJsonData(item.graphData);
-      });
+const lineIdClick = (e) => {
+  window.localStorage.setItem(tagName.value, "id");
+  list.value.forEach((item, index) => {
+    item.graphData.lines.forEach((item2) => {
+      if (item2.type === tagName.value) {
+        item2.text = item2.id;
+      }
     });
-}
+    nextTick(() => {
+      graphRef.value[index].setJsonData(item.graphData);
+    });
+  });
+};
 //修改字段line type
-const lineTypeClick = (e)=>{
-  window.localStorage.setItem(tagName.value,'type')
-  list.value.forEach((item,index) => {
-      item.graphData.lines.forEach((item2) => {
-          if (item2.type === tagName.value) {
-            item2.text = item2.type
-          }
-      });
-      nextTick(() => {
-        graphRef.value[index].setJsonData(item.graphData);
-      });
+const lineTypeClick = (e) => {
+  window.localStorage.setItem(tagName.value, "type");
+  list.value.forEach((item, index) => {
+    item.graphData.lines.forEach((item2) => {
+      if (item2.type === tagName.value) {
+        item2.text = item2.type;
+      }
     });
-}
+    nextTick(() => {
+      graphRef.value[index].setJsonData(item.graphData);
+    });
+  });
+};
 //修改字段 line properties
-const lineFileClick = (e)=>{
-  window.localStorage.setItem(tagName.value,e.target.innerText)
-  list.value.forEach((item,index) => {
-      item.graphData.lines.forEach((item2) => {
-          if (item2.type === tagName.value) {
-            item2.text = item2.properties[e.target.innerText]
-          }
-      });
-      nextTick(() => {
-        graphRef.value[index].setJsonData(item.graphData);
-      });
+const lineFileClick = (e) => {
+  window.localStorage.setItem(tagName.value, e.target.innerText);
+  list.value.forEach((item, index) => {
+    item.graphData.lines.forEach((item2) => {
+      if (item2.type === tagName.value) {
+        item2.text = item2.properties[e.target.innerText];
+      }
     });
-}
+    nextTick(() => {
+      graphRef.value[index].setJsonData(item.graphData);
+    });
+  });
+};
 //取消置顶
 mitts.on("Data", (item: any) => {
   list.value.push(item);
@@ -1961,74 +1973,150 @@ mitts.on("params", (result: any) => {
     result.records.forEach((item: any, index: Number) => {
       for (let i = 0; i < item._fields.length; i++) {
         if (item._fields[i] !== null && item._fields[i].segments) {
-          
-          if(window.localStorage.getItem(item._fields[i].start.labels[0])){
-            if(window.localStorage.getItem(item._fields[i].start.labels[0]) === "id"){
-              textName = item._fields[i].start.elementId
-            }else{
-              textName = item._fields[i].start.properties[window.localStorage.getItem(item._fields[i].start.labels[0])]
+          for (let k = 0; k < item._fields[i].segments.length; k++) {
+            for(let t = 0; t < item._fields[i].segments[k].start.labels.length; t++){
+              for(let l = 0;l < item._fields[i].segments[k].end.labels.length; l++){
+            if (window.localStorage.getItem(item._fields[i].segments[k].start.labels[t])) {
+              if (
+                window.localStorage.getItem(item._fields[i].start.labels[t]) ===
+                "id"
+              ) {
+                textName = item._fields[i].segments[k].start.elementId;
+              } else {
+                textName =
+                  item._fields[i].segments[k].start.properties[
+                    window.localStorage.getItem(item._fields[i].segments[k].start.labels[t])
+                  ];
+              }
+            } else {
+              for (const key in item._fields[i].segments[k].start.properties) {
+                textName = item._fields[i].segments[k].start.properties[key];
+              }
             }
-          }else{
-            for (const key in item._fields[i].start.properties) {
-            textName = item._fields[i].start.properties[key];
-          }
-          }
-          if(window.localStorage.getItem(item._fields[i].end.labels[0])){
-            if(window.localStorage.getItem(item._fields[i].end.labels[0]) === "id"){
-              textTitle = item._fields[i].end.elementId
-            }else{
-              textTitle = item._fields[i].end.properties[window.localStorage.getItem(item._fields[i].end.labels[0])]
+            if (window.localStorage.getItem(item._fields[i].segments[k].end.labels[l])) {
+              if (
+                window.localStorage.getItem(item._fields[i].segments[k].end.labels[l]) ===
+                "id"
+              ) {
+                textTitle = item._fields[i].segments[k].end.elementId;
+              } else {
+                textTitle =
+                  item._fields[i].segments[k].end.properties[
+                    window.localStorage.getItem(item._fields[i].segments[k].end.labels[l])
+                  ];
+              }
+            } else {
+              for (const key in item._fields[i].segments[k].end.properties) {
+                textTitle = item._fields[i].segments[k].end.properties[key];
+              }
             }
-          }else{
-            for (const key in item._fields[i].end.properties) {
-              textTitle = item._fields[i].end.properties[key];
-          }
-          }
-          if(window.localStorage.getItem(item._fields[i].segments[0].relationship.type)){
-            if(window.localStorage.getItem(item._fields[i].segments[0].relationship.type) === "id"){
-              lineText = item._fields[i].segments[0].relationship.elementId
-            }else if(window.localStorage.getItem(item._fields[i].segments[0].relationship.type) === "type"){
-              lineText = item._fields[i].segments[0].relationship.type
-            }else{
-              lineText = item._fields[i].segments[0].relationship.properties[window.localStorage.getItem(item._fields[i].segments[0].relationship.type)]
+            if (
+              window.localStorage.getItem(
+                item._fields[i].segments[k].relationship.type
+              )
+            ) {
+              if (
+                window.localStorage.getItem(
+                  item._fields[i].segments[k].relationship.type
+                ) === "id"
+              ) {
+                lineText = item._fields[i].segments[k].relationship.elementId;
+              } else if (
+                window.localStorage.getItem(
+                  item._fields[i].segments[k].relationship.type
+                ) === "type"
+              ) {
+                lineText = item._fields[i].segments[k].relationship.type;
+              } else {
+                lineText =
+                  item._fields[i].segments[k].relationship.properties[
+                    window.localStorage.getItem(
+                      item._fields[i].segments[k].relationship.type
+                    )
+                  ];
+              }
+            } else {
+              lineText = item._fields[i].segments[k].relationship.type;
             }
-          }else{
-            lineText = item._fields[i].segments[0].relationship.type
+            result.graphData.nodes.push({
+              id: item._fields[i].segments[k].start.elementId,
+              text: textName,
+              color: window.localStorage.getItem(
+                item._fields[i].segments[k].start.labels[t] + "color"
+              )
+                ? window.localStorage.getItem(
+                    item._fields[i].segments[k].start.labels[t] + "color"
+                  )
+                : "#21a1ff",
+              label: item._fields[i].segments[k].start.labels,
+              properties: item._fields[i].segments[k].start.properties,
+              width: window.localStorage.getItem(
+                item._fields[i].segments[k].start.labels[t] + "size"
+              )
+                ? window.localStorage.getItem(
+                    item._fields[i].segments[k].start.labels[t] + "size"
+                  )
+                : 80,
+              height: window.localStorage.getItem(
+                item._fields[i].segments[k].start.labels[t] + "size"
+              )
+                ? window.localStorage.getItem(
+                    item._fields[i].segments[k].start.labels[t] + "size"
+                  )
+                : 80,
+            });
+            result.graphData.nodes.push({
+              id: item._fields[i].segments[k].end.elementId,
+              text: textTitle,
+              color: window.localStorage.getItem(
+                item._fields[i].segments[k].end.labels[l] + "color"
+              )
+                ? window.localStorage.getItem(
+                    item._fields[i].segments[k].end.labels[l] + "color"
+                  )
+                : "#21a1ff",
+              label: item._fields[i].segments[k].end.labels,
+              properties: item._fields[i].segments[k].end.properties,
+              width: window.localStorage.getItem(
+                item._fields[i].segments[k].end.labels[l] + "size"
+              )
+                ? window.localStorage.getItem(
+                    item._fields[i].segments[k].end.labels[l] + "size"
+                  )
+                : 80,
+              height: window.localStorage.getItem(
+                item._fields[i].segments[k].end.labels[l] + "size"
+              )
+                ? window.localStorage.getItem(
+                    item._fields[i].segments[k].end.labels[l] + "size"
+                  )
+                : 80,
+            });
+            result.graphData.lines.push({
+              id: item._fields[i].segments[k].relationship.elementId,
+              type: item._fields[i].segments[k].relationship.type,
+              properties: item._fields[i].segments[k].relationship.properties,
+              from: item._fields[i].segments[k].start.elementId,
+              to: item._fields[i].segments[k].end.elementId,
+              text: lineText,
+              lineWidth: window.localStorage.getItem(
+                item._fields[i].segments[k].relationship.type + "linesize"
+              )
+                ? window.localStorage.getItem(
+                    item._fields[i].segments[k].relationship.type + "linesize"
+                  )
+                : 1,
+              color: window.localStorage.getItem(
+                item._fields[i].segments[k].relationship.type + "linecolor"
+              )
+                ? window.localStorage.getItem(
+                    item._fields[i].segments[k].relationship.type + "linecolor"
+                  )
+                : "#666666",
+            });
           }
-          result.graphData.nodes.push({
-            id: item._fields[i].start.elementId,
-            text: textName,
-            color:window.localStorage.getItem(item._fields[i].start.labels[0] + 'color') ? window.localStorage.getItem(item._fields[i].start.labels[0] + 'color') :  "#21a1ff",
-            label: item._fields[i].start.labels,
-            properties:item._fields[i].start.properties,
-            width: window.localStorage.getItem(item._fields[i].start.labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].start.labels[0] + 'size') :  80,
-            height: window.localStorage.getItem(item._fields[i].start.labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].start.labels[0] + 'size') :  80,
-          });
-          result.graphData.nodes.push({
-            id: item._fields[i].end.elementId,
-            text: textTitle,
-            color:window.localStorage.getItem(item._fields[i].end.labels[0] + 'color') ? window.localStorage.getItem(item._fields[i].end.labels[0] + 'color') :  "#21a1ff",
-            label: item._fields[i].end.labels,
-            properties:item._fields[i].end.properties,
-            width: window.localStorage.getItem(item._fields[i].end.labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].end.labels[0] + 'size') :  80,
-            height: window.localStorage.getItem(item._fields[i].end.labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].end.labels[0] + 'size') :  80,
-          });
-          // result.graphData.lines.push({
-          //   // id:item._fields[i].segments[0].relationship.elementId,
-          //   // id:item._fields[i].segments.length !== 0 : 
-          //   //要不写两个for循环想这个i是的 给labels和segment都循环一下
-          //   //这都不能是0
-          //   // 如果fields只有一条，那你这个i就是0.那你也取不到segments的下标1啊不是啊，我的意思是，在fields里不是判断n和p了吗 当为n的时候 写个for循环循环这个label，我分析label也不带只有一个的 
-          //   //如果是p 写个for循环循环segment和start和end的labels，你觉得呢 等下，我看看啊
-          //   // 1.segments是个数组吧对，有时候不只是1条吧对，你是不是都取0是不对的对，你不就是想按顺序取么对，还有我发现了，虽然我不懂这个玩意，但是所有的0都不对，都得遍历取你说呢嗯咋改
-          //   type:item._fields[i].segments[0].relationship.type,
-          //   properties:item._fields[i].segments[0].relationship.properties,
-          //   from: item._fields[i].start.elementId,
-          //   to: item._fields[i].end.elementId,
-          //   text: lineText,
-          //   lineWidth: window.localStorage.getItem(item._fields[i].segments[0].relationship.type + 'linesize') ? window.localStorage.getItem(item._fields[i].segments[0].relationship.type + 'linesize') : 1,
-          //   color: window.localStorage.getItem(item._fields[i].segments[0].relationship.type + 'linecolor') ? window.localStorage.getItem(item._fields[i].segments[0].relationship.type + 'linecolor') :  '#666666',
-          // });
+          }
+          }
           break;
         }
       }
@@ -2046,26 +2134,43 @@ mitts.on("params", (result: any) => {
           !item._fields[i].end &&
           item._fields[i].labels
         ) {
-          if(window.localStorage.getItem(item._fields[i].labels[0])){
-            if(window.localStorage.getItem(item._fields[i].labels[0]) === "id"){
-              textName = item._fields[i].elementId
-            }else{
-              textName = item._fields[i].properties[window.localStorage.getItem(item._fields[i].labels[0])]
+          if (window.localStorage.getItem(item._fields[i].labels[0])) {
+            if (
+              window.localStorage.getItem(item._fields[i].labels[0]) === "id"
+            ) {
+              textName = item._fields[i].elementId;
+            } else {
+              textName =
+                item._fields[i].properties[
+                  window.localStorage.getItem(item._fields[i].labels[0])
+                ];
             }
-          }else{
+          } else {
             for (const key in item._fields[i].properties) {
-            textName = item._fields[i].properties[key];
+              textName = item._fields[i].properties[key];
+            }
           }
-          }
-          
+
           result.graphData.nodes.push({
             id: item._fields[i].elementId,
-            text:textName,
+            text: textName,
             label: item._fields[i].labels,
-            properties:item._fields[i].properties,
-            color:window.localStorage.getItem(item._fields[i].labels[0] + 'color') ? window.localStorage.getItem(item._fields[i].labels[0] + 'color') :  "#21a1ff",
-            width:window.localStorage.getItem(item._fields[i].labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].labels[0] + 'size') :  "80",
-            height:window.localStorage.getItem(item._fields[i].labels[0] + 'size') ? window.localStorage.getItem(item._fields[i].labels[0] + 'size') :  "80",
+            properties: item._fields[i].properties,
+            color: window.localStorage.getItem(
+              item._fields[i].labels[0] + "color"
+            )
+              ? window.localStorage.getItem(item._fields[i].labels[0] + "color")
+              : "#21a1ff",
+            width: window.localStorage.getItem(
+              item._fields[i].labels[0] + "size"
+            )
+              ? window.localStorage.getItem(item._fields[i].labels[0] + "size")
+              : "80",
+            height: window.localStorage.getItem(
+              item._fields[i].labels[0] + "size"
+            )
+              ? window.localStorage.getItem(item._fields[i].labels[0] + "size")
+              : "80",
           });
           break;
         }
@@ -2085,44 +2190,61 @@ mitts.on("params", (result: any) => {
   }
   //overview nodes
   resultNodes.value = [];
-  let set = new Set(result.graphData.nodes.map((item) => JSON.stringify(item)));
-  resultNodes.value = Array.from(set).map((strItem) => JSON.parse(strItem)); //将所有node节点去重
-  labelList.value = []; //节点
+  resultNodes.value = result.graphData.nodes.reduce(
+    (acc: any, current: any) => {
+      // 检查累加器（acc）中是否已存在具有相同id的对象
+      const existing = acc.find((item) => item.id === current.id);
+      // 如果不存在，则将其添加到累加器中
+      if (!existing) {
+        acc.push(current);
+      }
+      // 否则，不执行任何操作（即不添加重复项）
+      return acc;
+    },
+    []
+  ); // 初始累加器是一个空数组
+  labelList.value = [];
   resultNodes.value.forEach((item) => {
     labelList.value.push(...item.label);
   });
-  result.labelList = labelList.value.reduce((acc, curr) => {
+  result.labelList = labelList.value.reduce((acc2, curr2) => {
     // 如果当前元素已经在累加器中，则增加其计数
-    if (acc[curr]) {
-      acc[curr]++;
+    if (acc2[curr2]) {
+      acc2[curr2]++;
     }
     // 否则，将其添加到累加器中，并设置计数为1
     else {
-      acc[curr] = 1;
+      acc2[curr2] = 1;
     }
-    return acc;
+    return acc2;
   }, {});
-  //overview Relationship
 
+  //overview Relationship
   resultRelation.value = [];
-  let set2 = new Set(
-    result.graphData.lines.map((item) => JSON.stringify(item))
+  resultRelation.value = result.graphData.lines.reduce(
+    (acc: any, current: any) => {
+      const existing = acc.find((item) => item.id === current.id);
+      if (!existing) {
+        acc.push(current);
+      }
+      return acc;
+    },
+    []
   );
-  resultRelation.value = Array.from(set2).map((strItem) => JSON.parse(strItem)); //将所有node节点去重
   relationList.value = []; //关系
   resultRelation.value.forEach((item) => {
-    relationList.value.push(item.text);
+    relationList.value.push(item.type);
   });
-  result.relationList = relationList.value.reduce((acc, curr) => {
-    // 如果当前元素已经在累加器中，则增加其计数
-    if (acc[curr]) {
-      acc[curr]++;
-    }
-    // 否则，将其添加到累加器中，并设置计数为1
-    else {
-      acc[curr] = 1;
-    }
-    return acc;
+  result.relationList = relationList.value.reduce((acc2, curr2) => {
+  // 如果当前元素已经在累加器中，则增加其计数
+  if (acc2[curr2]) {
+    acc2[curr2]++;
+  }
+  // 否则，将其添加到累加器中，并设置计数为1
+  else {
+    acc2[curr2] = 1;
+  }
+  return acc2;
   }, {});
   //渲染图形
   if (result.graphData.nodes.length !== 0) {
