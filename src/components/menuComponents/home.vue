@@ -4,7 +4,7 @@
     style="
       padding: 18px 0 0 26px;
       height: calc(100vh - 70px);
-      overflow-y: scroll;
+      overflow-y: auto;
     "
   >
     <!-- 标题 -->
@@ -45,10 +45,10 @@
           style="cursor: pointer"
           @click="labelShow"
         >
-          *(3,181,724)</a-tag
+          *(908,224)</a-tag
         >
         <a-tag
-          :color="item.color"
+          :color="getNodeColor(item.text)"
           style="margin-left: 10px; margin-top: 10px; cursor: pointer"
           v-for="(item, index) in dataBase[0].nodes"
           :key="index"
@@ -63,7 +63,7 @@
         <div class="name">关系类型</div>
       </a-col>
       <a-col style="margin-top: 20px">
-        <a-tag style="cursor: pointer" @click="relationShow()"
+        <a-tag style="cursor: pointer" @click="relationShow($event)"
           >*(17,256,038)</a-tag
         >
         <a-tag
@@ -75,7 +75,7 @@
         >
       </a-col>
       <!-- 属性值 -->
-      <a-col style="margin-top: 20px; display: flex; align-items: center">
+      <!-- <a-col style="margin-top: 20px; display: flex; align-items: center">
         <div class="circle"></div>
         <div class="name">属性值</div>
       </a-col>
@@ -87,22 +87,36 @@
           @click="keysClick($event)"
           >{{ item }}</a-tag
         >
-      </a-col>
+      </a-col> -->
       <!-- 连接库信息 -->
       <a-col style="margin-top: 30px; display: flex; align-items: center">
         <div class="circle"></div>
         <div class="name">连接库信息</div>
       </a-col>
-      <el-col style="margin-top: 12;">
-        <div style="margin-top: 8px;">
-          <span style="font-size: 16px; color: #333;font-weight: 500;">username:</span>
-          <span style="margin-left: 14px;">{{username}}</span>
+      <el-col style="margin-top: 12">
+        <div style="margin-top: 8px">
+          <span style="font-size: 16px; color: #333; font-weight: 500"
+            >username:</span
+          >
+          <span style="margin-left: 14px">{{ username }}</span>
         </div>
-        <div style="margin-top: 8px;">
-          <span style="font-size: 16px; color: #333;font-weight: 500;">address:</span>
-          <span style="margin-left: 14px;">{{ address }}</span>
+        <div style="margin-top: 8px">
+          <span style="font-size: 16px; color: #333; font-weight: 500"
+            >address:</span
+          >
+          <span style="margin-left: 14px">{{ address }}</span>
         </div>
-        <div style="margin-top: 8px; font-size: 16px; color: #6a8322; font-weight: 500;text-decoration: underline;cursor: pointer;" @click="disconnectClick">
+        <div
+          style="
+            margin-top: 8px;
+            font-size: 16px;
+            color: #6a8322;
+            font-weight: 500;
+            text-decoration: underline;
+            cursor: pointer;
+          "
+          @click="disconnectClick"
+        >
           disconnect
         </div>
       </el-col>
@@ -111,13 +125,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref ,watch } from "vue";
 import dataBase from "@/data/dataBase";
-import request from "../../utils/request.js";
-import { useStore } from "vuex";
-import { ElMessageBox } from "element-plus";
-const username = window.localStorage.getItem("username")
-const address = window.localStorage.getItem('address')
+import mitts from "../../utils/bus.js";
+const username = window.localStorage.getItem("username");
+const address = window.localStorage.getItem("address");
 // 展示节点
 const value = ref("");
 const options = [
@@ -130,112 +142,172 @@ const options = [
     label: "Option2",
   },
 ];
+
 //断开连接
-const disconnectClick = ()=>{
-window.localStorage.removeItem("username"),
-window.localStorage.removeItem("password"),
-window.localStorage.removeItem("address"),
-location.reload()
+const disconnectClick = () => {
+  window.localStorage.removeItem("username"),
+    window.localStorage.removeItem("password"),
+    window.localStorage.removeItem("address"),
+    location.reload();
+};
+//节点标签颜色
+const getNodeColor = (key) => {
+  const color = window.localStorage.getItem(key + "color")
+    ? window.localStorage.getItem(key + "color")
+    : "rgb(145, 149, 160)";
+  return color;
+};
+//节点展示全部
+const labelShow = () => {
+  const startTime = performance.now()
+  fetch("http://10.0.82.146:7601", {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain",
+    },
+    body: "MATCH (n) RETURN n LIMIT 25",
+  })
+    .then((response) => response.text())
+    .then((data) => {
+      const endTime = performance.now()
+      const responseTime = endTime - startTime
+      const result = {};
+      result.records = [];
+      result.summary = {};
+      result.summary.query = {};
+      result.summary.server = {};
+      console.log(JSON.parse(data), "data");
+      result.resTime = Math.round(responseTime) + 'ms'
+      const data2 = JSON.parse(data);
+      data2.response.forEach((value, key) => {
+        const keys = Object.keys(value);
+        for (let key in value) {
+          result.records.push({ keys: keys, _fields: [value[key]] });
+        }
+      });
+      result.summary.query.text = data2.query;
+      result.summary.server.address = "http://10.0.82.146:7601";
+      result.summary.server.agent = "PandaDB";
+      console.log(result);
+      mitts.emit("params", result);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+};
+//节点展示部分
+const graphShow = (e) => {
+  const startTime = performance.now();
+  fetch("http://10.0.82.146:7601", {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain",
+    },
+    body: `MATCH (n:${e.target.innerText}) RETURN n LIMIT 25`,
+  })
+    .then((response) => response.text())
+    .then((data) => {
+      const endTime = performance.now();
+      const responseTime = endTime - startTime;
+      console.log(JSON.parse(data), "data");
+      const result = {};
+      result.records = [];
+      result.summary = {};
+      result.summary.query = {};
+      result.summary.server = {};
+      result.resTime = Math.round(responseTime) + "ms";
+      const data2 = JSON.parse(data);
+      data2.response.forEach((value, key) => {
+        const keys = Object.keys(value);
+        for (let key in value) {
+          result.records.push({ keys: keys, _fields: [value[key]] });
+        }
+      });
+      result.summary.query.text = data2.query;
+      result.summary.server.address = "http://10.0.82.146:7601";
+      result.summary.server.agent = "PandaDB";
+      console.log(result);
+      mitts.emit("params", result);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+};
+//关系展示全部
+const relationShow = (e) => {
+  const startTime = performance.now();
+  fetch("http://10.0.82.146:7601", {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain",
+    },
+    body: `MATCH p=()-->() RETURN p LIMIT 25`,
+  })
+    .then((response) => response.text())
+    .then((data) => {
+      const endTime = performance.now();
+      const result = {};
+      result.records = [];
+      result.summary = {};
+      result.summary.query = {};
+      result.summary.server = {};
+      const data2 = JSON.parse(data);
+      result.resTime = Math.round(responseTime) + "ms";
+      data2.response.forEach((value, key) => {
+        const keys = Object.keys(value);
+        for (let key in value) {
+          result.records.push({ keys: keys, _fields: [value[key]] });
+        }
+      });
+      result.summary.query.text = data2.query;
+      result.summary.server.address = "http://10.0.82.146:7601";
+      result.summary.server.agent = "PandaDB";
+      console.log(result);
+      mitts.emit("params", result);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
 }
-// 节点展示全局
-// const labelShow = () => {
-//   let promiseData = request.fetchData(
-//     "neo4j",
-//     "admin",
-//     "MATCH (n) RETURN n LIMIT 10"
-//   );
-//   promiseData
-//     .then((result: any) => {
-//       console.log(result, "节点的数据");
-//       // store.commit("increment",  result );
-//     })
-//     .catch((error: any) => {
-//       console.log(error);
-//       ElMessageBox.alert(error, "错误提示", {
-//         confirmButtonText: "好的",
-//       });
-//     });
-// };
-// 节点展示部分
-// const graphShow = (event) => {
-//   let promiseData = request.fetchData(
-//     "neo4j",
-//     "admin",
-//     `MATCH(n:${event.target.innerText})RETURN n LIMIT 25`
-//   );
-//   promiseData
-//     .then((result: any) => {
-//       console.log(result, "部分节点数据");
-//       // store.commit("increment", result);
-//     })
-//     .catch((error: any) => {
-//       console.log(error);
-//       ElMessageBox.alert(error, "错误提示", {
-//         confirmButtonText: "好的",
-//       });
-//     });
-// };
-// 关系全部
-// const relationShow = () => {
-//   let promiseData = request.fetchData(
-//     "neo4j",
-//     "admin",
-//     `MATCH p=()-->() RETURN p LIMIT 25`
-//   );
-//   promiseData
-//     .then((result: any) => {
-//       // console.log(result,"关系的数据")
-//       store.commit("increment", result );
-//     })
-//     .catch((error: any) => {
-//       console.log(error);
-//       ElMessageBox.alert(error, "错误提示", {
-//         confirmButtonText: "好的",
-//       });
-//     });
-// };
-//关系部分
-// const relationClick = (event) => {
-//   let promiseData = request.fetchData(
-//     "neo4j",
-//     "admin",
-//     `MATCH p=()-[r:${event.target.innerText}]->() RETURN p LIMIT 25`
-//   );
-//   promiseData
-//     .then((result: any) => {
-//       console.log(result, "部分关系数据");
-//       // store.commit("increment",  result );
-//     })
-//     .catch((error: any) => {
-//       console.log(error);
-//       ElMessageBox.alert(error, "错误提示", {
-//         confirmButtonText: "好的",
-//       });
-//     });
-// };
-//属性
-// const keysClick = (event) => {
-//   let promiseData = request.fetchData(
-//     "neo4j",
-//     "admin",
-//     `MATCH (n) WHERE (n.${event.target.innerText}) IS NOT NULL
-//       RETURN DISTINCT "node" as entity, n.${event.target.innerText} AS ${event.target.innerText} LIMIT 25
-//       UNION ALL
-//       MATCH ()-[r]-() WHERE (r.${event.target.innerText}) IS NOT NULL
-//       RETURN DISTINCT "relationship" AS entity, r.${event.target.innerText} AS ${event.target.innerText} LIMIT 25`
-//   );
-//   promiseData
-//     .then((result: any) => {
-//       console.log(result, "属性数据");
-//       // store.commit("increment",  result );
-//     })
-//     .catch((error: any) => {
-//       console.log(error);
-//       ElMessageBox.alert(error, "错误提示", {
-//         confirmButtonText: "好的",
-//       });
-//     });
-// };
+//关系展示部分
+const relationClick = (e) => {
+  const startTime = performance.now();
+  fetch("http://10.0.82.146:7601", {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain",
+    },
+    body: `MATCH p=()-[r:${e.target.innerText}]->() RETURN p LIMIT 25`,
+  })
+    .then((response) => response.text())
+    .then((data) => {
+      const endTime = performance.now();
+      const responseTime = endTime - startTime;
+      console.log(JSON.parse(data), "data");
+      const result = {};
+      result.records = [];
+      result.summary = {};
+      result.summary.query = {};
+      result.summary.server = {};
+      const data2 = JSON.parse(data);
+      result.resTime = Math.round(responseTime) + "ms";
+      console.log(data2)
+      data2.response.forEach((value, key) => {
+        const keys = Object.keys(value);
+        for (let key in value) {
+          result.records.push({ keys: keys, _fields: [value[key]] });
+        }
+      });
+      result.summary.query.text = data2.query;
+      result.summary.server.address = "http://10.0.82.146:7601";
+      result.summary.server.agent = "PandaDB";
+      console.log(result);
+      mitts.emit("params", result);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
 </script>
 
 <style scoped>

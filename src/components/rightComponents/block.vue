@@ -11,7 +11,7 @@
       zIndex: isFullscreen ? '5' : '0',
     }"
   >
-    <el-row>
+    <el-row >
       <div
         style="background-color: #f6f6f6; width: 100%; height: 24px"
         v-if="!isFullscreen"
@@ -68,6 +68,17 @@
           height: isFullscreen ? '100vh' : 'auto',
         }"
       >
+      <el-col v-if="item.flagshowER":style="{ height: isFullscreen ? '100vh' : '324px' }"
+      style="padding: 18px;"
+      >
+      <div style="display: flex">
+        <el-tag effect="dark" type="danger"> ERROR </el-tag>
+        <h3 style="font-weight: 500;margin-left: 16px;align-items: center;">pandaDB, Error message</h3>
+      </div>
+      <div style="width: 100%;background-color: rgb(210, 213, 218);padding: 20px;margin-top: 10px">
+        {{ item.error }}
+      </div>
+      </el-col>
         <!-- node -->
         <el-col
           v-if="item.flagshowN">
@@ -176,14 +187,14 @@
                             v-for="(value, key) in item.labelList" :key="key"
                             >{{ key }}({{ value }})</el-tag>
                         </template>
-                        <el-row 
-                        v-for="(value, key) in item.labelList" :key="key">
+                        <el-row >
                           <el-col>
                             <el-tag
+                            v-for="(value, key) in item.labelList" :key="key"
                               effect="dark"
                               round
                               :color="getTagColor(key)"
-                              style="width: 100%;border: none"
+                              style="width: 100%;border: none;margin-bottom: 10px"
                               >{{ key }}({{ value }})</el-tag
                             >
                           </el-col>
@@ -334,9 +345,7 @@
                             </el-tag>
                             <div v-for="(pathTagItem,pathTagIndex) in item.records[0]._fields">
                                 <div v-if="pathTagItem.labels">
-                                  <div v-if="pathTagItem.labels.indexOf(key) !== -1">
                                     <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" v-for="(value4,key4) in pathTagItem.properties " :key="key4" @click="fileClick($event,value4)">{{ key4 }}</el-tag>
-                                  </div>
                                 </div>
                               </div>
                           </el-col> 
@@ -1373,10 +1382,17 @@
         </el-col>
         <!-- keys -->
         <el-col v-if="item.flagshowE">
+          <div v-if="item.records.length === 0"
+          :style="{ height: isFullscreen ? '100vh' : '324px' }"
+          style="padding: 18px;"
+          >
+            (no changes, no records)
+          </div>
           <el-tabs
             :tab-position="tabPosition"
             class="demo-tabs graphMenu"
             :style="{ height: isFullscreen ? '100vh' : '324px' }"
+            v-if="item.records.length !== 0"
           >
             <el-tab-pane label="table">
               <template #label>
@@ -1563,6 +1579,7 @@
           line-height: 24px;
           padding-left: 16px;
         "
+        v-if="!item.flagshowER"
       >
         Transmit {{ item.records.length }} records within {{ item.resTime }}.
       </div>
@@ -1590,6 +1607,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import mitts from "../../utils/bus.js";
 //组件
 import search3 from "../rightComponents/blockcomponents/search3.vue";
+import mitt from "mitt";
 //变量
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 const options = {};
@@ -1604,10 +1622,8 @@ const labelList = ref([]);
 const resultRelation = ref([]);
 const relationList = ref([]);
 const tagName = ref("");
-//置顶
-// watch(() => list.value,(newValue,oldValue) => {
-//   mitts.emit(list)
-// })
+const error = ref("")
+console.log(list.value, "1605");
 //控制list条数
 if (list.value.length > 30) {
   list.value.splice(list.value.length - 1, 1);
@@ -1944,6 +1960,13 @@ mitts.on("params", (result: any) => {
     nodes: [],
     lines: [],
   };
+  console.log(result,'1953')
+  if(result.error){
+    result.flagshowER = true;
+  } else if(result.records.length === 0){
+    result.flagshowE = true;
+  }
+  else{
   result.records.forEach((item: any, index: Number) => {
     for (let i = 0; i < item._fields.length; i++) {
       if (
@@ -1968,159 +1991,213 @@ mitts.on("params", (result: any) => {
       }
     }
   });
+}
+console.log(list.value,'1984')
   //path
   if (result.flagshowP) {
     result.records.forEach((item: any, index: Number) => {
       for (let i = 0; i < item._fields.length; i++) {
         if (item._fields[i] !== null && item._fields[i].segments) {
           for (let k = 0; k < item._fields[i].segments.length; k++) {
-            for(let t = 0; t < item._fields[i].segments[k].start.labels.length; t++){
-              for(let l = 0;l < item._fields[i].segments[k].end.labels.length; l++){
-            if (window.localStorage.getItem(item._fields[i].segments[k].start.labels[t])) {
-              if (
-                window.localStorage.getItem(item._fields[i].start.labels[t]) ===
-                "id"
-              ) {
-                textName = item._fields[i].segments[k].start.elementId;
-              } else {
-                textName =
-                  item._fields[i].segments[k].start.properties[
-                    window.localStorage.getItem(item._fields[i].segments[k].start.labels[t])
-                  ];
-              }
-            } else {
-              for (const key in item._fields[i].segments[k].start.properties) {
-                textName = item._fields[i].segments[k].start.properties[key];
-              }
-            }
-            if (window.localStorage.getItem(item._fields[i].segments[k].end.labels[l])) {
-              if (
-                window.localStorage.getItem(item._fields[i].segments[k].end.labels[l]) ===
-                "id"
-              ) {
-                textTitle = item._fields[i].segments[k].end.elementId;
-              } else {
-                textTitle =
-                  item._fields[i].segments[k].end.properties[
-                    window.localStorage.getItem(item._fields[i].segments[k].end.labels[l])
-                  ];
-              }
-            } else {
-              for (const key in item._fields[i].segments[k].end.properties) {
-                textTitle = item._fields[i].segments[k].end.properties[key];
-              }
-            }
-            if (
-              window.localStorage.getItem(
-                item._fields[i].segments[k].relationship.type
-              )
+            for (
+              let t = 0;
+              t < item._fields[i].segments[k].start.labels.length;
+              t++
             ) {
-              if (
-                window.localStorage.getItem(
-                  item._fields[i].segments[k].relationship.type
-                ) === "id"
+              for (
+                let l = 0;
+                l < item._fields[i].segments[k].end.labels.length;
+                l++
               ) {
-                lineText = item._fields[i].segments[k].relationship.elementId;
-              } else if (
-                window.localStorage.getItem(
-                  item._fields[i].segments[k].relationship.type
-                ) === "type"
-              ) {
-                lineText = item._fields[i].segments[k].relationship.type;
-              } else {
-                lineText =
-                  item._fields[i].segments[k].relationship.properties[
+                if (
+                  window.localStorage.getItem(
+                    item._fields[i].segments[k].start.labels[t]
+                  )
+                ) {
+                  if (
                     window.localStorage.getItem(
-                      item._fields[i].segments[k].relationship.type
-                    )
-                  ];
-              }
-            } else {
-              lineText = item._fields[i].segments[k].relationship.type;
-            }
-            result.graphData.nodes.push({
-              id: item._fields[i].segments[k].start.elementId,
-              text: textName,
-              color: window.localStorage.getItem(
-                item._fields[i].segments[k].start.labels[t] + "color"
-              )
-                ? window.localStorage.getItem(
+                      item._fields[i].start.labels[t]
+                    ) === "id"
+                  ) {
+                    textName = item._fields[i].segments[k].start.elementId;
+                  } else {
+                    textName =
+                      item._fields[i].segments[k].start.properties[
+                        window.localStorage.getItem(
+                          item._fields[i].segments[k].start.labels[t]
+                        )
+                      ];
+                  }
+                } else {
+                  for (const key in item._fields[i].segments[k].start
+                    .properties) {
+                    textName =
+                      item._fields[i].segments[k].start.properties[key];
+                  }
+                }
+                if (
+                  window.localStorage.getItem(
+                    item._fields[i].segments[k].end.labels[l]
+                  )
+                ) {
+                  if (
+                    window.localStorage.getItem(
+                      item._fields[i].segments[k].end.labels[l]
+                    ) === "id"
+                  ) {
+                    textTitle = item._fields[i].segments[k].end.elementId;
+                  } else {
+                    textTitle =
+                      item._fields[i].segments[k].end.properties[
+                        window.localStorage.getItem(
+                          item._fields[i].segments[k].end.labels[l]
+                        )
+                      ];
+                  }
+                } else {
+                  for (const key in item._fields[i].segments[k].end
+                    .properties) {
+                    textTitle = item._fields[i].segments[k].end.properties[key];
+                  }
+                }
+                if (
+                  window.localStorage.getItem(
+                    item._fields[i].segments[k].relation.types
+                  )
+                ) {
+                  if (
+                    window.localStorage.getItem(
+                      item._fields[i].segments[k].relation.types
+                    ) === "id"
+                  ) {
+                    lineText = item._fields[i].segments[k].relation.elementId;
+                  } else if (
+                    window.localStorage.getItem(
+                      item._fields[i].segments[k].relation.types
+                    ) === "type"
+                  ) {
+                    lineText = item._fields[i].segments[k].relation.types;
+                  } else {
+                    lineText =
+                      item._fields[i].segments[k].relation.properties[
+                        window.localStorage.getItem(
+                          item._fields[i].segments[k].relation.types
+                        )
+                      ];
+                  }
+                } else {
+                  lineText = item._fields[i].segments[k].relation.types;
+                }
+                result.graphData.nodes.push({
+                  id: item._fields[i].segments[k].start.elementId,
+                  text: textName,
+                  color: window.localStorage.getItem(
                     item._fields[i].segments[k].start.labels[t] + "color"
                   )
-                : "#21a1ff",
-              label: item._fields[i].segments[k].start.labels,
-              properties: item._fields[i].segments[k].start.properties,
-              width: window.localStorage.getItem(
-                item._fields[i].segments[k].start.labels[t] + "size"
-              )
-                ? window.localStorage.getItem(
+                    ? window.localStorage.getItem(
+                        item._fields[i].segments[k].start.labels[t] + "color"
+                      )
+                    : "#21a1ff",
+                  label: item._fields[i].segments[k].start.labels,
+                  properties: item._fields[i].segments[k].start.properties,
+                  width: window.localStorage.getItem(
                     item._fields[i].segments[k].start.labels[t] + "size"
                   )
-                : 80,
-              height: window.localStorage.getItem(
-                item._fields[i].segments[k].start.labels[t] + "size"
-              )
-                ? window.localStorage.getItem(
+                    ? window.localStorage.getItem(
+                        item._fields[i].segments[k].start.labels[t] + "size"
+                      )
+                    : 80,
+                  height: window.localStorage.getItem(
                     item._fields[i].segments[k].start.labels[t] + "size"
                   )
-                : 80,
-            });
-            result.graphData.nodes.push({
-              id: item._fields[i].segments[k].end.elementId,
-              text: textTitle,
-              color: window.localStorage.getItem(
-                item._fields[i].segments[k].end.labels[l] + "color"
-              )
-                ? window.localStorage.getItem(
+                    ? window.localStorage.getItem(
+                        item._fields[i].segments[k].start.labels[t] + "size"
+                      )
+                    : 80,
+                });
+                result.graphData.nodes.push({
+                  id: item._fields[i].segments[k].end.elementId,
+                  text: textTitle,
+                  color: window.localStorage.getItem(
                     item._fields[i].segments[k].end.labels[l] + "color"
                   )
-                : "#21a1ff",
-              label: item._fields[i].segments[k].end.labels,
-              properties: item._fields[i].segments[k].end.properties,
-              width: window.localStorage.getItem(
-                item._fields[i].segments[k].end.labels[l] + "size"
-              )
-                ? window.localStorage.getItem(
+                    ? window.localStorage.getItem(
+                        item._fields[i].segments[k].end.labels[l] + "color"
+                      )
+                    : "#21a1ff",
+                  label: item._fields[i].segments[k].end.labels,
+                  properties: item._fields[i].segments[k].end.properties,
+                  width: window.localStorage.getItem(
                     item._fields[i].segments[k].end.labels[l] + "size"
                   )
-                : 80,
-              height: window.localStorage.getItem(
-                item._fields[i].segments[k].end.labels[l] + "size"
-              )
-                ? window.localStorage.getItem(
+                    ? window.localStorage.getItem(
+                        item._fields[i].segments[k].end.labels[l] + "size"
+                      )
+                    : 80,
+                  height: window.localStorage.getItem(
                     item._fields[i].segments[k].end.labels[l] + "size"
                   )
-                : 80,
-            });
-            result.graphData.lines.push({
-              id: item._fields[i].segments[k].relationship.elementId,
-              type: item._fields[i].segments[k].relationship.type,
-              properties: item._fields[i].segments[k].relationship.properties,
-              from: item._fields[i].segments[k].start.elementId,
-              to: item._fields[i].segments[k].end.elementId,
-              text: lineText,
-              lineWidth: window.localStorage.getItem(
-                item._fields[i].segments[k].relationship.type + "linesize"
-              )
-                ? window.localStorage.getItem(
-                    item._fields[i].segments[k].relationship.type + "linesize"
+                    ? window.localStorage.getItem(
+                        item._fields[i].segments[k].end.labels[l] + "size"
+                      )
+                    : 80,
+                });
+                result.graphData.lines.push({
+                  id: item._fields[i].segments[k].relation.elementId,
+                  type: item._fields[i].segments[k].relation.types,
+                  properties: item._fields[i].segments[k].relation.properties,
+                  from: String(item._fields[i].segments[k].start.elementId),
+                  to: String(item._fields[i].segments[k].end.elementId),
+                  text: lineText,
+                  lineWidth: window.localStorage.getItem(
+                    item._fields[i].segments[k].relation.types + "linesize"
                   )
-                : 1,
-              color: window.localStorage.getItem(
-                item._fields[i].segments[k].relationship.type + "linecolor"
-              )
-                ? window.localStorage.getItem(
-                    item._fields[i].segments[k].relationship.type + "linecolor"
+                    ? window.localStorage.getItem(
+                        item._fields[i].segments[k].relation.types + "linesize"
+                      )
+                    : 1,
+                  color: window.localStorage.getItem(
+                    item._fields[i].segments[k].relation.types + "linecolor"
                   )
-                : "#666666",
-            });
-          }
-          }
+                    ? window.localStorage.getItem(
+                        item._fields[i].segments[k].relation.types + "linecolor"
+                      )
+                    : "#666666",
+                });
+              }
+            }
           }
           break;
         }
       }
     });
+    result.graphData.nodes = result.graphData.nodes.reduce(
+      (acc: any, current: any) => {
+        // 检查累加器（acc）中是否已存在具有相同id的对象
+        const existing = acc.find((item) => item.id === current.id);
+        // 如果不存在，则将其添加到累加器中
+        if (!existing) {
+          acc.push(current);
+        }
+        // 否则，不执行任何操作（即不添加重复项）
+        return acc;
+      },
+      []
+    ); // 初始累加器是一个空数组
+    result.graphData.lines = result.graphData.lines.reduce(
+      (acc: any, current: any) => {
+        // 检查累加器（acc）中是否已存在具有相同id的对象
+        const existing = acc.find((item) => item.id === current.id);
+        // 如果不存在，则将其添加到累加器中
+        if (!existing) {
+          acc.push(current);
+        }
+        // 否则，不执行任何操作（即不添加重复项）
+        return acc;
+      },
+      []
+    ); // 初始累加器是一个空数组
+    console.log(result.graphData);
     result.flagshowN = false;
     result.flagshowR = false;
     result.flagshowE = false;
@@ -2236,15 +2313,15 @@ mitts.on("params", (result: any) => {
     relationList.value.push(item.type);
   });
   result.relationList = relationList.value.reduce((acc2, curr2) => {
-  // 如果当前元素已经在累加器中，则增加其计数
-  if (acc2[curr2]) {
-    acc2[curr2]++;
-  }
-  // 否则，将其添加到累加器中，并设置计数为1
-  else {
-    acc2[curr2] = 1;
-  }
-  return acc2;
+    // 如果当前元素已经在累加器中，则增加其计数
+    if (acc2[curr2]) {
+      acc2[curr2]++;
+    }
+    // 否则，将其添加到累加器中，并设置计数为1
+    else {
+      acc2[curr2] = 1;
+    }
+    return acc2;
   }, {});
   //渲染图形
   if (result.graphData.nodes.length !== 0) {

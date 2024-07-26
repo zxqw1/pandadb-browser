@@ -21,7 +21,7 @@
       <a-col v-if="open" style="padding-left: 60px">
         <p>
           <span style="font-size: 20px"> 您已连接至用户</span>
-          <span style="padding-left: 20px; color: #6a8322; font-size: 20px">{{username }}</span>
+          <!-- <span style="padding-left: 20px; color: #6a8322; font-size: 20px">{{username }}</span> -->
         </p>
         <p>
           <span style="font-size: 20px"> 地址为</span>
@@ -58,13 +58,13 @@
                 placeholder="请选择"
                 style="width: 115px"
               >
-                <el-option label="neo4j://" value="neo4j://" />
-                <el-option label="bolt://" value="bolt://" />
+                <el-option label="http://" value="http://" />
+                <!-- <el-option label="bolt://" value="bolt://" /> -->
               </el-select>
             </template>
           </el-input>
         </div>
-        <div>
+        <!-- <div>
           <div style="font-size: 14px; font-weight: 500; margin-bottom: 4px">
             UserName
           </div>
@@ -80,7 +80,7 @@
             placeholder="请输入密码"
             show-password
           />
-        </div>
+        </div> -->
         <div>
           <el-button type="primary" @click="loginClick">登录</el-button>
         </div>
@@ -93,7 +93,7 @@
 import { onMounted, reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 const open = ref<boolean>(false);
-const select = ref("bolt://");
+const select = ref("http://");
 const input3 = ref("");
 const input = ref("");
 const input2 = ref("");
@@ -107,31 +107,34 @@ const loginClick = () => {
     ElMessageBox.alert("地址不能为空", "提示", {
       confirmButtonText: "好的",
     });
-  }else if(input.value === ""){
-    ElMessageBox.alert("用户名不能为空", "提示", {
-      confirmButtonText: "好的",
-    });
-  }else if(input2.value === ""){
-    ElMessageBox.alert("密码不能为空", "提示", {
-      confirmButtonText: "好的",
-    });
-  }else{
+  }
+  // else if(input.value === ""){
+  //   ElMessageBox.alert("用户名不能为空", "提示", {
+  //     confirmButtonText: "好的",
+  //   });
+  // }else if(input2.value === ""){
+  //   ElMessageBox.alert("密码不能为空", "提示", {
+  //     confirmButtonText: "好的",
+  //   });
+  // }
+  else{
     window.localStorage.setItem("address",select.value + input3.value)
-    window.localStorage.setItem("username",input.value)
-    window.localStorage.setItem("password",input2.value)
-    window.location.reload();
+    // window.localStorage.setItem("username",input.value)
+    // window.localStorage.setItem("password",input2.value)
     open.value = true;
+    window.location.reload();
   }
 };
 
 //判段是否登录
 onMounted(() => {
-  if (window.localStorage.getItem("username") && window.localStorage.getItem("password")) {
+  // if (window.localStorage.getItem("username") && window.localStorage.getItem("password")) 
+    if (window.localStorage.getItem("address") ) {
     open.value = true;
   }else{
-    // ElMessageBox.alert("您暂未登录哦，请登录", "提示", {
-    //   confirmButtonText: "好的",
-    // });
+    ElMessageBox.alert("您暂未登录哦，请登录", "提示", {
+      confirmButtonText: "好的",
+    });
   }
 }); 
 

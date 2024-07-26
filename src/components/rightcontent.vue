@@ -31,22 +31,31 @@ import login from "./rightComponents/login.vue";
 import login2 from "./rightComponents/login2.vue"
 import block from "./rightComponents/block.vue"
 import blockTop from "./rightComponents/blockTop.vue";
+import mitts from "../utils/bus.js";
 
 import { ref, watch, nextTick } from "vue";
-import { useStore } from "vuex";
-const store = useStore();
+// import { useStore } from "vuex";
+// const store = useStore();
 const scrollContainer = ref(null);
 const loading = ref(false)
-watch(store.state.list, async () => { 
+mitts.on("params",async () => {
+  // console.log(123132213)
   await nextTick();
   //设置滚动条
-  if (scrollContainer.value) {
-    console.log(scrollContainer,"44")
-    scrollContainer.value.scrollTo({
-      top: -scrollContainer.value.scrollHeight,
-    });
-  }
-});
+  // if (scrollContainer.value) {
+    console.log(document.getElementsByClassName("scroll-container")[0].scrollHeight,"44")
+    document.getElementsByClassName("scroll-container")[0].scrollTo({
+      top: -117400000
+    })
+    // scrollContainer.value.scrollTo({
+      // top: -scrollContainer.value.scrollHeight,
+      // top: -200,
+    // });
+  // }
+})
+// watch(store.state.list, async () => { 
+//   
+// });
 </script>
 
 <style scoped>

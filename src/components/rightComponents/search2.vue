@@ -78,6 +78,7 @@ import "codemirror/lib/codemirror.css";
 import "codemirror/theme/darcula.css";
 //主题
 import "codemirror/theme/idea.css";
+import { error } from "neo4j-driver";
 const mode = "javascript"; // 编译语言
 const height = ref(150);
 const theme = "idea"; // 主题语言
@@ -170,20 +171,70 @@ const funClick = async () => {
     console.log(111);
   } else {
     const startTime = performance.now();
-    let promiseData = request.fetchData("neo4j", "admin", contentValue.value);
-    promiseData
-      .then((result: any) => {
-    console.log(result,'175')
-        const endTime = performance.now();
-        const responseTime = endTime - startTime;
-        result.resTime = Math.round(responseTime) + "ms";
-        mitts.emit("params", result);
+    fetch("http://10.0.82.146:7601", {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain",
+      },
+      body: contentValue.value,
+    })
+      .then((response) => response.text())
+      .then((data) => {
+        const data2 = JSON.parse(data);
+        console.log(data2, "184");
+        if (data2.error) {
+          console.log(data2,'186')
+          const result = {};
+          result.summary = {};
+          result.summary.query = {};
+          result.summary.server = {};
+          result.summary.query.text = data2.query;
+          result.summary.server.address = "http://10.0.82.146:7601";
+          result.summary.server.agent = "PandaDB";
+          result.error = error
+          mitts.emit("params", result);
+        } else {
+          const endTime = performance.now();
+          const responseTime = endTime - startTime;
+          console.log(JSON.parse(data), "data");
+          const result = {};
+          result.records = [];
+          result.summary = {};
+          result.summary.query = {};
+          result.summary.server = {};
+          result.resTime = Math.round(responseTime) + "ms";
+          data2.response.forEach((value, key) => {
+            const keys = Object.keys(value);
+            for (let key in value) {
+              result.records.push({ keys: keys, _fields: [value[key]] });
+            }
+          });
+          result.summary.query.text = data2.query;
+          result.summary.server.address = "http://10.0.82.146:7601";
+          result.summary.server.agent = "PandaDB";
+          console.log(result);
+          mitts.emit("params", result);
+        }
       })
-      .catch((error: any) => {
-        ElMessageBox.alert(error, "错误提示", {
-          confirmButtonText: "好的",
-        });
+      .catch((error) => {
+        console.error("Error:", error);
       });
+
+    // const startTime = performance.now();
+    // let promiseData = request.fetchData("neo4j", "admin", contentValue.value);
+    // promiseData
+    //   .then((result: any) => {
+    // console.log(result,'175')
+    //     const endTime = performance.now();
+    //     const responseTime = endTime - startTime;
+    //     result.resTime = Math.round(responseTime) + "ms";
+    //     mitts.emit("params", result);
+    //   })
+    //   .catch((error: any) => {
+    //     ElMessageBox.alert(error, "错误提示", {
+    //       confirmButtonText: "好的",
+    //     });
+    //   });
     deleteClick();
   }
 };

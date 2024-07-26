@@ -127,7 +127,7 @@ mitts.on("command", (contentValue: any) => {
 });
 // 判断是否登录
 const loginelse = ref<boolean>(false);
-if (window.localStorage.getItem("username") === null) {
+if (window.localStorage.getItem("address") === null) {
   loginelse.value = true;
 } else {
   loginelse.value = false;
