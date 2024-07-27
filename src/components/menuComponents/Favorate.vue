@@ -135,7 +135,6 @@ const deleteClick = (scoped) => {
 const RenameClick = (scoped) => {
   scoped.data.show = !scoped.data.show;
 };
-console.log(TreeData.value, "112");
 const handleEnter = (scoped) => {
   // scoped.data.label =
   // console.log(input.value,'119')

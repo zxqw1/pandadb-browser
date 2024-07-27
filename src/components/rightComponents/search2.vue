@@ -79,6 +79,8 @@ import "codemirror/theme/darcula.css";
 //主题
 import "codemirror/theme/idea.css";
 import { error } from "neo4j-driver";
+import { useStore } from "vuex";
+const store = useStore();
 const mode = "javascript"; // 编译语言
 const height = ref(150);
 const theme = "idea"; // 主题语言
@@ -214,6 +216,7 @@ const funClick = async () => {
           result.summary.server.agent = "PandaDB";
           console.log(result);
           mitts.emit("params", result);
+          store.commit("ScrollChange", result);
         }
       })
       .catch((error) => {

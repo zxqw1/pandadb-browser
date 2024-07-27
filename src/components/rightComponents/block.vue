@@ -1623,7 +1623,6 @@ const resultRelation = ref([]);
 const relationList = ref([]);
 const tagName = ref("");
 const error = ref("")
-console.log(list.value, "1605");
 //控制list条数
 if (list.value.length > 30) {
   list.value.splice(list.value.length - 1, 1);
