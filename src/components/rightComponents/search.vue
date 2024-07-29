@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, markRaw, nextTick, onMounted, ref, } from "vue";
+import { computed, markRaw, nextTick, onMounted, ref, reactive } from "vue";
 import mitts from "../../utils/bus.js";
 import {
   CaretRightOutlined,
@@ -71,7 +71,7 @@ import {
   ShrinkOutlined,
 } from "@ant-design/icons-vue";
 import { ElMessageBox } from "element-plus";
-// import request from "../../utils/request.js";
+import request from "../../utils/request.js";
 //框架
 import CodeMirror from "codemirror";
 import "codemirror/lib/codemirror.css";
@@ -79,6 +79,8 @@ import "codemirror/theme/darcula.css";
 //主题
 import "codemirror/theme/idea.css";
 import { error } from "neo4j-driver";
+import { useStore } from "vuex";
+const store = useStore();
 const mode = "javascript"; // 编译语言
 const height = ref(150);
 const theme = "idea"; // 主题语言
@@ -90,9 +92,11 @@ const keywords = ref([
   ["MATCH", "match"],
   ["RETURN", "match"],
   ["LIMIT", "match"],
+  ["CREATE", "match"],
   ["match", "match"],
   ["return", "match"],
   ["limit", "match"],
+  ["create", "match"],
   ["0", "number"],
   ["1", "number"],
   ["2", "number"],
@@ -164,29 +168,115 @@ onMounted(() => {
 computed((_height) => {
   return Number(height.value) ? Number(height.value) + "px" : height.value;
 });
+//喜好渲染
+mitts.on("favo", (cypher) => {
+  const startTime = performance.now();
+  fetch("http://10.0.82.146:7601", {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain",
+    },
+    body: cypher,
+  })
+    .then((response) => response.text())
+    .then((data) => {
+      const data2 = JSON.parse(data);
+      if (data2.error) {
+        console.log(data2, "186");
+        const result = {};
+        result.summary = {};
+        result.summary.query = {};
+        result.summary.server = {};
+        result.summary.query.text = data2.query;
+        result.summary.server.address = "http://10.0.82.146:7601";
+        result.summary.server.agent = "PandaDB";
+        result.error = error;
+        mitts.emit("params", result);
+      } else {
+        const endTime = performance.now();
+        const responseTime = endTime - startTime;
+        console.log(JSON.parse(data), "data");
+        const result = {};
+        result.records = [];
+        result.summary = {};
+        result.summary.query = {};
+        result.summary.server = {};
+        result.resTime = Math.round(responseTime) + "ms";
+        data2.response.forEach((value, key) => {
+          const keys = Object.keys(value);
+          for (let key in value) {
+            result.records.push({ keys: keys, _fields: [value[key]] });
+          }
+        });
+        result.summary.query.text = data2.query;
+        result.summary.server.address = "http://10.0.82.146:7601";
+        result.summary.server.agent = "PandaDB";
+        console.log(result);
+        mitts.emit("params", result);
+        store.commit("ScrollChange", result);
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+});
 //获取数据
 const funClick = async () => {
   await nextTick();
   if (contentValue.value === "") {
-    console.log('输入内容为空');
+    console.log(111);
   } else {
-    // const startTime = performance.now();
-    // const endTime = performance.now();
-    // const responseTime = endTime - startTime;
-    fetch('http://10.0.82.146:7601',{
-      method:'POST',
-      headers:{
-        'Content-Type': 'text/plain',
+    const startTime = performance.now();
+    fetch("http://10.0.82.146:7601", {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain",
       },
-      body:contentValue.value
+      body: contentValue.value,
     })
-    .then(response => response.text())
-    .then(data => {
-      console.log(JSON.parse(data) ,'返回数据')
-    })
-    .catch(error => {
-      console.log(error,'报错数据')
-    })
+      .then((response) => response.text())
+      .then((data) => {
+        const data2 = JSON.parse(data);
+        console.log(data2, "184");
+        if (data2.error) {
+          console.log(data2, "186");
+          const result = {};
+          result.summary = {};
+          result.summary.query = {};
+          result.summary.server = {};
+          result.summary.query.text = data2.query;
+          result.summary.server.address = "http://10.0.82.146:7601";
+          result.summary.server.agent = "PandaDB";
+          result.error = error;
+          mitts.emit("params", result);
+        } else {
+          const endTime = performance.now();
+          const responseTime = endTime - startTime;
+          console.log(JSON.parse(data), "data");
+          const result = {};
+          result.records = [];
+          result.summary = {};
+          result.summary.query = {};
+          result.summary.server = {};
+          result.resTime = Math.round(responseTime) + "ms";
+          data2.response.forEach((value, index) => {
+            const keys = Object.keys(value);
+            result.records.push({ keys: keys, _fields: [] });
+            for (let key in value) {
+              result.records[index]._fields.push(value[key]);
+            }
+          });
+          result.summary.query.text = data2.query;
+          result.summary.server.address = "http://10.0.82.146:7601";
+          result.summary.server.agent = "PandaDB";
+          console.log(result, "271");
+          mitts.emit("params", result);
+          store.commit("ScrollChange", result);
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
     deleteClick();
   }
 };
@@ -201,6 +291,9 @@ const deleteClick = () => {
 </script>
 
 <style scoped>
+ .CodeMirror-line {
+  padding-right: 16px !important;
+}
 .search {
   width: 100%;
   background-color: #ffffff;

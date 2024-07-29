@@ -156,7 +156,7 @@ const funClick = async () => {
       result.summary.server.agent = "PandaDB";
       console.log(result,155);
       // mitts.emit("revamp", (result,props.index));
-      mitts.emit("revamp2", {result:result,index:props.index});
+      mitts.emit("revamp", {result:result,index:props.index});
       store.commit("ScrollChange", result);
     })
     .catch((error) => {

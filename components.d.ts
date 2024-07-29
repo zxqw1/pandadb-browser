@@ -16,7 +16,7 @@ declare module 'vue' {
     ATag: typeof import('ant-design-vue/es')['Tag']
     Block: typeof import('./src/components/rightComponents/block.vue')['default']
     BlockTop: typeof import('./src/components/rightComponents/blockTop.vue')['default']
-    copy: typeof import('./src/components/rightComponents/search2 copy.vue')['default']
+    copy: typeof import('./src/components/rightComponents/blockcomponents/search2 copy.vue')['default']
     Favorate: typeof import('./src/components/menuComponents/Favorate.vue')['default']
     Guides: typeof import('./src/components/menuComponents/guides.vue')['default']
     Header: typeof import('./src/components/header.vue')['default']
@@ -28,7 +28,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Search: typeof import('./src/components/rightComponents/search.vue')['default']
-    Search2: typeof import('./src/components/rightComponents/search2.vue')['default']
+    Search2: typeof import('./src/components/rightComponents/blockcomponents/search2.vue')['default']
     Search3: typeof import('./src/components/rightComponents/blockcomponents/search3.vue')['default']
     Setter: typeof import('./src/components/menuComponents/setter.vue')['default']
   }

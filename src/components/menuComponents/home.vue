@@ -212,7 +212,6 @@ const graphShow = (e) => {
     .then((data) => {
       const endTime = performance.now();
       const responseTime = endTime - startTime;
-      console.log(JSON.parse(data), "data");
       const result = {};
       result.records = [];
       result.summary = {};
@@ -229,7 +228,6 @@ const graphShow = (e) => {
       result.summary.query.text = data2.query;
       result.summary.server.address = "http://10.0.82.146:7601";
       result.summary.server.agent = "PandaDB";
-      console.log(result);
       mitts.emit("params", result);
       store.commit("ScrollChange", result);
     })

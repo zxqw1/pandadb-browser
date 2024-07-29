@@ -2,7 +2,7 @@
   <div class="content">
     <a-row>
       <!-- <search></search> -->
-      <search2 />
+      <search />
       <div
         style="
           display: flex;
@@ -18,19 +18,17 @@
         <login></login>
         <!-- <login2/> -->
         <block />
-        <!-- <blockTop /> -->
+        <blockTop />
       </div>
     </a-row>
   </div>
 </template>
 
 <script setup lang="ts">
-// import search from "./rightComponents/search.vue";
-import search2 from "./rightComponents/search2.vue";
+import search from "./rightComponents/search.vue";
 import login from "./rightComponents/login.vue";
-// import login2 from "./rightComponents/login2.vue";
 import block from "./rightComponents/block.vue";
-// import blockTop from "./rightComponents/blockTop.vue";
+import blockTop from "./rightComponents/blockTop.vue";
 // import mitts from "../utils/bus.js";
 import { ref, watch, nextTick } from "vue";
 import { useStore } from "vuex";
@@ -41,7 +39,6 @@ watch(store.state.list, async () => {
   await nextTick();
   //设置滚动条
   if (scrollContainer.value) {
-    console.log(scrollContainer, "44");
     scrollContainer.value.scrollTo({
       top: -scrollContainer.value.scrollHeight,
     });

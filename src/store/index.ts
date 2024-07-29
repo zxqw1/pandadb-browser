@@ -7,7 +7,7 @@ const store: StoreOptions<any> = {
     },
     mutations: {
         ScrollChange(state: any, value) {
-            console.log(value,"10")
+            // console.log(value,"10")
             state.list.push(value)
             // let num = undefined;
             // for (let i = 0; i < state.list.length; i++) {

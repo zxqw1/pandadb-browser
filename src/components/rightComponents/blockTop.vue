@@ -1,7 +1,7 @@
 <template>
   <div
     style="background-color: #ffffff"
-    v-for="(item, index) in list"
+    v-for="(item, index) in toplist"
     :key="item.id"
     :style="{
       position: isFullscreen ? 'fixed' : 'static',
@@ -29,7 +29,7 @@
       >
         <div class="topIcon">
           <Pushpin-outlined
-            style="margin-left: 16px"
+            style="margin-left: 16px;background-color: #999999"
             @click="topClick(index, item)"
           />
           <Down-outlined
@@ -59,7 +59,7 @@
         </div>
       </el-col>
       <!-- 搜索 -->
-      <search2 :command="item.summary.query.text" :index="index" />
+      <search3 :command="item.summary.query.text" :index="index" />
       <!-- 展示 -->
       <el-col
         style="height: 348px; margin-top: 12px"
@@ -1589,7 +1589,7 @@ import { ArrowLeftBold, CopyDocument } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import mitts from "../../utils/bus.js";
 //组件
-import search2 from "../rightComponents/blockcomponents/search2.vue";
+import search3 from "./blockcomponents/search3.vue";
 import mitt from "mitt";
 import { useStore } from "vuex";
 const store = useStore();
@@ -1601,16 +1601,15 @@ const isFullscreen = ref(false);
 const isunfold = ref(false);
 const isres = ref(false);
 const overview = ref(false);
-const list = ref([]);
+const toplist = ref([]);
 const resultNodes = ref([]);
 const labelList = ref([]);
 const resultRelation = ref([]);
 const relationList = ref([]);
 const tagName = ref("");
-const error = ref("")
 //控制list条数
-if (list.value.length > 30) {
-  list.value.splice(list.value.length - 1, 1);
+if (toplist.value.length > 30) {
+  toplist.value.splice(list.value.length - 1, 1);
 }
 //标签颜色
 const getTagColor = (key) => {
@@ -1639,32 +1638,24 @@ const unfoldClick = () => {
 const resClick = () => {
   isres.value = !isres.value;
 };
-// 置顶
+//取消置顶
 const topClick = (index: Number, item: any) => {
-  list.value.splice(index, 1);
-  mitts.emit("topData", item);
+  toplist.value.splice(index, 1);
+  mitts.emit("untopData", item);
   store.commit("ScrollChange", item);
 };
-//取消置顶
-mitts.on("untopData", (item: any) => {
-  list.value.push(item);
+//置顶
+mitts.on("topData", (item: any) => {
+  toplist.value.push(item);
   nextTick(() => {
-    graphRef.value[list.value.length - 1].setJsonData(item.graphData);
+    graphRef.value[toplist.value.length - 1].setJsonData(item.graphData);
   });
 });
 //放大
 const toggleFullScreen = () => {
   isFullscreen.value = !isFullscreen.value;
 };
-
-//生成数据唯一id
-const generateRandomId = () => {
-  const timestamp = new Date().getTime(); // 获取当前时间戳
-  const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
-  return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
-};
-//修改
-mitts.on('revamp',(data) => {
+mitts.on('revamp2',(data) => {
 // console.log(data,'1665')
 const result = data.result
 const index = data.index
@@ -1676,12 +1667,12 @@ result.id = generateRandomId();
   result.flagshowR = undefined;
   result.flagshowE = undefined;
   // list.value.push(result);
-  list.value[index] = result
+  toplist.value[index] = result
   let textName = "";
   let textTitle = "";
   let lineText = "";
   result.graphData = {
-    rootId: list.value.length,
+    rootId: toplist.value.length,
     nodes: [],
     lines: [],
   };
@@ -2049,8 +2040,6 @@ result.id = generateRandomId();
   //渲染图形
   if (result.graphData.nodes.length !== 0) {
     nextTick(() => {
-      console.log(list.value,"2308")
-      console.log(graphRef.value,"2308")
       graphRef.value[index].setJsonData(result.graphData);
     });
   }
@@ -2069,7 +2058,7 @@ const tableCopy = (item4: any) => {
 };
 //删除
 const removeModule = (index: Number) => {
-  list.value.splice(index, 1);
+  toplist.value.splice(index, 1);
 };
 
 //overview修改颜色
@@ -2079,7 +2068,7 @@ const colorClick = (e) => {
       tagName.value + "color",
       e.target.style.backgroundColor
     );
-    list.value.forEach((item, index) => {
+    toplist.value.forEach((item, index) => {
       item.graphData.nodes.forEach((item2) => {
         item2.label.forEach((item3) => {
           if (item3 === tagName.value) {
@@ -2100,7 +2089,7 @@ const colorRelaClick = (e) => {
       tagName.value + "linecolor",
       e.target.style.backgroundColor
     );
-    list.value.forEach((item, index) => {
+    toplist.value.forEach((item, index) => {
       item.graphData.lines.forEach((item2) => {
         if (item2.text === tagName.value) {
           item2.color = window.localStorage.getItem(
@@ -2118,7 +2107,7 @@ const colorRelaClick = (e) => {
 const sizeClick = (e) => {
   if (e.target.className === "sizeLi") {
     window.localStorage.setItem(tagName.value + "size", e.target.dataset.size);
-    list.value.forEach((item, index) => {
+    toplist.value.forEach((item, index) => {
       item.graphData.nodes.forEach((item2) => {
         item2.label.forEach((item3) => {
           if (item3 === tagName.value) {
@@ -2140,7 +2129,7 @@ const sizeRelaClick = (e) => {
       tagName.value + "linesize",
       e.target.dataset.size
     );
-    list.value.forEach((item, index) => {
+    toplist.value.forEach((item, index) => {
       item.graphData.lines.forEach((item2) => {
         if (item2.text === tagName.value) {
           item2.lineWidth = window.localStorage.getItem(
@@ -2157,7 +2146,7 @@ const sizeRelaClick = (e) => {
 //修改字段 id
 const idClick = (e) => {
   window.localStorage.setItem(tagName.value, "id");
-  list.value.forEach((item) => {
+  toplist.value.forEach((item) => {
     item.graphData.nodes.forEach((item2) => {
       item2.label.forEach((item3) => {
         if (item3 === tagName.value) {
@@ -2180,14 +2169,14 @@ const idClick = (e) => {
       });
     });
     nextTick(() => {
-      graphRef.value[list.value.length - 1].setJsonData(item.graphData);
+      graphRef.value[toplist.value.length - 1].setJsonData(item.graphData);
     });
   });
 };
 //修改字段properties
 const fileClick = (e) => {
   window.localStorage.setItem(tagName.value, e.target.innerText);
-  list.value.forEach((item) => {
+  toplist.value.forEach((item) => {
     item.graphData.nodes.forEach((item2) => {
       item2.label.forEach((item3) => {
         if (item3 === tagName.value) {
@@ -2209,14 +2198,14 @@ const fileClick = (e) => {
       });
     });
     nextTick(() => {
-      graphRef.value[list.value.length - 1].setJsonData(item.graphData);
+      graphRef.value[toplist.value.length - 1].setJsonData(item.graphData);
     });
   });
 };
 //修改line字段 id
 const lineIdClick = (e) => {
   window.localStorage.setItem(tagName.value, "id");
-  list.value.forEach((item, index) => {
+  toplist.value.forEach((item, index) => {
     item.graphData.lines.forEach((item2) => {
       if (item2.type === tagName.value) {
         item2.text = item2.id;
@@ -2230,7 +2219,7 @@ const lineIdClick = (e) => {
 //修改字段line type
 const lineTypeClick = (e) => {
   window.localStorage.setItem(tagName.value, "type");
-  list.value.forEach((item, index) => {
+  toplist.value.forEach((item, index) => {
     item.graphData.lines.forEach((item2) => {
       if (item2.type === tagName.value) {
         item2.text = item2.type;
@@ -2244,7 +2233,7 @@ const lineTypeClick = (e) => {
 //修改字段 line properties
 const lineFileClick = (e) => {
   window.localStorage.setItem(tagName.value, e.target.innerText);
-  list.value.forEach((item, index) => {
+  toplist.value.forEach((item, index) => {
     item.graphData.lines.forEach((item2) => {
       if (item2.type === tagName.value) {
         item2.text = item2.properties[e.target.innerText];
@@ -2255,396 +2244,16 @@ const lineFileClick = (e) => {
     });
   });
 };
+//生成数据唯一id
+const generateRandomId = () => {
+  const timestamp = new Date().getTime(); // 获取当前时间戳
+  const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
+  return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
+};
 //下载图片
 mitts.on('download',(index) => {
   graphRef.value[index].getInstance().downloadAsImage('png',index)
 })
-//数据
-mitts.on("params", (result: any) => {
-  result.id = generateRandomId();
-  result.labelList = {};
-  result.relationList = [];
-  result.flagshowN = undefined;
-  result.flagshowP = undefined;
-  result.flagshowR = undefined;
-  result.flagshowE = undefined;
-  list.value.push(result);
-  let textName = "";
-  let textTitle = "";
-  let lineText = "";
-  result.graphData = {
-    rootId: list.value.length,
-    nodes: [],
-    lines: [],
-  };
-  if(result.error){
-    result.flagshowER = true;
-  } else if(result.records.length === 0){
-    result.flagshowE = true;
-  }
-  else{
-  result.records.forEach((item: any, index: Number) => {
-    for (let i = 0; i < item._fields.length; i++) {
-      if (
-        item._fields[i] !== null &&
-        !item._fields[i].start &&
-        !item._fields[i].end &&
-        item._fields[i].labels
-      ) {
-        result.flagshowN = true;
-      } else if (item._fields[i] !== null && item._fields[i].segments) {
-        result.flagshowP = true;
-      } else if (
-        item._fields[i] !== null &&
-        item._fields[i].endNodeElementId &&
-        item._fields[i].startNodeElementId &&
-        !item._fields[i].labels &&
-        !item._fields[i].segments
-      ) {
-        result.flagshowR = true;
-      } else {
-        result.flagshowE = true;
-      }
-    }
-  });
-}
-  //path
-  if (result.flagshowP) {
-    result.records.forEach((item: any, index: Number) => {
-      for (let i = 0; i < item._fields.length; i++) {
-        if (item._fields[i] !== null && item._fields[i].segments) {
-          for (let k = 0; k < item._fields[i].segments.length; k++) {
-            for (
-              let t = 0;
-              t < item._fields[i].segments[k].start.labels.length;
-              t++
-            ) {
-              for (
-                let l = 0;
-                l < item._fields[i].segments[k].end.labels.length;
-                l++
-              ) {
-                if (
-                  window.localStorage.getItem(
-                    item._fields[i].segments[k].start.labels[t]
-                  )
-                ) {
-                  if (
-                    window.localStorage.getItem(
-                      item._fields[i].start.labels[t]
-                    ) === "id"
-                  ) {
-                    textName = item._fields[i].segments[k].start.elementId;
-                  } else {
-                    textName =
-                      item._fields[i].segments[k].start.properties[
-                        window.localStorage.getItem(
-                          item._fields[i].segments[k].start.labels[t]
-                        )
-                      ];
-                  }
-                } else {
-                  for (const key in item._fields[i].segments[k].start
-                    .properties) {
-                    textName =
-                      item._fields[i].segments[k].start.properties[key];
-                  }
-                }
-                if (
-                  window.localStorage.getItem(
-                    item._fields[i].segments[k].end.labels[l]
-                  )
-                ) {
-                  if (
-                    window.localStorage.getItem(
-                      item._fields[i].segments[k].end.labels[l]
-                    ) === "id"
-                  ) {
-                    textTitle = item._fields[i].segments[k].end.elementId;
-                  } else {
-                    textTitle =
-                      item._fields[i].segments[k].end.properties[
-                        window.localStorage.getItem(
-                          item._fields[i].segments[k].end.labels[l]
-                        )
-                      ];
-                  }
-                } else {
-                  for (const key in item._fields[i].segments[k].end
-                    .properties) {
-                    textTitle = item._fields[i].segments[k].end.properties[key];
-                  }
-                }
-                if (
-                  window.localStorage.getItem(
-                    item._fields[i].segments[k].relation.types
-                  )
-                ) {
-                  if (
-                    window.localStorage.getItem(
-                      item._fields[i].segments[k].relation.types
-                    ) === "id"
-                  ) {
-                    lineText = item._fields[i].segments[k].relation.elementId;
-                  } else if (
-                    window.localStorage.getItem(
-                      item._fields[i].segments[k].relation.types
-                    ) === "type"
-                  ) {
-                    lineText = item._fields[i].segments[k].relation.types;
-                  } else {
-                    lineText =
-                      item._fields[i].segments[k].relation.properties[
-                        window.localStorage.getItem(
-                          item._fields[i].segments[k].relation.types
-                        )
-                      ];
-                  }
-                } else {
-                  lineText = item._fields[i].segments[k].relation.types;
-                }
-                result.graphData.nodes.push({
-                  id: item._fields[i].segments[k].start.elementId,
-                  text: textName,
-                  color: window.localStorage.getItem(
-                    item._fields[i].segments[k].start.labels[t] + "color"
-                  )
-                    ? window.localStorage.getItem(
-                        item._fields[i].segments[k].start.labels[t] + "color"
-                      )
-                    : "#21a1ff",
-                  label: item._fields[i].segments[k].start.labels,
-                  properties: item._fields[i].segments[k].start.properties,
-                  width: window.localStorage.getItem(
-                    item._fields[i].segments[k].start.labels[t] + "size"
-                  )
-                    ? window.localStorage.getItem(
-                        item._fields[i].segments[k].start.labels[t] + "size"
-                      )
-                    : 80,
-                  height: window.localStorage.getItem(
-                    item._fields[i].segments[k].start.labels[t] + "size"
-                  )
-                    ? window.localStorage.getItem(
-                        item._fields[i].segments[k].start.labels[t] + "size"
-                      )
-                    : 80,
-                });
-                result.graphData.nodes.push({
-                  id: item._fields[i].segments[k].end.elementId,
-                  text: textTitle,
-                  color: window.localStorage.getItem(
-                    item._fields[i].segments[k].end.labels[l] + "color"
-                  )
-                    ? window.localStorage.getItem(
-                        item._fields[i].segments[k].end.labels[l] + "color"
-                      )
-                    : "#21a1ff",
-                  label: item._fields[i].segments[k].end.labels,
-                  properties: item._fields[i].segments[k].end.properties,
-                  width: window.localStorage.getItem(
-                    item._fields[i].segments[k].end.labels[l] + "size"
-                  )
-                    ? window.localStorage.getItem(
-                        item._fields[i].segments[k].end.labels[l] + "size"
-                      )
-                    : 80,
-                  height: window.localStorage.getItem(
-                    item._fields[i].segments[k].end.labels[l] + "size"
-                  )
-                    ? window.localStorage.getItem(
-                        item._fields[i].segments[k].end.labels[l] + "size"
-                      )
-                    : 80,
-                });
-                result.graphData.lines.push({
-                  id: item._fields[i].segments[k].relation.elementId,
-                  type: item._fields[i].segments[k].relation.types,
-                  properties: item._fields[i].segments[k].relation.properties,
-                  from: String(item._fields[i].segments[k].start.elementId),
-                  to: String(item._fields[i].segments[k].end.elementId),
-                  text: lineText,
-                  lineWidth: window.localStorage.getItem(
-                    item._fields[i].segments[k].relation.types + "linesize"
-                  )
-                    ? window.localStorage.getItem(
-                        item._fields[i].segments[k].relation.types + "linesize"
-                      )
-                    : 1,
-                  color: window.localStorage.getItem(
-                    item._fields[i].segments[k].relation.types + "linecolor"
-                  )
-                    ? window.localStorage.getItem(
-                        item._fields[i].segments[k].relation.types + "linecolor"
-                      )
-                    : "#666666",
-                });
-              }
-            }
-          }
-          break;
-        }
-      }
-    });
-    result.graphData.nodes = result.graphData.nodes.reduce(
-      (acc: any, current: any) => {
-        // 检查累加器（acc）中是否已存在具有相同id的对象
-        const existing = acc.find((item) => item.id === current.id);
-        // 如果不存在，则将其添加到累加器中
-        if (!existing) {
-          acc.push(current);
-        }
-        // 否则，不执行任何操作（即不添加重复项）
-        return acc;
-      },
-      []
-    ); // 初始累加器是一个空数组
-    result.graphData.lines = result.graphData.lines.reduce(
-      (acc: any, current: any) => {
-        // 检查累加器（acc）中是否已存在具有相同id的对象
-        const existing = acc.find((item) => item.id === current.id);
-        // 如果不存在，则将其添加到累加器中
-        if (!existing) {
-          acc.push(current);
-        }
-        // 否则，不执行任何操作（即不添加重复项）
-        return acc;
-      },
-      []
-    ); // 初始累加器是一个空数组
-    console.log(result.graphData);
-    result.flagshowN = false;
-    result.flagshowR = false;
-    result.flagshowE = false;
-  } else if (result.flagshowN) {
-    //nodes
-    result.records.forEach((item: any, index: Number) => {
-      for (let i = 0; i < item._fields.length; i++) {
-        if (
-          item._fields[i] !== null &&
-          !item._fields[i].start &&
-          !item._fields[i].end &&
-          item._fields[i].labels
-        ) {
-          if (window.localStorage.getItem(item._fields[i].labels[0])) {
-            if (
-              window.localStorage.getItem(item._fields[i].labels[0]) === "id"
-            ) {
-              textName = item._fields[i].elementId;
-            } else {
-              textName =
-                item._fields[i].properties[
-                  window.localStorage.getItem(item._fields[i].labels[0])
-                ];
-            }
-          } else {
-            for (const key in item._fields[i].properties) {
-              textName = item._fields[i].properties[key];
-            }
-          }
-
-          result.graphData.nodes.push({
-            id: item._fields[i].elementId,
-            text: textName,
-            label: item._fields[i].labels,
-            properties: item._fields[i].properties,
-            color: window.localStorage.getItem(
-              item._fields[i].labels[0] + "color"
-            )
-              ? window.localStorage.getItem(item._fields[i].labels[0] + "color")
-              : "#21a1ff",
-            width: window.localStorage.getItem(
-              item._fields[i].labels[0] + "size"
-            )
-              ? window.localStorage.getItem(item._fields[i].labels[0] + "size")
-              : "80",
-            height: window.localStorage.getItem(
-              item._fields[i].labels[0] + "size"
-            )
-              ? window.localStorage.getItem(item._fields[i].labels[0] + "size")
-              : "80",
-          });
-          break;
-        }
-      }
-    });
-    result.flagshowP = false;
-    result.flagshowR = false;
-    result.flagshowE = false;
-  } else if (result.flagshowR) {
-    result.flagshowP = false;
-    result.flagshowN = false;
-    result.flagshowE = false;
-  } else {
-    result.flagshowP = false;
-    result.flagshowN = false;
-    result.flagshowR = false;
-  }
-  //overview nodes
-  resultNodes.value = [];
-  resultNodes.value = result.graphData.nodes.reduce(
-    (acc: any, current: any) => {
-      // 检查累加器（acc）中是否已存在具有相同id的对象
-      const existing = acc.find((item) => item.id === current.id);
-      // 如果不存在，则将其添加到累加器中
-      if (!existing) {
-        acc.push(current);
-      }
-      // 否则，不执行任何操作（即不添加重复项）
-      return acc;
-    },
-    []
-  ); // 初始累加器是一个空数组
-  labelList.value = [];
-  resultNodes.value.forEach((item) => {
-    labelList.value.push(...item.label);
-  });
-  result.labelList = labelList.value.reduce((acc2, curr2) => {
-    // 如果当前元素已经在累加器中，则增加其计数
-    if (acc2[curr2]) {
-      acc2[curr2]++;
-    }
-    // 否则，将其添加到累加器中，并设置计数为1
-    else {
-      acc2[curr2] = 1;
-    }
-    return acc2;
-  }, {});
-
-  //overview Relationship
-  resultRelation.value = [];
-  resultRelation.value = result.graphData.lines.reduce(
-    (acc: any, current: any) => {
-      const existing = acc.find((item) => item.id === current.id);
-      if (!existing) {
-        acc.push(current);
-      }
-      return acc;
-    },
-    []
-  );
-  relationList.value = []; //关系
-  resultRelation.value.forEach((item) => {
-    relationList.value.push(item.type);
-  });
-  result.relationList = relationList.value.reduce((acc2, curr2) => {
-    // 如果当前元素已经在累加器中，则增加其计数
-    if (acc2[curr2]) {
-      acc2[curr2]++;
-    }
-    // 否则，将其添加到累加器中，并设置计数为1
-    else {
-      acc2[curr2] = 1;
-    }
-    return acc2;
-  }, {});
-  //渲染图形
-  if (result.graphData.nodes.length !== 0) {
-    nextTick(() => {
-      graphRef.value[list.value.length - 1].setJsonData(result.graphData);
-    });
-  }
-});
 </script>
 
 <style scoped>
