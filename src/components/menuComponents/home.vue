@@ -128,6 +128,8 @@
 import { ref ,watch } from "vue";
 import dataBase from "@/data/dataBase";
 import mitts from "../../utils/bus.js";
+import { useStore } from "vuex";
+const store = useStore();
 const username = window.localStorage.getItem("username");
 const address = window.localStorage.getItem("address");
 // 展示节点
@@ -190,6 +192,7 @@ const labelShow = () => {
       result.summary.server.agent = "PandaDB";
       console.log(result);
       mitts.emit("params", result);
+      store.commit("ScrollChange", result);
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -228,6 +231,7 @@ const graphShow = (e) => {
       result.summary.server.agent = "PandaDB";
       console.log(result);
       mitts.emit("params", result);
+      store.commit("ScrollChange", result);
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -252,6 +256,7 @@ const relationShow = (e) => {
       result.summary.query = {};
       result.summary.server = {};
       const data2 = JSON.parse(data);
+      const responseTime = endTime - startTime;
       result.resTime = Math.round(responseTime) + "ms";
       data2.response.forEach((value, key) => {
         const keys = Object.keys(value);
@@ -264,6 +269,7 @@ const relationShow = (e) => {
       result.summary.server.agent = "PandaDB";
       console.log(result);
       mitts.emit("params", result);
+      store.commit("ScrollChange", result);
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -303,6 +309,7 @@ const relationClick = (e) => {
       result.summary.server.agent = "PandaDB";
       console.log(result);
       mitts.emit("params", result);
+      store.commit("ScrollChange", result);
     })
     .catch((error) => {
       console.error("Error:", error);

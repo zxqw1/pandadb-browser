@@ -155,7 +155,7 @@ if (window.localStorage.getItem("address") === null) {
   font-size: 16px;
 }
 .content {
-  width: 300px;
+  width: 460px;
 }
 </style>
 <style>

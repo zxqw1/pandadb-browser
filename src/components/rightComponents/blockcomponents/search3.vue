@@ -41,6 +41,7 @@
       <StarOutlined style="font-size: 20px"  @click="collectClick"/>
       <VerticalAlignBottomOutlined
         style="font-size: 20px"
+        @click="imgClick"
       />
     </el-col>
   </el-row>
@@ -76,9 +77,11 @@ const keywords = ref([
   ["MATCH", "match"],
   ["RETURN", "match"],
   ["LIMIT", "match"],
+  ["CREATE", "match"],
   ["match", "match"],
   ["return", "match"],
   ["limit", "match"],
+  ["create", "match"],
   ["0", "number"],
   ["1", "number"],
   ["2", "number"],
@@ -98,7 +101,7 @@ const opt = ref({
   lineNumbers: true, //行号
   lineWrapping: true, //自动换行
   tabSize: 4, //Tab缩进
-  indentUnit: 4, //缩进单位
+  indentUnit: 4, //缩进单e位
   indentWithTabs: true, //自动缩进
   mode: mode, //语言
   readOnly: false, //只读
@@ -122,25 +125,46 @@ const funClick = async () => {
     console.log(111);
   } else {
     const startTime = performance.now();
-    let promiseData = request.fetchData("neo4j", "admin", contentValue.value);
-    promiseData
-      .then((result: any) => {
-        const endTime = performance.now();
-        const responseTime = endTime - startTime;
-        result.resTime = Math.round(responseTime) + "ms";
-        result.number = props.index
-        console.log(result,166)
-        mitts.emit("revise", result);
-        mitts.emit("revise2", result);
-      })
-      .catch((error: any) => {
-        console.log(error, 106);
-        ElMessageBox.alert(error, "错误提示", {
-          confirmButtonText: "好的",
-        });
+  fetch("http://10.0.82.146:7601", {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain",
+    },
+    body: contentValue.value,
+  })
+    .then((response) => response.text())
+    .then((data) => {
+      const endTime = performance.now();
+      const result = {};
+      result.records = [];
+      result.summary = {};
+      result.summary.query = {};
+      result.summary.server = {};
+      const data2 = JSON.parse(data);
+      const responseTime = endTime - startTime;
+      result.resTime = Math.round(responseTime) + "ms";
+      data2.response.forEach((value, key) => {
+        const keys = Object.keys(value);
+        for (let key in value) {
+          result.records.push({ keys: keys, _fields: [value[key]] });
+        }
       });
+      result.summary.query.text = data2.query;
+      result.summary.server.address = "http://10.0.82.146:7601";
+      result.summary.server.agent = "PandaDB";
+      console.log(result);
+      mitts.emit("revise", (result,props.index));
+      store.commit("ScrollChange", result);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
   }
 };
+//下载图片
+const imgClick = () =>{
+  mitts.emit("download", props.index)
+}
 //删除
 const deleteClick = () => {
   editorInstance.setValue("");

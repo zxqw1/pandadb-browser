@@ -8,14 +8,15 @@
     <!-- 顶部 -->
     <a-col :span="24">
       <!-- 左面导航 -->
-      <a-col>
+      <a-col :span="24" style="display: flex;">
         <LeftMenu></LeftMenu>
+        <RightContent></RightContent>
       </a-col>
       <!-- 左面导航 -->
       <!-- 右面内容 -->
-      <a-col :span="16" style="flex: 1; max-width: 100%; display: flex;">
-        <RightContent></RightContent> 
-      </a-col>
+      <!-- <a-col :span="19"> -->
+        <!-- style="flex: 1; max-width:100%; display: flex;" -->
+      <!-- </a-col> -->
       <!-- 右面内容 -->
     </a-col>
   </a-row>
@@ -47,7 +48,7 @@ import { onMounted } from "vue";
   height: 100%;
 }
 .ant-col:nth-child(2) {
-  display: flex;
+  /* display: flex; */
 }
 </style>
 <style>

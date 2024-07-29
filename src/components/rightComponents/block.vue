@@ -1388,6 +1388,12 @@
           >
             (no changes, no records)
           </div>
+          <RelationGraph
+            v-show="true"
+            ref="graphRef"
+            :options="options"
+            style="height: 0; width: 0;"
+          ></RelationGraph>
           <el-tabs
             :tab-position="tabPosition"
             class="demo-tabs graphMenu"
@@ -1407,31 +1413,9 @@
               </template>
               <!-- 详情 -->
               <div
-                style="overflow-y: auto"
+                style="overflow-x: scroll; position: absolute; width: 100%;"
                 :style="{ height: isFullscreen ? '100vh' : '324px' }"
               >
-                <a-row
-                  style="
-                    font-size: 16px;
-                    color: #666666;
-                    height: 32px;
-                    background-color: #ffffff;
-                    border-bottom: 1px #999999 dashed;
-                    padding-left: 16px;
-                    z-index: 1;
-                    position: sticky;
-                    top: 0;
-                    flex-wrap: nowrap;
-                  "
-                >
-                  <a-col
-                    v-for="(item2, index2) in item.records[0].keys"
-                    :key="index2"
-                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
-                  >
-                    {{ item2 }}
-                  </a-col>
-                </a-row>
                 <a-row
                   v-for="(item3, index3) in item.records"
                   :key="index3"
@@ -1445,8 +1429,8 @@
                   <a-col
                     v-for="(item4, index4) in item3._fields"
                     :key="index4"
-                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
                   >
+                    {{item3.keys[index4]}}
                     <pre
                       style="
                         margin-bottom: 10px;
@@ -1459,9 +1443,8 @@
                       "
                     >
                     <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;" @click="tableCopy(item4)"/>
-                  {{
-                        JSON.stringify(item4 === null ? "null" : item4, null, 2)
-                      }}</pre>
+                    {{JSON.stringify(item4 === null ? "null" : item4 , null, 2)}}
+                  </pre>
                   </a-col>
                 </a-row>
               </div>
@@ -1940,7 +1923,10 @@ const generateRandomId = () => {
   const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
   return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
 };
-
+//下载图片
+mitts.on('download',(index) => {
+  graphRef.value[index].getInstance().downloadAsImage('png',index)
+})
 //数据
 mitts.on("params", (result: any) => {
   result.id = generateRandomId();
@@ -2325,6 +2311,8 @@ console.log(list.value,'1984')
   //渲染图形
   if (result.graphData.nodes.length !== 0) {
     nextTick(() => {
+      console.log(list.value,"2308")
+      console.log(graphRef.value,"2308")
       graphRef.value[list.value.length - 1].setJsonData(result.graphData);
     });
   }

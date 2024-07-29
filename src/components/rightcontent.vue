@@ -7,7 +7,7 @@
         style="
           display: flex;
           flex-direction: column-reverse;
-          width: 100%;
+          width: 99%;
           max-height: 860px;
           overflow-y: auto;
         "
@@ -18,7 +18,7 @@
         <login></login>
         <!-- <login2/> -->
         <block />
-        <blockTop />
+        <!-- <blockTop /> -->
       </div>
     </a-row>
   </div>
@@ -30,7 +30,7 @@ import search2 from "./rightComponents/search2.vue";
 import login from "./rightComponents/login.vue";
 // import login2 from "./rightComponents/login2.vue";
 import block from "./rightComponents/block.vue";
-import blockTop from "./rightComponents/blockTop.vue";
+// import blockTop from "./rightComponents/blockTop.vue";
 // import mitts from "../utils/bus.js";
 import { ref, watch, nextTick } from "vue";
 import { useStore } from "vuex";

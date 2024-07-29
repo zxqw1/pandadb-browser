@@ -44,8 +44,9 @@
           @node-drop="handleDrop"
           :render-content="renderContent"
         >
+        
           <template #default="scoped">
-            <div style="width: 100%; display: flex" id:scoped.data.id>
+            <div style="width: 100%; display: flex" id:scoped.data.id  >
               <div style="display: flex; flex: 1">
                 <Folder
                   style="width: 22px; height: 22px"
@@ -78,6 +79,7 @@
                 :width="200"
                 trigger="click"
                 content=""
+                v-if="scoped.data.type === 'files'"
               >
                 <div class="hoverText" @click="RenameClick(scoped)">
                   Rename folder
@@ -88,15 +90,18 @@
                 <div class="hoverText">Export scripts as .zip file</div>
                 <div class="hoverText">Export scripts as .cypher file</div>
                 <template #reference>
-                  <el-icon style="height: 22px; width: 22px"
-                    ><MoreFilled
+                  <el-icon style="height: 22px; width: 22px"><MoreFilled
                       style="width: 22px; height: 22px"
                       @click="showPopover"
                   /></el-icon>
                 </template>
               </el-popover>
             </div>
+            <div>
+            <el-icon style="height: 22px; width: 22px" v-if="scoped.data.type === 'file'" @click="favoriteClick(scoped.data.label)"><CaretRight /></el-icon>
+          </div>
           </template>
+
         </el-tree>
       </a-col>
 
@@ -114,7 +119,7 @@
 import type { TreeProps } from "ant-design-vue";
 import { ref, onMounted } from "vue";
 import mitts from "../../utils/bus.js";
-import { FolderAdd, Folder, MoreFilled } from "@element-plus/icons-vue";
+import { FolderAdd, Folder, MoreFilled,CaretRight } from "@element-plus/icons-vue";
 import type Node from "element-plus/es/components/tree/src/model/node";
 import type { DragEvents } from "element-plus/es/components/tree/src/model/useDragNode";
 import type {
@@ -146,42 +151,6 @@ const handleEnter = (scoped) => {
   //   }
   // })
 };
-//没有子元素也有箭头显示
-if (TreeData.value.length !== 0) {
-  function ensureChildren(nodes) {
-    nodes.forEach((node) => {
-      if (!node.children) {
-        node.children = [];
-      }
-      if (node.children && node.children.length > 0) {
-        ensureChildren(node.children);
-      }
-    });
-  }
-  ensureChildren(TreeData);
-}
-// const renderContent = (h, { node, data, store })=>{
-// if(data.editable){
-//    // 编辑状态，显示输入框
-//    return (
-//           <span>
-//             <el-input
-//               v-model={data.label}
-//               @blur={() => this.handleEditEnd(node, data)}
-//               placeholder="请输入节点名称"
-//             ></el-input>
-//           </span>
-//         );
-// }else{
-//       // 非编辑状态，显示节点名称，并提供编辑的触发方式
-//       return (
-//           <span on-click={() => this.handleEditStart(node, data)}>
-//             {node.label}
-//             <i class="el-icon-edit" style="cursor: pointer; margin-left: 8px;"></i>
-//           </span>
-//         );
-// }
-// }
 const handleEditStart = (node, data) => {
   // 开始编辑节点名称
   data.editable = true;
@@ -272,6 +241,11 @@ mitts.on("recommand", (contentValue: any) => {
   });
   console.log(TreeData, "256");
 });
+//渲染
+const favoriteClick = (label)=>{
+// console.log(label,'246')
+mitts.emit('favo',label)
+}
 </script>
 
 <style scoped>
