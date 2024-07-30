@@ -1606,9 +1606,13 @@ const labelList = ref([]);
 const resultRelation = ref([]);
 const relationList = ref([]);
 const tagName = ref("");
-const error = ref("")
+// const error = ref("");
 //控制list条数
-if (list.value.length > window.localStorage.getItem('item') ? window.localStorage.getItem('item') :30) {
+if (
+  list.value.length > window.localStorage.getItem("item")
+    ? window.localStorage.getItem("item")
+    : 30
+) {
   list.value.splice(list.value.length - 1, 1);
 }
 //标签颜色
@@ -1663,11 +1667,10 @@ const generateRandomId = () => {
   return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
 };
 //修改
-mitts.on('revamp',(data) => {
-// console.log(data,'1665')
-const result = data.result
-const index = data.index
-result.id = generateRandomId();
+mitts.on("revamp", (data) => {
+  const result = data.result;
+  const index = data.index;
+  result.id = generateRandomId();
   result.labelList = {};
   result.relationList = [];
   result.flagshowN = undefined;
@@ -1675,7 +1678,7 @@ result.id = generateRandomId();
   result.flagshowR = undefined;
   result.flagshowE = undefined;
   // list.value.push(result);
-  list.value[index] = result
+  list.value[index] = result;
   let textName = "";
   let textTitle = "";
   let lineText = "";
@@ -1684,37 +1687,36 @@ result.id = generateRandomId();
     nodes: [],
     lines: [],
   };
-  if(result.error){
+  if (result.error) {
     result.flagshowER = true;
-  } else if(result.records.length === 0){
+  } else if (result.records.length === 0) {
     result.flagshowE = true;
-  }
-  else{
-  result.records.forEach((item: any, index: Number) => {
-    for (let i = 0; i < item._fields.length; i++) {
-      if (
-        item._fields[i] !== null &&
-        !item._fields[i].start &&
-        !item._fields[i].end &&
-        item._fields[i].labels
-      ) {
-        result.flagshowN = true;
-      } else if (item._fields[i] !== null && item._fields[i].segments) {
-        result.flagshowP = true;
-      } else if (
-        item._fields[i] !== null &&
-        item._fields[i].endNodeElementId &&
-        item._fields[i].startNodeElementId &&
-        !item._fields[i].labels &&
-        !item._fields[i].segments
-      ) {
-        result.flagshowR = true;
-      } else {
-        result.flagshowE = true;
+  } else {
+    result.records.forEach((item: any, index: Number) => {
+      for (let i = 0; i < item._fields.length; i++) {
+        if (
+          item._fields[i] !== null &&
+          !item._fields[i].start &&
+          !item._fields[i].end &&
+          item._fields[i].labels
+        ) {
+          result.flagshowN = true;
+        } else if (item._fields[i] !== null && item._fields[i].segments) {
+          result.flagshowP = true;
+        } else if (
+          item._fields[i] !== null &&
+          item._fields[i].endNodeElementId &&
+          item._fields[i].startNodeElementId &&
+          !item._fields[i].labels &&
+          !item._fields[i].segments
+        ) {
+          result.flagshowR = true;
+        } else {
+          result.flagshowE = true;
+        }
       }
-    }
-  });
-}
+    });
+  }
   //path
   if (result.flagshowP) {
     result.records.forEach((item: any, index: Number) => {
@@ -2048,12 +2050,10 @@ result.id = generateRandomId();
   //渲染图形
   if (result.graphData.nodes.length !== 0) {
     nextTick(() => {
-      console.log(list.value,"2308")
-      console.log(graphRef.value,"2308")
       graphRef.value[index].setJsonData(result.graphData);
     });
   }
-})
+});
 
 //复制
 const tableCopy = (item4: any) => {
@@ -2255,9 +2255,9 @@ const lineFileClick = (e) => {
   });
 };
 //下载图片
-mitts.on('download',(index) => {
-  graphRef.value[index].getInstance().downloadAsImage('png',index)
-})
+mitts.on("download", (index) => {
+  graphRef.value[index].getInstance().downloadAsImage("png", index);
+});
 //数据
 mitts.on("params", (result: any) => {
   result.id = generateRandomId();
@@ -2276,37 +2276,36 @@ mitts.on("params", (result: any) => {
     nodes: [],
     lines: [],
   };
-  if(result.error){
+  if (result.error) {
     result.flagshowER = true;
-  } else if(result.records.length === 0){
+  } else if (result.records.length === 0) {
     result.flagshowE = true;
-  }
-  else{
-  result.records.forEach((item: any, index: Number) => {
-    for (let i = 0; i < item._fields.length; i++) {
-      if (
-        item._fields[i] !== null &&
-        !item._fields[i].start &&
-        !item._fields[i].end &&
-        item._fields[i].labels
-      ) {
-        result.flagshowN = true;
-      } else if (item._fields[i] !== null && item._fields[i].segments) {
-        result.flagshowP = true;
-      } else if (
-        item._fields[i] !== null &&
-        item._fields[i].endNodeElementId &&
-        item._fields[i].startNodeElementId &&
-        !item._fields[i].labels &&
-        !item._fields[i].segments
-      ) {
-        result.flagshowR = true;
-      } else {
-        result.flagshowE = true;
+  } else {
+    result.records.forEach((item: any, index: Number) => {
+      for (let i = 0; i < item._fields.length; i++) {
+        if (
+          item._fields[i] !== null &&
+          !item._fields[i].start &&
+          !item._fields[i].end &&
+          item._fields[i].labels
+        ) {
+          result.flagshowN = true;
+        } else if (item._fields[i] !== null && item._fields[i].segments) {
+          result.flagshowP = true;
+        } else if (
+          item._fields[i] !== null &&
+          item._fields[i].endNodeElementId &&
+          item._fields[i].startNodeElementId &&
+          !item._fields[i].labels &&
+          !item._fields[i].segments
+        ) {
+          result.flagshowR = true;
+        } else {
+          result.flagshowE = true;
+        }
       }
-    }
-  });
-}
+    });
+  }
   //path
   if (result.flagshowP) {
     result.records.forEach((item: any, index: Number) => {

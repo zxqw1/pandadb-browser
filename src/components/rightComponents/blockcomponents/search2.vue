@@ -137,28 +137,28 @@ const funClick = async () => {
   })
     .then((response) => response.text())
     .then((data) => {
-      const endTime = performance.now();
-      const result = {};
-      result.records = [];
-      result.summary = {};
-      result.summary.query = {};
-      result.summary.server = {};
+        const endTime = performance.now();
+          const result = {};
+          result.records = [];
+          result.summary = {};
+          result.summary.query = {};
+          result.summary.server = {};
       const data2 = JSON.parse(data);
       const responseTime = endTime - startTime;
-      result.resTime = Math.round(responseTime) + "ms";
+          result.resTime = Math.round(responseTime) + "ms";
       data2.response.forEach((value, key) => {
-        const keys = Object.keys(value);
-        for (let key in value) {
+            const keys = Object.keys(value);
+            for (let key in value) {
           result.records.push({ keys: keys, _fields: [value[key]] });
-        }
-      });
-      result.summary.query.text = data2.query;
-      result.summary.server.address = window.localStorage.getItem('address');
-      result.summary.server.agent = "PandaDB";
+            }
+          });
+          result.summary.query.text = data2.query;
+          result.summary.server.address = window.localStorage.getItem('address');
+          result.summary.server.agent = "PandaDB";
       console.log(result,155);
       // mitts.emit("revamp", (result,props.index));
-      mitts.emit("revamp", {result:result,index:props.index});
-      store.commit("ScrollChange", result);
+          mitts.emit("revamp", {result:result,index:props.index});
+          store.commit("ScrollChange", result);
     })
     .catch((error) => {
       console.error("Error:", error);

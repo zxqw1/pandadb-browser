@@ -38,9 +38,9 @@
         justify-content: space-around;
       "
     >
-      <StarOutlined style="font-size: 20px"  @click="collectClick"/>
+      <StarOutlined style="font-size: 20px;position: absolute;right: 26px"  @click="collectClick"/>
       <VerticalAlignBottomOutlined
-        style="font-size: 20px"
+        style="font-size: 20px;position: absolute;right: 66px"
         @click="imgClick"
       />
     </el-col>

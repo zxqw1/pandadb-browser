@@ -176,16 +176,21 @@ computed((_height) => {
 });
 //喜好渲染
 mitts.on("favo", (cypher) => {
+  loadingFlag.value = !loadingFlag.value
   const startTime = performance.now();
+   // 创建新的 AbortController 实例  
+   abortController = new AbortController();
   fetch(window.localStorage.getItem('address'), {
     method: "POST",
     headers: {
       "Content-Type": "text/plain",
     },
     body: cypher,
+    signal: abortController.signal,
   })
     .then((response) => response.text())
     .then((data) => {
+      loadingFlag.value = !loadingFlag.value
         const data2 = JSON.parse(data);
         if(!window.localStorage.getItem("address")){
         data2.error = 'No connection found, did you connect to PandaDB?'
@@ -233,9 +238,6 @@ mitts.on("favo", (cypher) => {
 
 const funClick = async () => {
   loadingFlag.value = !loadingFlag.value
-  // if(preventLoading.value === true){
-  //   break;
-  // }我这么写不对
   await nextTick();
   if (contentValue.value === "") {
     console.log(111);
@@ -319,9 +321,6 @@ const funClick = async () => {
   }
 };
 const breakClick = ()=>{
-  // preventLoading.value = !preventLoading.value
-  console.log('322')
-  console.log(abortController,'323')
   if (abortController) {
     abortController.abort(); // 调用 abort 方法来取消请求
     abortController = null; // 可选：重置 abortController
