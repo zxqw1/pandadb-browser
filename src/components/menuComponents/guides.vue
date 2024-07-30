@@ -6,7 +6,7 @@
       <span style="font-size: 20px; color: #333333; font-weight: 600">教程</span>
     </div>
     <!-- 内容 -->
-    <a-row v-for="(item, index) in guides" :key="index">
+    <a-row v-for="(item, index) in guides" :key="index" style=" display: flex;flex-direction: column;">
       <a-col>
         {{ item.promop }}
       </a-col>
@@ -17,8 +17,7 @@
       <a-col
         v-for="(item2, index2) in item.Builts.data"
         :key="index2"
-        class="point"
-      >
+        class="point" >
         <a href="" style="color: #6a8322;text-decoration: underline;">{{ item2.introduce }}</a>
         <div>{{ item2.explain }}</div>
       </a-col>

@@ -1,12 +1,12 @@
 const setterList = [
-    {
-        "title": "主题",
-        "type": "theme"
-    },
-    {
-        "title":"偏好",
-        "type": "favor"
-    },
+    // {
+    //     "title": "主题",
+    //     "type": "theme"
+    // },
+    // {
+    //     "title":"偏好",
+    //     "type": "favor"
+    // },
     {
         "title":"结果展示",
         "type": "result"

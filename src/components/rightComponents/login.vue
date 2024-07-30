@@ -101,8 +101,7 @@ const input = ref("");
 const input2 = ref("");
 const username = window.localStorage.getItem("username");
 const href = window.localStorage.getItem("address");
-const ipPortRegex =
-  /^\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):([0-9]{1,5})\b$/;
+const ipPortRegex = /^(\d{1,3}\.){3}\d{1,3}:\d{1,5}(\/[^\s]*)?$/;
 //拿到输入内容
 const loginClick = () => {
   //非空校验

@@ -6,9 +6,9 @@
       <span style="font-size: 20px; color: #333333; font-weight: 600">帮助</span>
     </div>
     <!-- 反馈意见 -->
-    <el-button plain @click="open" style="margin-top: 18px"
+    <!-- <el-button plain @click="open" style="margin-top: 18px"
       >点击反馈意见</el-button
-    >
+    > -->
     <!-- 内容 -->
     <a-row v-for="(item, index) in help" :key="index">
       <div style="display: flex; flex-direction: column">

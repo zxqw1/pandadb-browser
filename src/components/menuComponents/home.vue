@@ -132,8 +132,7 @@ import { useStore } from "vuex";
 const store = useStore();
 const username = window.localStorage.getItem("username");
 const address = window.localStorage.getItem("address");
-const ConnectLib = window.localStorage.getItem('address') === "http://10.0.82.146:7601"
-console.log(ConnectLib)
+const ConnectLib = window.localStorage.getItem('address') === "http://10.0.82.146:7601/query"
 // 展示节点
 const value = ref("");
 const options = [
@@ -164,7 +163,7 @@ const getNodeColor = (key) => {
 //节点展示全部
 const labelShow = () => {
   const startTime = performance.now()
-  fetch("http://10.0.82.146:7601", {
+  fetch(window.localStorage.getItem('address'), {
     method: "POST",
     headers: {
       "Content-Type": "text/plain",
@@ -190,7 +189,7 @@ const labelShow = () => {
         }
       });
       result.summary.query.text = data2.query;
-      result.summary.server.address = "http://10.0.82.146:7601";
+      result.summary.server.address = window.localStorage.getItem('address');
       result.summary.server.agent = "PandaDB";
       console.log(result);
       mitts.emit("params", result);
@@ -203,7 +202,7 @@ const labelShow = () => {
 //节点展示部分
 const graphShow = (e) => {
   const startTime = performance.now();
-  fetch("http://10.0.82.146:7601", {
+  fetch(window.localStorage.getItem('address'), {
     method: "POST",
     headers: {
       "Content-Type": "text/plain",
@@ -228,7 +227,7 @@ const graphShow = (e) => {
         }
       });
       result.summary.query.text = data2.query;
-      result.summary.server.address = "http://10.0.82.146:7601";
+      result.summary.server.address = window.localStorage.getItem('address');
       result.summary.server.agent = "PandaDB";
       mitts.emit("params", result);
       store.commit("ScrollChange", result);
@@ -240,7 +239,7 @@ const graphShow = (e) => {
 //关系展示全部
 const relationShow = (e) => {
   const startTime = performance.now();
-  fetch("http://10.0.82.146:7601", {
+  fetch(window.localStorage.getItem('address'), {
     method: "POST",
     headers: {
       "Content-Type": "text/plain",
@@ -265,7 +264,7 @@ const relationShow = (e) => {
         }
       });
       result.summary.query.text = data2.query;
-      result.summary.server.address = "http://10.0.82.146:7601";
+      result.summary.server.address = window.localStorage.getItem('address');
       result.summary.server.agent = "PandaDB";
       console.log(result);
       mitts.emit("params", result);
@@ -278,7 +277,7 @@ const relationShow = (e) => {
 //关系展示部分
 const relationClick = (e) => {
   const startTime = performance.now();
-  fetch("http://10.0.82.146:7601", {
+  fetch(window.localStorage.getItem('address'), {
     method: "POST",
     headers: {
       "Content-Type": "text/plain",
@@ -305,7 +304,7 @@ const relationClick = (e) => {
         }
       });
       result.summary.query.text = data2.query;
-      result.summary.server.address = "http://10.0.82.146:7601";
+      result.summary.server.address = window.localStorage.getItem('address');
       result.summary.server.agent = "PandaDB";
       console.log(result);
       mitts.emit("params", result);

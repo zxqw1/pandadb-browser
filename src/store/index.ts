@@ -3,7 +3,8 @@ import { createLogger, createStore, type StoreOptions } from 'vuex'
 
 const store: StoreOptions<any> = {
     state: {
-        list: []
+        list: [],
+        loading: false
     },
     mutations: {
         ScrollChange(state: any, value) {
@@ -22,6 +23,10 @@ const store: StoreOptions<any> = {
             // }
             // sessionStorage.setItem("reviseNum", JSON.stringify(-1))
         },
+        loadingFlag(state: any, value) {
+            console.log(value,"27")
+            state.loading = value
+        }
         //删除
         // remove(state, index) {
         //     state.list.splice(index, 1)
@@ -130,6 +135,9 @@ const store: StoreOptions<any> = {
         ScrollChange({ commit }, value) {
             commit('ScrollChange', value); // 提交 mutation 来改变状态  
         },
+        loadingFlag({commit}, value) {
+            commit('loadingFlag', value); // 提交 mutation 来改变状态  
+        }
         // remove({ commit }, index) {
         //     commit('remove', index);
         // },

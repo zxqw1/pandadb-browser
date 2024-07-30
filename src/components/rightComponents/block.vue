@@ -11,7 +11,7 @@
       zIndex: isFullscreen ? '5' : '0',
     }"
   >
-    <el-row >
+    <el-row>
       <div
         style="background-color: #f6f6f6; width: 100%; height: 24px"
         v-if="!isFullscreen"
@@ -176,21 +176,20 @@
                         placement="bottom"
                         :width="260"
                         trigger="click"
+                        v-for="(value, key) in item.labelList" :key="key"
                       >
-                        <template #reference>
+                      <template #reference>
                           <el-tag
                             @click="tagClick(key)"
                             effect="dark"
                             round
                             :color="getTagColor(key)"
                             style="margin-left: 10px; cursor: pointer;border: none"
-                            v-for="(value, key) in item.labelList" :key="key"
-                            >{{ key }}({{ value }})</el-tag>
+                          >{{ key }}({{ value }})</el-tag>
                         </template>
-                        <el-row >
+                        <el-row>
                           <el-col>
                             <el-tag
-                            v-for="(value, key) in item.labelList" :key="key"
                               effect="dark"
                               round
                               :color="getTagColor(key)"
@@ -495,7 +494,7 @@
                 </div>
               </template>
               <!-- 详情 -->
-              <div style="padding: 10px; overflow-y: auto">
+              <div style="padding: 10px; overflow-y: auto;height: 324px">
                 <el-row>
                   <el-col class="severTitle" :span="8"> Server version</el-col>
                   <el-col :span="16" class="severContent">
@@ -1609,7 +1608,7 @@ const relationList = ref([]);
 const tagName = ref("");
 const error = ref("")
 //控制list条数
-if (list.value.length > 30) {
+if (list.value.length > window.localStorage.getItem('item') ? window.localStorage.getItem('item') :30) {
   list.value.splice(list.value.length - 1, 1);
 }
 //标签颜色

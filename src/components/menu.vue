@@ -33,6 +33,7 @@
       </template>
       <div v-if="tabsName" class="content">
         <favorate />
+        <!-- 首页 -->
       </div>
     </el-tab-pane>
     <el-tab-pane name="教程" :disabled="loginelse">
@@ -45,7 +46,9 @@
           <span>教程</span>
         </span>
       </template>
-      <div v-if="tabsName" class="content"><guides /></div>
+      <div v-if="tabsName" class="content">
+        <guides />
+      </div>
     </el-tab-pane>
     <el-tab-pane name="帮助" :disabled="loginelse">
       <template #label>
@@ -71,7 +74,9 @@
           <span>设置</span>
         </span>
       </template>
-      <div v-if="tabsName" class="content"><setter /></div>
+      <div v-if="tabsName" class="content">
+        <setter />
+      </div>
     </el-tab-pane>
     <el-tab-pane name="关于我们" :disabled="loginelse">
       <template #label>
@@ -83,7 +88,9 @@
           <span>关于我们</span>
         </span>
       </template>
-      <div v-if="tabsName" class="content"><about /></div>
+      <div v-if="tabsName" class="content">
+        <about />
+      </div>
     </el-tab-pane>
   </el-tabs>
 </template>

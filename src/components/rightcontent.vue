@@ -13,7 +13,7 @@
         "
         class="scroll-container"
         ref="scrollContainer"
-        v-loading="loading"
+        v-loading="store.state.loading"
       >
         <login></login>
         <!-- <login2/> -->
@@ -34,7 +34,7 @@ import { ref, watch, nextTick } from "vue";
 import { useStore } from "vuex";
 const store = useStore();
 const scrollContainer = ref(null);
-const loading = ref(false);
+// const loading = ref(false);
 watch(store.state.list, async () => {
   await nextTick();
   //设置滚动条

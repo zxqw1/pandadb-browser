@@ -1,5 +1,5 @@
 <template>
-  <div class="title">
+  <div class="title" >
     <div class="titleS">
       <div class="icon"></div>
       <span style="font-size: 20px; color: #333333; font-weight: 600"
@@ -17,22 +17,22 @@
         <div class="name">{{ item.title }}</div>
       </a-col>
       <!-- 主题 -->
-      <a-col v-if="item.type === 'theme'" style="margin: 14px 0;">
+      <!-- <a-col v-if="item.type === 'theme'" style="margin: 14px 0;">
         <a-radio-group v-model:value="value" name="radioGroup">
           <a-radio value="1">浅色</a-radio>
           <a-radio value="2">深色</a-radio>
         </a-radio-group>
-      </a-col>
+      </a-col> -->
       <!-- 默认初始命令 -->
       <a-col v-if="item.type === 'favor'">
-        <div>
+        <!-- <div>
           <h4 style="margin-left: 5px;">默认初始命令</h4>
             <a-input v-model:value="value2" placeholder="默认命令" style="margin-top: 6px;" />
-        </div>
-        <div>
+        </div> -->
+        <!-- <div>
           <h4 style="margin-left: 5px;">连接超时时间</h4>
             <a-input v-model:value="value3" placeholder="时间" style="margin-top: 6px;" />
-        </div>
+        </div> -->
       </a-col>
       <a-col v-if="item.type === 'result'">
         <div>
@@ -45,6 +45,7 @@
         </div>
       </a-col>
     </a-row>
+    <!-- <el-button type="primary" style="width: 100%; margin-top: 30px;" @click="setterClick">确定</el-button> -->
   </div>
 </template>
 
@@ -57,9 +58,12 @@ const value3 = ref<string>('');
 const value4 = ref<string>('');
 const value5 = ref<string>('');
 
-watch(value2, () => {
-  console.log(value2.value);
-});
+// const setterClick = ()=>{
+//   //默认节点大小
+//   window.localStorage.setItem("size",value4.value)
+//   //历史记录最大条数
+//   window.localStorage.setItem('item',value5.value)
+// }
 
 </script>
 

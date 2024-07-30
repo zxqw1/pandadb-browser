@@ -36,11 +36,12 @@
         display: flex;
         align-items: center;
         justify-content: space-around;
+        position: relative;
       "
     >
-      <StarOutlined style="font-size: 20px"  @click="collectClick"/>
+      <StarOutlined style="font-size: 20px;position: absolute;right: 26px"  @click="collectClick"/>
       <VerticalAlignBottomOutlined
-        style="font-size: 20px"
+        style="font-size: 20px;position: absolute;right: 66px"
         @click="imgClick"
       />
     </el-col>
@@ -127,7 +128,7 @@ const funClick = async () => {
     console.log(111);
   } else {
     const startTime = performance.now();
-  fetch("http://10.0.82.146:7601", {
+  fetch(window.localStorage.getItem('address'), {
     method: "POST",
     headers: {
       "Content-Type": "text/plain",
@@ -152,7 +153,7 @@ const funClick = async () => {
         }
       });
       result.summary.query.text = data2.query;
-      result.summary.server.address = "http://10.0.82.146:7601";
+      result.summary.server.address = window.localStorage.getItem('address');
       result.summary.server.agent = "PandaDB";
       console.log(result,155);
       // mitts.emit("revamp", (result,props.index));

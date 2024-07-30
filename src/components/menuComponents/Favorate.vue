@@ -44,9 +44,8 @@
           @node-drop="handleDrop"
           :render-content="renderContent"
         >
-        
           <template #default="scoped">
-            <div style="width: 100%; display: flex" id:scoped.data.id  >
+            <div style="width: 100%; display: flex" id:scoped.data.id>
               <div style="display: flex; flex: 1">
                 <Folder
                   style="width: 22px; height: 22px"
@@ -87,10 +86,9 @@
                 <div class="hoverText" @click="deleteClick(scoped)">
                   Delete folder
                 </div>
-                <div class="hoverText">Export scripts as .zip file</div>
-                <div class="hoverText">Export scripts as .cypher file</div>
                 <template #reference>
-                  <el-icon style="height: 22px; width: 22px"><MoreFilled
+                  <el-icon style="height: 22px; width: 22px"
+                    ><MoreFilled
                       style="width: 22px; height: 22px"
                       @click="showPopover"
                   /></el-icon>
@@ -98,10 +96,14 @@
               </el-popover>
             </div>
             <div>
-            <el-icon style="height: 22px; width: 22px" v-if="scoped.data.type === 'file'" @click="favoriteClick(scoped.data.label)"><CaretRight /></el-icon>
-          </div>
+              <el-icon
+                style="height: 22px; width: 22px"
+                v-if="scoped.data.type === 'file'"
+                @click="favoriteClick(scoped.data.label)"
+                ><CaretRight
+              /></el-icon>
+            </div>
           </template>
-
         </el-tree>
       </a-col>
 
@@ -119,7 +121,12 @@
 import type { TreeProps } from "ant-design-vue";
 import { ref, onMounted } from "vue";
 import mitts from "../../utils/bus.js";
-import { FolderAdd, Folder, MoreFilled,CaretRight } from "@element-plus/icons-vue";
+import {
+  FolderAdd,
+  Folder,
+  MoreFilled,
+  CaretRight,
+} from "@element-plus/icons-vue";
 import type Node from "element-plus/es/components/tree/src/model/node";
 import type { DragEvents } from "element-plus/es/components/tree/src/model/useDragNode";
 import type {
@@ -129,12 +136,14 @@ import type {
 const buttonRef = ref(false);
 const input = ref("");
 const renameFlag = ref(false);
-const TreeData = ref([]);
+// console.log(,'139')
+const TreeData = ref(!JSON.parse(localStorage.getItem("treedata")) ? [] : JSON.parse(localStorage.getItem("treedata")));
 //删除
 const deleteClick = (scoped) => {
   TreeData.value = TreeData.value.filter((item) => {
     return item.id !== scoped.data.id;
   });
+  window.localStorage.setItem("treedata", JSON.stringify(TreeData.value));
 };
 
 const RenameClick = (scoped) => {
@@ -200,7 +209,9 @@ const handleDrop = (
     // 2.文件拖到文件夹才可以，文件和文件不允许合并对
     dropNode.parent.data.children[0].children = [];
     TreeData.value.push(draggingNode.data);
-    alert("操作失败，最多添加两级！")
+    alert("操作失败，最多添加两级！");
+  }else{
+    window.localStorage.setItem("treedata", JSON.stringify(TreeData.value));
   }
 };
 const allowDrop = (draggingNode: Node, dropNode: Node, type: AllowDropType) => {
@@ -225,6 +236,7 @@ const addfileClick = () => {
     type: "files",
   });
   console.log(TreeData, "242");
+  window.localStorage.setItem("treedata", JSON.stringify(TreeData.value));
 };
 const showPopover = () => {
   buttonRef.value = true;
@@ -239,13 +251,13 @@ mitts.on("recommand", (contentValue: any) => {
     editInput: null,
     type: "file",
   });
-  console.log(TreeData, "256");
+  window.localStorage.setItem("treedata", JSON.stringify(TreeData.value));
 });
 //渲染
-const favoriteClick = (label)=>{
-// console.log(label,'246')
-mitts.emit('favo',label)
-}
+const favoriteClick = (label) => {
+  // console.log(label,'246')
+  mitts.emit("favo", label);
+};
 </script>
 
 <style scoped>
