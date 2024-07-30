@@ -25,7 +25,9 @@
         </p>
         <p>
           <span style="font-size: 20px"> 地址为</span>
-          <span style="padding-left: 20px; color: #6a8322; font-size: 20px">{{href}}</span>
+          <span style="padding-left: 20px; color: #6a8322; font-size: 20px">{{
+            href
+          }}</span>
         </p>
         <p>
           <span style="font-size: 20px"> 连接凭据存储在web浏览器中</span>
@@ -98,8 +100,9 @@ const input3 = ref("");
 const input = ref("");
 const input2 = ref("");
 const username = window.localStorage.getItem("username");
-const href = window.localStorage.getItem("address")
-// const href = window.location.href;
+const href = window.localStorage.getItem("address");
+const ipPortRegex =
+  /^\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):([0-9]{1,5})\b$/;
 //拿到输入内容
 const loginClick = () => {
   //非空校验
@@ -107,37 +110,32 @@ const loginClick = () => {
     ElMessageBox.alert("地址不能为空", "提示", {
       confirmButtonText: "好的",
     });
-  }
-  // else if(input.value === ""){
-  //   ElMessageBox.alert("用户名不能为空", "提示", {
-  //     confirmButtonText: "好的",
-  //   });
-  // }else if(input2.value === ""){
-  //   ElMessageBox.alert("密码不能为空", "提示", {
-  //     confirmButtonText: "好的",
-  //   });
-  // }
-  else{
-    window.localStorage.setItem("address",select.value + input3.value)
-    // window.localStorage.setItem("username",input.value)
-    // window.localStorage.setItem("password",input2.value)
-    open.value = true;
-    window.location.reload();
+  } else {
+    if (!ipPortRegex.test(input3.value)) {
+      ElMessageBox.alert("请输入有效的IP地址和端口号", "提示", {
+        confirmButtonText: "好的",
+      });
+    } else {
+      window.localStorage.setItem("address", select.value + input3.value);
+      // window.localStorage.setItem("username",input.value)
+      // window.localStorage.setItem("password",input2.value)
+      open.value = true;
+      window.location.reload();
+    }
   }
 };
 
 //判段是否登录
 onMounted(() => {
-  // if (window.localStorage.getItem("username") && window.localStorage.getItem("password")) 
-    if (window.localStorage.getItem("address") ) {
+  // if (window.localStorage.getItem("username") && window.localStorage.getItem("password"))
+  if (window.localStorage.getItem("address")) {
     open.value = true;
-  }else{
+  } else {
     ElMessageBox.alert("您暂未登录哦，请登录", "提示", {
       confirmButtonText: "好的",
     });
   }
-}); 
-
+});
 </script>
 
 <style scoped>

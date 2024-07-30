@@ -181,8 +181,10 @@ mitts.on("favo", (cypher) => {
     .then((response) => response.text())
     .then((data) => {
       const data2 = JSON.parse(data);
+      if(!window.localStorage.getItem("address")){
+        data2.error = 'No connection found, did you connect to PandaDB?'
+      }
       if (data2.error) {
-        console.log(data2, "186");
         const result = {};
         result.summary = {};
         result.summary.query = {};
@@ -211,7 +213,6 @@ mitts.on("favo", (cypher) => {
         result.summary.query.text = data2.query;
         result.summary.server.address = "http://10.0.82.146:7601";
         result.summary.server.agent = "PandaDB";
-        console.log(result);
         mitts.emit("params", result);
         store.commit("ScrollChange", result);
       }
@@ -237,7 +238,10 @@ const funClick = async () => {
       .then((response) => response.text())
       .then((data) => {
         const data2 = JSON.parse(data);
-        console.log(data2, "184");
+        
+        if(!window.localStorage.getItem("address")){
+        data2.error = 'No connection found, did you connect to PandaDB?'
+      }
         if (data2.error) {
           console.log(data2, "186");
           const result = {};
@@ -247,8 +251,10 @@ const funClick = async () => {
           result.summary.query.text = data2.query;
           result.summary.server.address = "http://10.0.82.146:7601";
           result.summary.server.agent = "PandaDB";
-          result.error = error;
+          result.error = data2.error;
+          console.log(result,"257")
           mitts.emit("params", result);
+          store.commit("ScrollChange", result);
         } else {
           const endTime = performance.now();
           const responseTime = endTime - startTime;
@@ -269,7 +275,6 @@ const funClick = async () => {
           result.summary.query.text = data2.query;
           result.summary.server.address = "http://10.0.82.146:7601";
           result.summary.server.agent = "PandaDB";
-          console.log(result, "271");
           mitts.emit("params", result);
           store.commit("ScrollChange", result);
         }

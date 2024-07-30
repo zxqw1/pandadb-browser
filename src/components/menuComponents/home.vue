@@ -39,7 +39,7 @@
         <div class="circle"></div>
         <div class="name">节点标签</div>
       </a-col>
-      <a-col style="margin-top: 20px">
+      <a-col style="margin-top: 20px" v-if="ConnectLib">
         <a-tag
           color="rgb(145, 149, 160)"
           style="cursor: pointer"
@@ -62,7 +62,7 @@
         <div class="circle"></div>
         <div class="name">关系类型</div>
       </a-col>
-      <a-col style="margin-top: 20px">
+      <a-col style="margin-top: 20px" v-if="ConnectLib">
         <a-tag style="cursor: pointer" @click="relationShow($event)"
           >*(17,256,038)</a-tag
         >
@@ -132,6 +132,8 @@ import { useStore } from "vuex";
 const store = useStore();
 const username = window.localStorage.getItem("username");
 const address = window.localStorage.getItem("address");
+const ConnectLib = window.localStorage.getItem('address') === "http://10.0.82.146:7601"
+console.log(ConnectLib)
 // 展示节点
 const value = ref("");
 const options = [
