@@ -27,7 +27,9 @@
           top: 4px;
         "
         @click="funClick"
+        v-if="!loadingFlag"
       />
+      <div v-else style="width: 14px; height: 14px; background-color: red;position: absolute;right: 16px; top: 10px;" @click="breakClick"></div>
     </el-col>
     <el-col
       :span="2"
@@ -66,6 +68,7 @@ import "codemirror/theme/darcula.css";
 //主题
 import "codemirror/theme/idea.css";
 import { useStore } from "vuex";
+const loadingFlag = ref(false)
 const store = useStore();
 const props = defineProps(["command","index","item"]);
 const mode = "javascript"; // 编译语言
@@ -120,44 +123,64 @@ const opt = ref({
     "CodeMirror-lint-markers",
   ],
 });
+let abortController: AbortController | null = null;
 //获取数据
 const funClick = async () => {
   await nextTick();
   if (contentValue.value === "") {
     console.log(111);
   } else {
+    loadingFlag.value = !loadingFlag.value
     const startTime = performance.now();
+    // 创建新的 AbortController 实例  
+    abortController = new AbortController();
   fetch(window.localStorage.getItem('address'), {
     method: "POST",
     headers: {
       "Content-Type": "text/plain",
     },
     body: contentValue.value,
+    signal: abortController.signal,
   })
     .then((response) => response.text())
     .then((data) => {
-      const endTime = performance.now();
-      const result = {};
-      result.records = [];
-      result.summary = {};
-      result.summary.query = {};
-      result.summary.server = {};
+      loadingFlag.value = !loadingFlag.value
+        const data2 = JSON.parse(data);
+        if (data2.error) {
+          // console.log(data2, "186");
+          const result = {};
+          result.summary = {};
+          result.summary.query = {};
+          result.summary.server = {};
+          result.summary.query.text = data2.query;
+          result.summary.server.address = window.localStorage.getItem('address');
+          result.summary.server.agent = "PandaDB";
+          result.error = data2.error;
+          mitts.emit("revamp2", {result:result,index:props.index,id:props.item.id,item:props.item});
+          store.commit("ScrollChange", result);
+        }else{
+          const endTime = performance.now();
+          const result = {};
+          result.records = [];
+          result.summary = {};
+          result.summary.query = {};
+          result.summary.server = {};
       const data2 = JSON.parse(data);
       const responseTime = endTime - startTime;
-      result.resTime = Math.round(responseTime) + "ms";
-      data2.response.forEach((value, key) => {
-        const keys = Object.keys(value);
-        for (let key in value) {
+          result.resTime = Math.round(responseTime) + "ms";
+        data2.response.forEach((value, key) => {
+            const keys = Object.keys(value);
+            for (let key in value) {
           result.records.push({ keys: keys, _fields: [value[key]] });
-        }
-      });
-      result.summary.query.text = data2.query;
-      result.summary.server.address = window.localStorage.getItem('address');
-      result.summary.server.agent = "PandaDB";
-      console.log(result,155);
+            }
+          });
+          result.summary.query.text = data2.query;
+          result.summary.server.address = window.localStorage.getItem('address');
+          result.summary.server.agent = "PandaDB";
       // mitts.emit("revamp", (result,props.index));
-      mitts.emit("revamp2", {result:result,index:props.index,id:props.id});
-      store.commit("ScrollChange", result);
+          mitts.emit("revamp2", {result:result,index:props.index,id:props.item.id,item:props.item});
+          store.commit("ScrollChange", result);
+        }
     })
     .catch((error) => {
       console.error("Error:", error);

@@ -4,8 +4,12 @@
     :style="{
       height: isFullscreen ? '100vh' : 'auto',
       padding: isFullscreen ? '20px' : 'auto',
+      // position :isFullscreen ? 'fixed' : 'relative',
+      // top:isFullscreen ? '0' :'auto',
+      // right:isFullscreen ? '0' :'auto',
+      // bottom:isFullscreen ? '0' :'auto',
+      // Zindex:isFullscreen ?'9999999999' :'0'
     }"
-    style="position: relative;"
   >
     <el-col :span="22" style="position: relative">
       <div
@@ -237,11 +241,11 @@ mitts.on("favo", (cypher) => {
 //获取数据
 
 const funClick = async () => {
-  loadingFlag.value = !loadingFlag.value
   await nextTick();
   if (contentValue.value === "") {
     console.log(111);
   } else {
+  loadingFlag.value = !loadingFlag.value
     if(!window.localStorage.getItem("address")){
       const  error = 'No connection found, did you connect to PandaDB?'
           const result = {};
@@ -282,7 +286,6 @@ const funClick = async () => {
           result.summary.server.address = window.localStorage.getItem('address');
           result.summary.server.agent = "PandaDB";
           result.error = data2.error;
-          console.log(result,"257")
           mitts.emit("params", result);
           store.commit("ScrollChange", result);
         } else {
@@ -308,8 +311,6 @@ const funClick = async () => {
           mitts.emit("params", result);
           store.commit("ScrollChange", result);
         }
-        // 请求完成后，可以重置 abortController  
-        // abortController = null;
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -330,6 +331,9 @@ const breakClick = ()=>{
 // 全屏
 const toggleFullScreen = () => {
   isFullscreen.value = !isFullscreen.value;
+  if(isFullscreen.value  === true){
+    window.localStorage.setItem('Fullscreen','true')
+  }
 };
 //删除
 const deleteClick = () => {

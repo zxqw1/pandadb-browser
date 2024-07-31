@@ -182,6 +182,7 @@
                         placement="bottom"
                         :width="260"
                         trigger="click"
+                        v-for="(value, key) in item.labelList" :key="key"
                       >
                       <template #reference>
                           <el-tag
@@ -190,13 +191,12 @@
                             round
                             :color="getTagColor(key)"
                             style="margin-left: 10px; cursor: pointer;border: none"
-                            v-for="(value, key) in item.labelList" :key="key"
                           >{{ key }}({{ value }})</el-tag>
                         </template>
                         <el-row>
                           <el-col>
+                          <!-- v-for="(value, key) in item.labelList" :key="key" -->
                             <el-tag
-                              v-for="(value, key) in item.labelList" :key="key"
                               effect="dark"
                               round
                               :color="getTagColor(key)"
@@ -650,11 +650,11 @@
                         placement="bottom"
                         :width="260"
                         trigger="click"
+                        v-for="(value2, key2) in item.labelList" :key="key2"
                       >
                         <template #reference>
                           <el-tag
-                        v-for="(value2, key2) in item.labelList" :key="key2"
-                          @click="tagClick(key2)"
+                            @click="tagClick(key2)"
                             effect="dark"
                             round
                             :color="getTagColor(key2)"
@@ -663,7 +663,8 @@
                         </template>
                         <el-row >
                           <el-col>
-                            <el-tag v-for="(value2, key2) in item.labelList" :key="key2" effect="dark" round style="width: 100%;border: none" :color="getTagColor(key2)">{{ key2 }}({{ value2 }})</el-tag>
+                            <!-- v-for="(value2, key2) in item.labelList" :key="key2" -->
+                            <el-tag effect="dark" round style="width: 100%;margin-top: 10px; border: none" :color="getTagColor(key2)">{{ key2 }}({{ value2 }})</el-tag>
                           </el-col>
                           <el-col style="display: flex; margin-top: 12px">
                             <ul
@@ -1011,7 +1012,6 @@
                               </div>
                           </el-col> 
                         </el-row>
-                        
                       </el-popover>
                     </el-col>
                     <el-col style="margin: 10px 0 0 10px">
@@ -1696,10 +1696,9 @@ const generateRandomId = () => {
 };
 //修改
 mitts.on("revamp", (data) => {
-  console.log(data, "1681");
   const result = data.result;
   const index = data.index;
-  console.log(index, "1673");
+  console.log(data.id, "1673");
   result.id = data.id || generateRandomId();
   result.labelList = {};
   result.relationList = [];
@@ -2118,7 +2117,7 @@ const colorClick = (e) => {
           }
         });
       });
-      nextTick(() =>{
+      nextTick(() => {
         item.graphRef.setJsonData(item.graphData);
       });
     });
@@ -2139,7 +2138,7 @@ const colorRelaClick = (e) => {
           );
         }
       });
-      nextTick(() =>{
+      nextTick(() => {
         item.graphRef.setJsonData(item.graphData);
       });
     });
@@ -2158,7 +2157,7 @@ const sizeClick = (e) => {
           }
         });
       });
-      nextTick(() =>{
+      nextTick(() => {
         item.graphRef.setJsonData(item.graphData);
       });
     });
@@ -2179,7 +2178,7 @@ const sizeRelaClick = (e) => {
           );
         }
       });
-      nextTick(() =>{
+      nextTick(() => {
         item.graphRef.setJsonData(item.graphData);
       });
     });
@@ -2210,9 +2209,9 @@ const idClick = (e) => {
         }
       });
     });
-    nextTick(() =>{
-        item.graphRef.setJsonData(item.graphData);
-      });
+    nextTick(() => {
+      item.graphRef.setJsonData(item.graphData);
+    });
   });
 };
 //修改字段properties
@@ -2239,9 +2238,9 @@ const fileClick = (e) => {
         }
       });
     });
-    nextTick(() =>{
-        item.graphRef.setJsonData(item.graphData);
-      });
+    nextTick(() => {
+      item.graphRef.setJsonData(item.graphData);
+    });
   });
 };
 //修改line字段 id
@@ -2253,9 +2252,9 @@ const lineIdClick = (e) => {
         item2.text = item2.id;
       }
     });
-    nextTick(() =>{
-        item.graphRef.setJsonData(item.graphData);
-      });
+    nextTick(() => {
+      item.graphRef.setJsonData(item.graphData);
+    });
   });
 };
 //修改字段line type
@@ -2267,9 +2266,9 @@ const lineTypeClick = (e) => {
         item2.text = item2.type;
       }
     });
-    nextTick(() =>{
-        item.graphRef.setJsonData(item.graphData);
-      });
+    nextTick(() => {
+      item.graphRef.setJsonData(item.graphData);
+    });
   });
 };
 //修改字段 line properties
@@ -2281,9 +2280,9 @@ const lineFileClick = (e) => {
         item2.text = item2.properties[e.target.innerText];
       }
     });
-    nextTick(() =>{
-        item.graphRef.setJsonData(item.graphData);
-      });
+    nextTick(() => {
+      item.graphRef.setJsonData(item.graphData);
+    });
   });
 };
 //下载图片
