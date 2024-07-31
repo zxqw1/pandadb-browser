@@ -28,4 +28,20 @@
 // const request  = {
 //     async fetc
 // }
-
+async function getJsonDataInfo() {
+    await fetch(window.localStorage.getItem('address'), {
+        method: "POST",
+        headers: {
+            "Content-Type": "text/plain",
+        },
+        body: 'call db.schema.statics',
+    }).then((response) => response.text())
+        .then((data) => {
+            const data2 = JSON.parse(data)
+            window.localStorage.setItem('labelList', JSON.stringify(data2.response[0].value.labels))
+            window.localStorage.setItem('typeList', JSON.stringify(data2.response[0].value.types))
+            window.localStorage.setItem('labelNumber', data2.response[0].value.nodeCount)
+            window.localStorage.setItem('TypeNumber', data2.response[0].value.relCount)
+        })
+}
+export default getJsonDataInfo

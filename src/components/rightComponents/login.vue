@@ -21,7 +21,6 @@
       <a-col v-if="open" style="padding-left: 60px">
         <p>
           <span style="font-size: 20px"> 您已连接至用户</span>
-          <!-- <span style="padding-left: 20px; color: #6a8322; font-size: 20px">{{username }}</span> -->
         </p>
         <p>
           <span style="font-size: 20px"> 地址为</span>
@@ -51,7 +50,7 @@
           <el-input
             v-model="input3"
             style="max-width: 600px"
-            placeholder="请输入"
+            placeholder="0.0.0.0:7600/query"
             class="input-with-select"
           >
             <template #prepend>

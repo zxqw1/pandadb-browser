@@ -39,22 +39,22 @@
         <div class="circle"></div>
         <div class="name">节点标签</div>
       </a-col>
-      <a-col style="margin-top: 20px" v-if="ConnectLib">
+      <a-col style="margin-top: 20px">
         <a-tag
           color="rgb(145, 149, 160)"
           style="cursor: pointer"
           @click="labelShow"
         >
-          *(908,224)</a-tag
+          *({{ nodeNumber }})</a-tag
         >
         <a-tag
           :color="getNodeColor(item.text)"
           style="margin-left: 10px; margin-top: 10px; cursor: pointer"
-          v-for="(item, index) in dataBase[0].nodes"
+          v-for="(item, index) in labelList"
           :key="index"
           @click="graphShow($event)"
         >
-          {{ item.text }}
+          {{ item }}
         </a-tag>
       </a-col>
       <!-- 关系类型 -->
@@ -62,13 +62,13 @@
         <div class="circle"></div>
         <div class="name">关系类型</div>
       </a-col>
-      <a-col style="margin-top: 20px" v-if="ConnectLib">
+      <a-col style="margin-top: 20px" >
         <a-tag style="cursor: pointer" @click="relationShow($event)"
-          >*(17,256,038)</a-tag
+          >*({{ TypeNumber }})</a-tag
         >
         <a-tag
           style="margin-left: 10px; margin-top: 10px; cursor: pointer"
-          v-for="(item, index) in dataBase[0].Relationship"
+          v-for="(item, index) in typeList"
           :key="index"
           @click="relationClick($event)"
           >{{ item }}</a-tag
@@ -125,14 +125,29 @@
 </template>
 
 <script lang="ts" setup>
-import { ref ,watch } from "vue";
+import getJsonDataInfo from '../../utils/request';
+import { ref, watch, onMounted, nextTick } from "vue";
 import dataBase from "@/data/dataBase";
 import mitts from "../../utils/bus.js";
 import { useStore } from "vuex";
 const store = useStore();
 const username = window.localStorage.getItem("username");
 const address = window.localStorage.getItem("address");
-const ConnectLib = window.localStorage.getItem('address') === "http://10.0.82.146:7601/query"
+const labelList = ref(JSON.parse(window.localStorage.getItem('labelList')))
+const typeList = ref(JSON.parse(window.localStorage.getItem('typeList')))
+const nodeNumber = ref(window.localStorage.getItem('labelNumber'))
+const TypeNumber = ref(window.localStorage.getItem('TypeNumber'))
+watch(store.state.list, async ()=>{
+    await getJsonDataInfo()
+
+  labelList.value = JSON.parse(window.localStorage.getItem('labelList'))
+  typeList.value = JSON.parse(window.localStorage.getItem('typeList'))
+  nodeNumber.value = window.localStorage.getItem('labelNumber')
+  TypeNumber.value = window.localStorage.getItem('TypeNumber')
+  
+
+})
+
 // 展示节点
 const value = ref("");
 const options = [
@@ -194,6 +209,7 @@ const labelShow = () => {
       console.log(result);
       mitts.emit("params", result);
       store.commit("ScrollChange", result);
+      
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -314,6 +330,13 @@ const relationClick = (e) => {
       console.error("Error:", error);
     });
 }
+
+onMounted(()=>{
+  nextTick(()=>{
+    getJsonDataInfo() //vue3 created事件是哪个
+  })
+})
+
 </script>
 
 <style scoped>

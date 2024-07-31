@@ -6,19 +6,19 @@
       <div
         style="
           display: flex;
-          flex-direction: column-reverse;
+          flex-direction: column;
           width: 99%;
           max-height: 860px;
           overflow-y: auto;
         "
         class="scroll-container"
         ref="scrollContainer"
-        v-loading="store.state.loading"
       >
-        <login></login>
         <!-- <login2/> -->
-        <block />
         <blockTop />
+        <block />
+        <login></login>
+
       </div>
     </a-row>
   </div>
@@ -35,15 +35,17 @@ import { useStore } from "vuex";
 const store = useStore();
 const scrollContainer = ref(null);
 // const loading = ref(false);
-watch(store.state.list, async () => {
-  await nextTick();
-  //设置滚动条
-  if (scrollContainer.value) {
-    scrollContainer.value.scrollTo({
-      top: -scrollContainer.value.scrollHeight,
-    });
-  }
-});
+// watch(store.state.list, () => {
+//   // await nextTick();
+//   //设置滚动条
+//   console.log("设置滚动条")
+//   if (scrollContainer.value) {
+//     scrollContainer.value.scrollTo({
+//       top: -scrollContainer.value.scrollHeight,
+//     });
+//   }
+// });
+
 </script>
 
 <style scoped>

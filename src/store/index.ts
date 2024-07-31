@@ -8,7 +8,7 @@ const store: StoreOptions<any> = {
     },
     mutations: {
         ScrollChange(state: any, value) {
-            // console.log(value,"10")
+            console.log(value,"111111111111111111")
             state.list.push(value)
             // let num = undefined;
             // for (let i = 0; i < state.list.length; i++) {
@@ -23,10 +23,10 @@ const store: StoreOptions<any> = {
             // }
             // sessionStorage.setItem("reviseNum", JSON.stringify(-1))
         },
-        loadingFlag(state: any, value) {
-            console.log(value,"27")
-            state.loading = value
-        }
+        // loadingFlag(state: any, value) {
+        //     console.log(value,"27")
+        //     state.loading = value
+        // }
         //删除
         // remove(state, index) {
         //     state.list.splice(index, 1)
@@ -133,6 +133,7 @@ const store: StoreOptions<any> = {
     },
     actions: {
         ScrollChange({ commit }, value) {
+            console.log(136136)
             commit('ScrollChange', value); // 提交 mutation 来改变状态  
         },
         loadingFlag({commit}, value) {

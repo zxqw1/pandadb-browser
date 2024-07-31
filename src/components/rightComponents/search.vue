@@ -34,36 +34,35 @@
         @click="funClick"
         v-if="!loadingFlag"
       />
-      <div v-else style="width: 14px; height: 14px; background-color: red;position: absolute;right: 16px; top: 10px;" @click="breakClick"></div>
-    </el-col>
-    <el-col
-      :span="2"
-      style="
-        padding: 0 10px;
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
-      "
-    >
-      <ExpandAltOutlined
-        style="font-size: 20px;position: absolute; top: 28px;right: 94px"
-        @click="toggleFullScreen"
-        v-if="!isFullscreen"
-      />
-      <ShrinkOutlined
-        style="font-size: 20px; position: absolute; top: 28px;right: 94px"
-        @click="toggleFullScreen"
+      <div
         v-else
-      />
-      <CloseOutlined
-        style="font-size: 20px"
-        :style="{
-          position: isFullscreen ? 'absolute' : 'absolute',
-          top: isFullscreen ? '28px' : '28px',
-          right: isFullscreen ? '54px' : '54px',
-        }"
-        @click="deleteClick"
-      />
+        style="
+          width: 14px;
+          height: 14px;
+          background-color: red;
+          position: absolute;
+          right: 16px;
+          top: 10px;
+        "
+        @click="breakClick"
+      ></div>
+    </el-col>
+    <el-col :span="2" style="display: flex">
+      <el-col :span="12" style="text-align: center;padding-top: 8px;">
+        <ExpandAltOutlined
+          style="font-size: 20px;"
+          @click="toggleFullScreen"
+          v-if="!isFullscreen"
+        />
+        <ShrinkOutlined
+          style="font-size: 20px;"
+          @click="toggleFullScreen"
+          v-else
+        />
+      </el-col>
+      <el-col :span="12" style="text-align: center;padding-top: 8px;">
+        <CloseOutlined style="font-size: 20px;" @click="deleteClick" />
+      </el-col>
     </el-col>
   </el-row>
 </template>
@@ -78,7 +77,7 @@ import {
   ShrinkOutlined,
 } from "@ant-design/icons-vue";
 import { ElMessageBox } from "element-plus";
-import request from "../../utils/request.js";
+// import request from "../../utils/request.js";
 //框架
 import CodeMirror from "codemirror";
 import "codemirror/lib/codemirror.css";
@@ -87,7 +86,7 @@ import "codemirror/theme/darcula.css";
 import "codemirror/theme/idea.css";
 import { error } from "neo4j-driver";
 import { useStore } from "vuex";
-const loadingFlag = ref(false)
+const loadingFlag = ref(false);
 // const preventLoading = ref(false)
 const store = useStore();
 const mode = "javascript"; // 编译语言
@@ -180,11 +179,11 @@ computed((_height) => {
 });
 //喜好渲染
 mitts.on("favo", (cypher) => {
-  loadingFlag.value = !loadingFlag.value
+  loadingFlag.value = !loadingFlag.value;
   const startTime = performance.now();
-   // 创建新的 AbortController 实例  
-   abortController = new AbortController();
-  fetch(window.localStorage.getItem('address'), {
+  // 创建新的 AbortController 实例
+  abortController = new AbortController();
+  fetch(window.localStorage.getItem("address"), {
     method: "POST",
     headers: {
       "Content-Type": "text/plain",
@@ -194,49 +193,49 @@ mitts.on("favo", (cypher) => {
   })
     .then((response) => response.text())
     .then((data) => {
-      loadingFlag.value = !loadingFlag.value
-        const data2 = JSON.parse(data);
-        if(!window.localStorage.getItem("address")){
-        data2.error = 'No connection found, did you connect to PandaDB?'
+      loadingFlag.value = !loadingFlag.value;
+      const data2 = JSON.parse(data);
+      if (!window.localStorage.getItem("address")) {
+        data2.error = "No connection found, did you connect to PandaDB?";
       }
-        if (data2.error) {
-          const result = {};
-          result.summary = {};
-          result.summary.query = {};
-          result.summary.server = {};
-          result.summary.query.text = data2.query;
-          result.summary.server.address = window.localStorage.getItem('address');
-          result.summary.server.agent = "PandaDB";
-          result.error = data2.error;
-          mitts.emit("params", result);
-          store.commit("ScrollChange", result);
-        } else {
-          const endTime = performance.now();
-          const responseTime = endTime - startTime;
-          console.log(JSON.parse(data), "data");
-          const result = {};
-          result.records = [];
-          result.summary = {};
-          result.summary.query = {};
-          result.summary.server = {};
-          result.resTime = Math.round(responseTime) + "ms";
-          data2.response.forEach((value, index) => {
-            const keys = Object.keys(value);
-            result.records.push({ keys: keys, _fields: [] });
-            for (let key in value) {
-              result.records[index]._fields.push(value[key]);
-            }
-          });
-          result.summary.query.text = data2.query;
-          result.summary.server.address = window.localStorage.getItem('address');
-          result.summary.server.agent = "PandaDB";
-          mitts.emit("params", result);
-          store.commit("ScrollChange", result);
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+      if (data2.error) {
+        const result = {};
+        result.summary = {};
+        result.summary.query = {};
+        result.summary.server = {};
+        result.summary.query.text = data2.query;
+        result.summary.server.address = window.localStorage.getItem("address");
+        result.summary.server.agent = "PandaDB";
+        result.error = data2.error;
+        mitts.emit("params", result);
+        store.commit("ScrollChange", result);
+      } else {
+        const endTime = performance.now();
+        const responseTime = endTime - startTime;
+        console.log(JSON.parse(data), "data");
+        const result = {};
+        result.records = [];
+        result.summary = {};
+        result.summary.query = {};
+        result.summary.server = {};
+        result.resTime = Math.round(responseTime) + "ms";
+        data2.response.forEach((value, index) => {
+          const keys = Object.keys(value);
+          result.records.push({ keys: keys, _fields: [] });
+          for (let key in value) {
+            result.records[index]._fields.push(value[key]);
+          }
+        });
+        result.summary.query.text = data2.query;
+        result.summary.server.address = window.localStorage.getItem("address");
+        result.summary.server.agent = "PandaDB";
+        mitts.emit("params", result);
+        store.commit("ScrollChange", result);
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
 });
 //获取数据
 
@@ -245,25 +244,26 @@ const funClick = async () => {
   if (contentValue.value === "") {
     console.log(111);
   } else {
-  loadingFlag.value = !loadingFlag.value
-    if(!window.localStorage.getItem("address")){
-      const  error = 'No connection found, did you connect to PandaDB?'
-          const result = {};
-          result.summary = {};
-          result.summary.query = {};
-          result.summary.server = {};
-          result.summary.query.text = contentValue.value;
-          // result.summary.server.address = window.localStorage.getItem('address');
-          // result.summary.server.agent = "PandaDB";
-          result.error = error;
-          console.log(result,"257")
-          mitts.emit("params", result);
-          store.commit("ScrollChange", result);
-      }
+    loadingFlag.value = !loadingFlag.value;
+    if (!window.localStorage.getItem("address")) {
+      const error = "No connection found, did you connect to PandaDB?";
+      const result = {};
+      result.summary = {};
+      result.summary.query = {};
+      result.summary.server = {};
+      result.summary.query.text = contentValue.value;
+      // result.summary.server.address = window.localStorage.getItem('address');
+      // result.summary.server.agent = "PandaDB";
+      result.error = error;
+      console.log(result, "257");
+      mitts.emit("params", result);
+      store.commit("ScrollChange", result);
+      
+    }
     const startTime = performance.now();
-    // 创建新的 AbortController 实例  
+    // 创建新的 AbortController 实例
     abortController = new AbortController();
-    fetch(window.localStorage.getItem('address'), {
+    fetch(window.localStorage.getItem("address"), {
       method: "POST",
       headers: {
         "Content-Type": "text/plain",
@@ -273,9 +273,9 @@ const funClick = async () => {
     })
       .then((response) => response.text())
       .then((data) => {
-        loadingFlag.value = !loadingFlag.value
+        loadingFlag.value = !loadingFlag.value;
         const data2 = JSON.parse(data);
-        
+        console.log(data2, "278");
         if (data2.error) {
           // console.log(data2, "186");
           const result = {};
@@ -283,7 +283,8 @@ const funClick = async () => {
           result.summary.query = {};
           result.summary.server = {};
           result.summary.query.text = data2.query;
-          result.summary.server.address = window.localStorage.getItem('address');
+          result.summary.server.address =
+            window.localStorage.getItem("address");
           result.summary.server.agent = "PandaDB";
           result.error = data2.error;
           mitts.emit("params", result);
@@ -306,7 +307,8 @@ const funClick = async () => {
             }
           });
           result.summary.query.text = data2.query;
-          result.summary.server.address = window.localStorage.getItem('address');
+          result.summary.server.address =
+            window.localStorage.getItem("address");
           result.summary.server.agent = "PandaDB";
           mitts.emit("params", result);
           store.commit("ScrollChange", result);
@@ -314,25 +316,24 @@ const funClick = async () => {
       })
       .catch((error) => {
         console.error("Error:", error);
-        
       });
-      // 请求完成后，可以重置 abortController  
-      // abortController = null;
+    // 请求完成后，可以重置 abortController
+    // abortController = null;
     deleteClick();
   }
 };
-const breakClick = ()=>{
+const breakClick = () => {
   if (abortController) {
     abortController.abort(); // 调用 abort 方法来取消请求
     abortController = null; // 可选：重置 abortController
-    loadingFlag.value = !loadingFlag.value
+    loadingFlag.value = !loadingFlag.value;
   }
-}
+};
 // 全屏
 const toggleFullScreen = () => {
   isFullscreen.value = !isFullscreen.value;
-  if(isFullscreen.value  === true){
-    window.localStorage.setItem('Fullscreen','true')
+  if (isFullscreen.value === true) {
+    window.localStorage.setItem("Fullscreen", "true");
   }
 };
 //删除
@@ -342,7 +343,7 @@ const deleteClick = () => {
 </script>
 
 <style scoped>
- .CodeMirror-line {
+.CodeMirror-line {
   padding-right: 16px !important;
 }
 .search {

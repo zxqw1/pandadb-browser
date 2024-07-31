@@ -1705,7 +1705,8 @@ mitts.on("revamp2", (data) => {
           item._fields[i] !== null &&
           !item._fields[i].start &&
           !item._fields[i].end &&
-          item._fields[i].labels
+          item._fields[i].labels && 
+          item._fields[i].properties
         ) {
           result.flagshowN = true;
         } else if (item._fields[i] !== null && item._fields[i].segments) {

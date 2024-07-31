@@ -41,11 +41,16 @@
         position: relative;
       "
     >
+    <el-col :span="12" style="text-align: center;padding-top: 8px;">
       <StarOutlined style="font-size: 20px;position: absolute;right: 26px; top: 10px;"  @click="collectClick"/>
-      <VerticalAlignBottomOutlined
+    </el-col>
+      <el-col :span="12" style="text-align: center;padding-top: 8px;">
+        <VerticalAlignBottomOutlined
         style="font-size: 20px;position: absolute;right: 66px; top: 10px;"
         @click="imgClick"
       />
+      </el-col>
+      
     </el-col>
   </el-row>
 </template>

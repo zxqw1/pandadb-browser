@@ -96,7 +96,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from "vue";
+import { ref, nextTick,onMounted } from "vue";
 import type { TabsInstance } from "element-plus";
 // 导入icon
 import {
@@ -115,6 +115,7 @@ import about from "./menuComponents/about.vue";
 import setter from "./menuComponents/setter.vue";
 import favorate from "./menuComponents/Favorate.vue";
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
+import getJsonDataInfo from "../utils/request.js"
 // 左导航
 let tabsName = ref<string | undefined>(undefined);
 const tabsClick = (value: any, value2: any) => {
@@ -139,6 +140,11 @@ if (window.localStorage.getItem("address") === null) {
 } else {
   loginelse.value = false;
 }
+// getJsonDataInfo()
+
+onMounted(()=>{
+  getJsonDataInfo()
+})
 </script>
 <style scoped>
 .el-tab-pane {

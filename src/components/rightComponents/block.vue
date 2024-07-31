@@ -139,7 +139,7 @@
                     text-align: center;
                     cursor: pointer;
                   "
-                  @click="OverviewClick(item)"
+                  @click="OverviewClick(item)" 
                   v-if="!item.overview"
                 >
                   <ArrowLeftBold color="#999999" style="width: 16px" />
@@ -1618,7 +1618,7 @@ import mitt from "mitt";
 //变量
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 const options = {};
-const graphRef = ref<RelationGraph>();
+// const graphRef = ref<RelationGraph>();
 const isFullscreen = ref(false);
 const isunfold = ref(false);
 const isres = ref(false);
@@ -1663,6 +1663,12 @@ const tagClick = (name) => {
 };
 const OverviewClick = (record) => {
   record.overview = !record.overview;
+  // record = !record
+  // list.value.forEach(item=>{
+  //   if(item.id === id){
+  //     item.overview = !item.overview
+  //   }
+  // })
 };
 //折叠
 const unfoldClick = () => {
@@ -1728,7 +1734,8 @@ mitts.on("revamp", (data) => {
           item._fields[i] !== null &&
           !item._fields[i].start &&
           !item._fields[i].end &&
-          item._fields[i].labels
+          item._fields[i].labels &&
+          item._fields[i].properties
         ) {
           result.flagshowN = true;
         } else if (item._fields[i] !== null && item._fields[i].segments) {
@@ -2301,7 +2308,7 @@ mitts.on("params", (result: any) => {
   result.overview = false;
   result.graph = false;
   result.graphRef = ref(null);
-  list.value.push(result);
+  list.value.unshift(result);
 
   let textName = "";
   let textTitle = "";
@@ -2322,7 +2329,8 @@ mitts.on("params", (result: any) => {
           item._fields[i] !== null &&
           !item._fields[i].start &&
           !item._fields[i].end &&
-          item._fields[i].labels
+          item._fields[i].labels &&
+          item._fields[i].properties
         ) {
           result.flagshowN = true;
         } else if (item._fields[i] !== null && item._fields[i].segments) {
