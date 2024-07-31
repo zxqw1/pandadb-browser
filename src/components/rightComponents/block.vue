@@ -3,6 +3,7 @@
     style="background-color: #ffffff"
     v-for="(item, index) in list"
     :key="item.id"
+    :id="item.id"
     :style="{
       position: isFullscreen ? 'fixed' : 'static',
       top: isFullscreen ? '0' : '0',
@@ -59,7 +60,7 @@
         </div>
       </el-col>
       <!-- 搜索 -->
-      <search2 :command="item.summary.query.text" :index="index" />
+      <search2 :command="item.summary.query.text" :index="index"  :item="item"/>
       <!-- 展示 -->
       <el-col
         style="height: 348px; margin-top: 12px"
@@ -71,13 +72,18 @@
       <el-col v-if="item.flagshowER":style="{ height: isFullscreen ? '100vh' : '324px' }"
       style="padding: 18px;"
       >
-      <div style="display: flex">
-        <el-tag effect="dark" type="danger"> ERROR </el-tag>
-        <h3 style="font-weight: 500;margin-left: 16px;align-items: center;">pandaDB, Error message</h3>
-      </div>
-      <div style="width: 100%;background-color: rgb(210, 213, 218);padding: 20px;margin-top: 10px">
-        {{ item.error }}
-      </div>
+        <div style="display: flex">
+          <el-tag effect="dark" type="danger"> ERROR </el-tag>
+          <h3 style="font-weight: 500;margin-left: 16px;align-items: center;">pandaDB, Error message</h3>
+        </div>
+        <div style="width: 100%;background-color: rgb(210, 213, 218);padding: 20px;margin-top: 10px">
+          {{ item.error }}
+        </div>
+        <RelationGraph
+          :ref="dom=>{getRefDom(dom,item)}"
+          :options="options"
+          style="display: none"  
+        ></RelationGraph>
       </el-col>
         <!-- node -->
         <el-col
@@ -133,8 +139,8 @@
                     text-align: center;
                     cursor: pointer;
                   "
-                  @click="OverviewClick"
-                  v-if="!overview"
+                  @click="OverviewClick(item)"
+                  v-if="!item.overview"
                 >
                   <ArrowLeftBold color="#999999" style="width: 16px" />
                 </div>
@@ -160,7 +166,7 @@
                       cursor: pointer;
                       z-index: 1;
                     "
-                    @click="OverviewClick"
+                    @click="OverviewClick(item)"
                   />
                   <!-- overview展开 -->
                   <el-row>
@@ -176,7 +182,6 @@
                         placement="bottom"
                         :width="260"
                         trigger="click"
-                        v-for="(value, key) in item.labelList" :key="key"
                       >
                       <template #reference>
                           <el-tag
@@ -185,11 +190,13 @@
                             round
                             :color="getTagColor(key)"
                             style="margin-left: 10px; cursor: pointer;border: none"
+                            v-for="(value, key) in item.labelList" :key="key"
                           >{{ key }}({{ value }})</el-tag>
                         </template>
                         <el-row>
                           <el-col>
                             <el-tag
+                              v-for="(value, key) in item.labelList" :key="key"
                               effect="dark"
                               round
                               :color="getTagColor(key)"
@@ -358,7 +365,7 @@
                   </el-row>
                 </div>
                 <RelationGraph
-                  ref="graphRef"
+                  :ref="dom=>{getRefDom(dom,item)}"
                   :options="options"
                   style="height: 336px"
                   :style="{ height: isFullscreen ? '100vh' : '324px' }"
@@ -599,8 +606,8 @@
                     text-align: center;
                     cursor: pointer;
                   "
-                  @click="OverviewClick"
-                  v-if="!overview"
+                  @click="OverviewClick(item)"
+                  v-if="!item.overview"
                 >
                   <ArrowLeftBold color="#999999" style="width: 16px" />
                 </div>
@@ -627,7 +634,7 @@
                       cursor: pointer;
                       z-index: 1;
                     "
-                    @click="OverviewClick"
+                    @click="OverviewClick(item)"
                   />
                   <el-row>
                     <el-col
@@ -640,13 +647,13 @@
                       <el-tag effect="dark" round style="margin-right: 10px;margin-top: 10px;"
                         >*({{ resultNodes.length }})</el-tag>
                       <el-popover
-                        v-for="(value2, key2) in item.labelList" :key="key2"
                         placement="bottom"
                         :width="260"
                         trigger="click"
                       >
                         <template #reference>
                           <el-tag
+                        v-for="(value2, key2) in item.labelList" :key="key2"
                           @click="tagClick(key2)"
                             effect="dark"
                             round
@@ -656,7 +663,7 @@
                         </template>
                         <el-row >
                           <el-col>
-                            <el-tag effect="dark" round style="width: 100%;border: none" :color="getTagColor(key2)">{{ key2 }}({{ value2 }})</el-tag>
+                            <el-tag v-for="(value2, key2) in item.labelList" :key="key2" effect="dark" round style="width: 100%;border: none" :color="getTagColor(key2)">{{ key2 }}({{ value2 }})</el-tag>
                           </el-col>
                           <el-col style="display: flex; margin-top: 12px">
                             <ul
@@ -1014,7 +1021,7 @@
                   </el-row>
                 </div>
                 <RelationGraph
-                  ref="graphRef"
+                 :ref="dom=>{getRefDom(dom,item)}"
                   :options="options"
                   style="height: 336px"
                   :style="{ height: isFullscreen ? '100vh' : '324px' }"
@@ -1199,6 +1206,12 @@
         </el-col>
          <!-- relaion -->
          <el-col v-if="item.flagshowR">
+          <RelationGraph
+          :ref="dom=>{getRefDom(dom,item)}"
+          :options="options"
+          style="display: none"
+          :style="{ height: isFullscreen ? '100vh' : '324px' }"
+        ></RelationGraph>
           <el-tabs
             :tab-position="tabPosition"
             class="demo-tabs graphMenu"
@@ -1378,21 +1391,26 @@
               </div>
             </el-tab-pane>
           </el-tabs>
+          <!-- <RelationGraph
+            ref="graphRef"
+            :options="options"
+            style="height: 336px"
+          ></RelationGraph> -->
         </el-col>
         <!-- keys -->
         <el-col v-if="item.flagshowE">
+          <RelationGraph
+            :ref="dom=>{getRefDom(dom,item)}"
+            :options="options"
+            style="display: none"
+            :style="{ height: isFullscreen ? '100vh' : '324px' }"
+          ></RelationGraph>
           <div v-if="item.records.length === 0"
           :style="{ height: isFullscreen ? '100vh' : '324px' }"
           style="padding: 18px;"
           >
             (no changes, no records)
           </div>
-          <RelationGraph
-            v-show="true"
-            ref="graphRef"
-            :options="options"
-            style="height: 0; width: 0;"
-          ></RelationGraph>
           <el-tabs
             :tab-position="tabPosition"
             class="demo-tabs graphMenu"
@@ -1550,6 +1568,11 @@
               </div>
             </el-tab-pane>
           </el-tabs>
+          <!-- <RelationGraph
+            ref="graphRef"
+            :options="options"
+            style="height: 336px"
+          ></RelationGraph> -->
         </el-col>
       </el-col>
       <div
@@ -1590,8 +1613,8 @@ import mitts from "../../utils/bus.js";
 //组件
 import search2 from "../rightComponents/blockcomponents/search2.vue";
 import mitt from "mitt";
-import { useStore } from "vuex";
-const store = useStore();
+// import { useStore } from "vuex";
+// const store = useStore();
 //变量
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 const options = {};
@@ -1599,7 +1622,7 @@ const graphRef = ref<RelationGraph>();
 const isFullscreen = ref(false);
 const isunfold = ref(false);
 const isres = ref(false);
-const overview = ref(false);
+// const overview = ref(false);
 const list = ref([]);
 const resultNodes = ref([]);
 const labelList = ref([]);
@@ -1607,6 +1630,12 @@ const resultRelation = ref([]);
 const relationList = ref([]);
 const tagName = ref("");
 // const error = ref("");
+
+const getRefDom = (val: any, item: any) => {
+  // console.log(val, item, 11111);
+  item.graphRef = val;
+};
+
 //控制list条数
 if (
   list.value.length > window.localStorage.getItem("item")
@@ -1632,8 +1661,8 @@ const getLineColor = (key) => {
 const tagClick = (name) => {
   tagName.value = name;
 };
-const OverviewClick = () => {
-  overview.value = !overview.value;
+const OverviewClick = (record) => {
+  record.overview = !record.overview;
 };
 //折叠
 const unfoldClick = () => {
@@ -1646,13 +1675,12 @@ const resClick = () => {
 const topClick = (index: Number, item: any) => {
   list.value.splice(index, 1);
   mitts.emit("topData", item);
-  store.commit("ScrollChange", item);
 };
 //取消置顶
 mitts.on("untopData", (item: any) => {
   list.value.push(item);
   nextTick(() => {
-    graphRef.value[list.value.length - 1].setJsonData(item.graphData);
+    item.graphRef.value.setJsonData(item.graphData);
   });
 });
 //放大
@@ -1668,16 +1696,19 @@ const generateRandomId = () => {
 };
 //修改
 mitts.on("revamp", (data) => {
+  console.log(data, "1681");
   const result = data.result;
   const index = data.index;
-  result.id = generateRandomId();
+  console.log(index, "1673");
+  result.id = data.id || generateRandomId();
   result.labelList = {};
   result.relationList = [];
   result.flagshowN = undefined;
   result.flagshowP = undefined;
   result.flagshowR = undefined;
   result.flagshowE = undefined;
-  // list.value.push(result);
+  result.overview = false;
+  result.graphRef = ref(null);
   list.value[index] = result;
   let textName = "";
   let textTitle = "";
@@ -2047,10 +2078,11 @@ mitts.on("revamp", (data) => {
     }
     return acc2;
   }, {});
+  console.log(result, "2051");
   //渲染图形
   if (result.graphData.nodes.length !== 0) {
     nextTick(() => {
-      graphRef.value[index].setJsonData(result.graphData);
+      result.graphRef.value.setJsonData(result.graphData);
     });
   }
 });
@@ -2086,8 +2118,8 @@ const colorClick = (e) => {
           }
         });
       });
-      nextTick(() => {
-        graphRef.value[index].setJsonData(item.graphData);
+      nextTick(() =>{
+        item.graphRef.setJsonData(item.graphData);
       });
     });
   }
@@ -2107,8 +2139,8 @@ const colorRelaClick = (e) => {
           );
         }
       });
-      nextTick(() => {
-        graphRef.value[index].setJsonData(item.graphData);
+      nextTick(() =>{
+        item.graphRef.setJsonData(item.graphData);
       });
     });
   }
@@ -2126,8 +2158,8 @@ const sizeClick = (e) => {
           }
         });
       });
-      nextTick(() => {
-        graphRef.value[index].setJsonData(item.graphData);
+      nextTick(() =>{
+        item.graphRef.setJsonData(item.graphData);
       });
     });
   }
@@ -2147,8 +2179,8 @@ const sizeRelaClick = (e) => {
           );
         }
       });
-      nextTick(() => {
-        graphRef.value[index].setJsonData(item.graphData);
+      nextTick(() =>{
+        item.graphRef.setJsonData(item.graphData);
       });
     });
   }
@@ -2156,7 +2188,7 @@ const sizeRelaClick = (e) => {
 //修改字段 id
 const idClick = (e) => {
   window.localStorage.setItem(tagName.value, "id");
-  list.value.forEach((item) => {
+  list.value.forEach((item, index) => {
     item.graphData.nodes.forEach((item2) => {
       item2.label.forEach((item3) => {
         if (item3 === tagName.value) {
@@ -2178,15 +2210,15 @@ const idClick = (e) => {
         }
       });
     });
-    nextTick(() => {
-      graphRef.value[list.value.length - 1].setJsonData(item.graphData);
-    });
+    nextTick(() =>{
+        item.graphRef.setJsonData(item.graphData);
+      });
   });
 };
 //修改字段properties
 const fileClick = (e) => {
   window.localStorage.setItem(tagName.value, e.target.innerText);
-  list.value.forEach((item) => {
+  list.value.forEach((item, index) => {
     item.graphData.nodes.forEach((item2) => {
       item2.label.forEach((item3) => {
         if (item3 === tagName.value) {
@@ -2207,9 +2239,9 @@ const fileClick = (e) => {
         }
       });
     });
-    nextTick(() => {
-      graphRef.value[list.value.length - 1].setJsonData(item.graphData);
-    });
+    nextTick(() =>{
+        item.graphRef.setJsonData(item.graphData);
+      });
   });
 };
 //修改line字段 id
@@ -2221,9 +2253,9 @@ const lineIdClick = (e) => {
         item2.text = item2.id;
       }
     });
-    nextTick(() => {
-      graphRef.value[index].setJsonData(item.graphData);
-    });
+    nextTick(() =>{
+        item.graphRef.setJsonData(item.graphData);
+      });
   });
 };
 //修改字段line type
@@ -2235,9 +2267,9 @@ const lineTypeClick = (e) => {
         item2.text = item2.type;
       }
     });
-    nextTick(() => {
-      graphRef.value[index].setJsonData(item.graphData);
-    });
+    nextTick(() =>{
+        item.graphRef.setJsonData(item.graphData);
+      });
   });
 };
 //修改字段 line properties
@@ -2249,14 +2281,14 @@ const lineFileClick = (e) => {
         item2.text = item2.properties[e.target.innerText];
       }
     });
-    nextTick(() => {
-      graphRef.value[index].setJsonData(item.graphData);
-    });
+    nextTick(() =>{
+        item.graphRef.setJsonData(item.graphData);
+      });
   });
 };
 //下载图片
-mitts.on("download", (index) => {
-  graphRef.value[index].getInstance().downloadAsImage("png", index);
+mitts.on("download", (item) => {
+  item.graphRef.getInstance().downloadAsImage("png", "graph");
 });
 //数据
 mitts.on("params", (result: any) => {
@@ -2267,7 +2299,11 @@ mitts.on("params", (result: any) => {
   result.flagshowP = undefined;
   result.flagshowR = undefined;
   result.flagshowE = undefined;
+  result.overview = false;
+  result.graph = false;
+  result.graphRef = ref(null);
   list.value.push(result);
+
   let textName = "";
   let textTitle = "";
   let lineText = "";
@@ -2308,6 +2344,7 @@ mitts.on("params", (result: any) => {
   }
   //path
   if (result.flagshowP) {
+    // result.graph = true;
     result.records.forEach((item: any, index: Number) => {
       for (let i = 0; i < item._fields.length; i++) {
         if (item._fields[i] !== null && item._fields[i].segments) {
@@ -2516,6 +2553,7 @@ mitts.on("params", (result: any) => {
     result.flagshowE = false;
   } else if (result.flagshowN) {
     //nodes
+    // result.graph = true;
     result.records.forEach((item: any, index: Number) => {
       for (let i = 0; i < item._fields.length; i++) {
         if (
@@ -2639,9 +2677,16 @@ mitts.on("params", (result: any) => {
   //渲染图形
   if (result.graphData.nodes.length !== 0) {
     nextTick(() => {
-      graphRef.value[list.value.length - 1].setJsonData(result.graphData);
+      console.log(result.graphRef.value);
+
+      // graphRef.value[list.value.length - 1].setJsonData(result.graphData);
+      result.graphRef.value.setJsonData(result.graphData);
     });
   }
+
+  nextTick(() => {
+    console.log(list.value, "nextTick-2290");
+  });
 });
 </script>
 

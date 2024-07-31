@@ -18,6 +18,7 @@ declare module 'vue' {
     BlockTop: typeof import('./src/components/rightComponents/blockTop.vue')['default']
     copy: typeof import('./src/components/rightComponents/blockcomponents/search2 copy.vue')['default']
     Favorate: typeof import('./src/components/menuComponents/Favorate.vue')['default']
+    Graph: typeof import('./src/components/rightComponents/blockcomponents/graph.vue')['default']
     Guides: typeof import('./src/components/menuComponents/guides.vue')['default']
     Header: typeof import('./src/components/header.vue')['default']
     Help: typeof import('./src/components/menuComponents/help.vue')['default']

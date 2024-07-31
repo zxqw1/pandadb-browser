@@ -68,7 +68,7 @@ import "codemirror/theme/darcula.css";
 import "codemirror/theme/idea.css";
 import { useStore } from "vuex";
 const store = useStore();
-const props = defineProps(["command","index"]);
+const props = defineProps(["command","index",'id','item']);
 const mode = "javascript"; // 编译语言
 const height = ref(150);
 const theme = "idea"; // 主题语言
@@ -157,7 +157,7 @@ const funClick = async () => {
           result.summary.server.agent = "PandaDB";
       console.log(result,155);
       // mitts.emit("revamp", (result,props.index));
-          mitts.emit("revamp", {result:result,index:props.index});
+          mitts.emit("revamp", {result:result,index:props.index,id:props.id});
           store.commit("ScrollChange", result);
     })
     .catch((error) => {
@@ -167,7 +167,7 @@ const funClick = async () => {
 };
 //下载图片
 const imgClick = () =>{
-  mitts.emit("download", props.index)
+  mitts.emit("download", props.item)
 }
 //删除
 const deleteClick = () => {
