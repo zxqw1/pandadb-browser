@@ -104,7 +104,7 @@
                   "
                 >
                   <img
-                    src="../../assets/img/图谱.png"
+                    src="../../../public/graph.png"
                     alt=""
                     style="width: 24px; height: 24px"
                   />
@@ -376,7 +376,7 @@
               <template #label>
                 <div>
                   <img
-                    src="../../assets/img/表格.png"
+                    src="../../../public/table.png"
                     alt=""
                     style="width: 24px; height: 24px"
                   />
@@ -447,7 +447,7 @@
               <template #label>
                 <div>
                   <img
-                    src="../../assets/img/文字.png"
+                    src="../../../public/text.png"
                     alt=""
                     style="width: 24px; height: 24px"
                   />
@@ -493,7 +493,7 @@
               <template #label>
                 <div>
                   <img
-                    src="../../assets/img/代码.png"
+                    src="../../../public/code.png"
                     alt=""
                     style="width: 24px; height: 24px"
                   />
@@ -572,7 +572,7 @@
                   "
                 >
                   <img
-                    src="../../assets/img/图谱.png"
+                    src="../../../public/graph.png"
                     alt=""
                     style="width: 24px; height: 24px"
                   />
@@ -1032,7 +1032,7 @@
               <template #label>
                 <div>
                   <img
-                    src="../../assets/img/表格.png"
+                    src="../../../public/table.png"
                     alt=""
                     style="width: 24px; height: 24px"
                   />
@@ -1103,7 +1103,7 @@
               <template #label>
                 <div>
                   <img
-                    src="../../assets/img/文字.png"
+                    src="../../../public/text.png"
                     alt=""
                     style="width: 24px; height: 24px"
                   />
@@ -1144,7 +1144,7 @@
               <template #label>
                 <div>
                   <img
-                    src="../../assets/img/代码.png"
+                    src="../../../public/code.png"
                     alt=""
                     style="width: 24px; height: 24px"
                   />
@@ -1221,7 +1221,7 @@
               <template #label>
                 <div>
                   <img
-                    src="../../assets/img/表格.png"
+                    src="../../../public/table.png"
                     alt=""
                     style="width: 24px; height: 24px"
                   />
@@ -1293,7 +1293,7 @@
               <template #label>
                 <div>
                   <img
-                    src="../../assets/img/文字.png"
+                    src="../../../public/text.png"
                     alt=""
                     style="width: 24px; height: 24px"
                   />
@@ -1333,7 +1333,7 @@
               <template #label>
                 <div>
                   <img
-                    src="../../assets/img/代码.png"
+                    src="../../../public/code.png"
                     alt=""
                     style="width: 24px; height: 24px"
                   />
@@ -1421,7 +1421,7 @@
               <template #label>
                 <div>
                   <img
-                    src="../../assets/img/表格.png"
+                    src="../../../public/table.png"
                     alt=""
                     style="width: 24px; height: 24px"
                   />
@@ -1470,7 +1470,7 @@
               <template #label>
                 <div>
                   <img
-                    src="../../assets/img/文字.png"
+                    src="../../../public/text.png"
                     alt=""
                     style="width: 24px; height: 24px"
                   />
@@ -1510,7 +1510,7 @@
               <template #label>
                 <div>
                   <img
-                    src="../../assets/img/代码.png"
+                    src="../../../public/code.png"
                     alt=""
                     style="width: 24px; height: 24px"
                   />
