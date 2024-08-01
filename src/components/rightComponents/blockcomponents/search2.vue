@@ -171,13 +171,13 @@ const funClick = async () => {
           result.summary = {};
           result.summary.query = {};
           result.summary.server = {};
-      const data2 = JSON.parse(data);
-      const responseTime = endTime - startTime;
+          const responseTime = endTime - startTime;
           result.resTime = Math.round(responseTime) + "ms";
-        data2.response.forEach((value, key) => {
+        data2.response.forEach((value, index) => {
             const keys = Object.keys(value);
+          result.records.push({ keys: keys, _fields: [] });
             for (let key in value) {
-          result.records.push({ keys: keys, _fields: [value[key]] });
+          result.records[index]._fields.push(value[key]);
             }
           });
           result.summary.query.text = data2.query;

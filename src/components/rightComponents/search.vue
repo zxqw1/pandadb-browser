@@ -238,7 +238,6 @@ mitts.on("favo", (cypher) => {
     });
 });
 //获取数据
-
 const funClick = async () => {
   await nextTick();
   if (contentValue.value === "") {
