@@ -38,7 +38,7 @@ const scrollContainer = ref(null);
 // watch(store.state.list, () => {
 //   // await nextTick();
 //   //设置滚动条
-//   console.log("设置滚动条")
+//   // console.log("设置滚动条")
 //   if (scrollContainer.value) {
 //     scrollContainer.value.scrollTo({
 //       top: -scrollContainer.value.scrollHeight,

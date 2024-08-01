@@ -128,7 +128,7 @@ let abortController: AbortController | null = null;
 const funClick = async () => {
   await nextTick();
   if (contentValue.value === "") {
-    console.log(111);
+    // console.log(111);
   } else {
     loadingFlag.value = !loadingFlag.value
     const startTime = performance.now();
@@ -147,7 +147,7 @@ const funClick = async () => {
       loadingFlag.value = !loadingFlag.value
         const data2 = JSON.parse(data);
         if (data2.error) {
-          // console.log(data2, "186");
+          // // console.log(data2, "186");
           const result = {};
           result.summary = {};
           result.summary.query = {};
@@ -197,7 +197,7 @@ const deleteClick = () => {
 };
 //收藏
 const collectClick = ()=>{
-  console.log(contentValue.value,'150')
+  // console.log(contentValue.value,'150')
   mitts.emit('command',contentValue.value )
 }
 onMounted(() => {

@@ -1619,7 +1619,7 @@ const resultRelation = ref([]);
 const relationList = ref([]);
 const tagName = ref("");
 const getRefDom = (val: any, item: any) => {
-  // console.log(val, item, 11111);
+  // // console.log(val, item, 11111);
   item.graphRef = val;
 };
 //控制list条数
@@ -1672,10 +1672,10 @@ const toggleFullScreen = () => {
 };
 //修改
 mitts.on("revamp2", (data) => {
-  console.log(data, "1681");
+  // console.log(data, "1681");
   const result = data.result;
   const index = data.index;
-  console.log(index, "1673");
+  // console.log(index, "1673");
   result.id = data.id || generateRandomId();
   result.labelList = {};
   result.relationList = [];
@@ -1929,7 +1929,7 @@ mitts.on("revamp2", (data) => {
       },
       []
     ); // 初始累加器是一个空数组
-    console.log(result.graphData);
+    // console.log(result.graphData);
     result.flagshowN = false;
     result.flagshowR = false;
     result.flagshowE = false;
@@ -2055,7 +2055,7 @@ mitts.on("revamp2", (data) => {
     }
     return acc2;
   }, {});
-  console.log(result, "2051");
+  // console.log(result, "2051");
   //渲染图形
   if (result.graphData.nodes.length !== 0) {
     nextTick(() => {
@@ -2179,7 +2179,7 @@ const idClick = (e) => {
               ) {
                 item2.text = item2.id;
               } else if (item5 !== null && item5.segments) {
-                console.log(111);
+                // console.log(111);
                 item2.text = item2.id;
               }
             });

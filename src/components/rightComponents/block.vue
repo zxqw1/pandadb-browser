@@ -1632,7 +1632,7 @@ const tagName = ref("");
 // const error = ref("");
 
 const getRefDom = (val: any, item: any) => {
-  // console.log(val, item, 11111);
+  // // console.log(val, item, 11111);
   item.graphRef = val;
 };
 
@@ -1704,7 +1704,7 @@ const generateRandomId = () => {
 mitts.on("revamp", (data) => {
   const result = data.result;
   const index = data.index;
-  console.log(data.id, "1673");
+  // console.log(data.id, "1673");
   result.id = data.id || generateRandomId();
   result.labelList = {};
   result.relationList = [];
@@ -1958,7 +1958,7 @@ mitts.on("revamp", (data) => {
       },
       []
     ); // 初始累加器是一个空数组
-    console.log(result.graphData);
+    // console.log(result.graphData);
     result.flagshowN = false;
     result.flagshowR = false;
     result.flagshowE = false;
@@ -2084,7 +2084,7 @@ mitts.on("revamp", (data) => {
     }
     return acc2;
   }, {});
-  console.log(result, "2051");
+  // console.log(result, "2051");
   //渲染图形
   if (result.graphData.nodes.length !== 0) {
     nextTick(() => {
@@ -2208,7 +2208,7 @@ const idClick = (e) => {
               ) {
                 item2.text = item2.id;
               } else if (item5 !== null && item5.segments) {
-                console.log(111);
+                // console.log(111);
                 item2.text = item2.id;
               }
             });
@@ -2554,7 +2554,7 @@ mitts.on("params", (result: any) => {
       },
       []
     ); // 初始累加器是一个空数组
-    console.log(result.graphData);
+    // console.log(result.graphData);
     result.flagshowN = false;
     result.flagshowR = false;
     result.flagshowE = false;
@@ -2684,7 +2684,7 @@ mitts.on("params", (result: any) => {
   //渲染图形
   if (result.graphData.nodes.length !== 0) {
     nextTick(() => {
-      console.log(result.graphRef.value);
+      // console.log(result.graphRef.value);
 
       // graphRef.value[list.value.length - 1].setJsonData(result.graphData);
       result.graphRef.value.setJsonData(result.graphData);
@@ -2692,7 +2692,7 @@ mitts.on("params", (result: any) => {
   }
 
   nextTick(() => {
-    console.log(list.value, "nextTick-2290");
+    // console.log(list.value, "nextTick-2290");
   });
 });
 </script>

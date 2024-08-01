@@ -48,7 +48,7 @@
           *({{ nodeNumber }})</a-tag
         >
         <a-tag
-          :color="getNodeColor(item.text)"
+          :color="getNodeColor(item)"
           style="margin-left: 10px; margin-top: 10px; cursor: pointer"
           v-for="(item, index) in labelList"
           :key="index"
@@ -194,7 +194,7 @@ const labelShow = () => {
       result.summary = {};
       result.summary.query = {};
       result.summary.server = {};
-      console.log(JSON.parse(data), "data");
+      // console.log(JSON.parse(data), "data");
       result.resTime = Math.round(responseTime) + 'ms'
       const data2 = JSON.parse(data);
       data2.response.forEach((value, key) => {
@@ -206,7 +206,7 @@ const labelShow = () => {
       result.summary.query.text = data2.query;
       result.summary.server.address = window.localStorage.getItem('address');
       result.summary.server.agent = "PandaDB";
-      console.log(result);
+      // console.log(result);
       mitts.emit("params", result);
       store.commit("ScrollChange", result);
       
@@ -282,7 +282,7 @@ const relationShow = (e) => {
       result.summary.query.text = data2.query;
       result.summary.server.address = window.localStorage.getItem('address');
       result.summary.server.agent = "PandaDB";
-      console.log(result);
+      // console.log(result);
       mitts.emit("params", result);
       store.commit("ScrollChange", result);
     })
@@ -304,7 +304,7 @@ const relationClick = (e) => {
     .then((data) => {
       const endTime = performance.now();
       const responseTime = endTime - startTime;
-      console.log(JSON.parse(data), "data");
+      // console.log(JSON.parse(data), "data");
       const result = {};
       result.records = [];
       result.summary = {};
@@ -312,7 +312,7 @@ const relationClick = (e) => {
       result.summary.server = {};
       const data2 = JSON.parse(data);
       result.resTime = Math.round(responseTime) + "ms";
-      console.log(data2)
+      // console.log(data2)
       data2.response.forEach((value, key) => {
         const keys = Object.keys(value);
         for (let key in value) {
@@ -322,7 +322,7 @@ const relationClick = (e) => {
       result.summary.query.text = data2.query;
       result.summary.server.address = window.localStorage.getItem('address');
       result.summary.server.agent = "PandaDB";
-      console.log(result);
+      // console.log(result);
       mitts.emit("params", result);
       store.commit("ScrollChange", result);
     })

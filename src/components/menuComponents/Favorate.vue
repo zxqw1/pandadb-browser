@@ -136,7 +136,7 @@ import type {
 const buttonRef = ref(false);
 const input = ref("");
 const renameFlag = ref(false);
-// console.log(,'139')
+// // console.log(,'139')
 const TreeData = ref(!JSON.parse(localStorage.getItem("treedata")) ? [] : JSON.parse(localStorage.getItem("treedata")));
 //删除
 const deleteClick = (scoped) => {
@@ -151,8 +151,8 @@ const RenameClick = (scoped) => {
 };
 const handleEnter = (scoped) => {
   // scoped.data.label =
-  // console.log(input.value,'119')
-  // console.log(scoped,'120')
+  // // console.log(input.value,'119')
+  // // console.log(scoped,'120')
   // TreeData.value.forEach(item=>{
   //   if(item.id === scoped.data.id){
   //     item.label = input.value
@@ -171,24 +171,24 @@ const handleEditEnd = (node, data) => {
   // 可以在这里做一些验证或清理工作
 };
 const handleDragStart = (node: Node, ev: DragEvents) => {
-  console.log("drag start", node);
+  // console.log("drag start", node);
 };
 const handleDragEnter = (
   draggingNode: Node,
   dropNode: Node,
   ev: DragEvents
 ) => {
-  console.log("tree drag enter:", dropNode.label);
+  // console.log("tree drag enter:", dropNode.label);
 };
 const handleDragLeave = (
   draggingNode: Node,
   dropNode: Node,
   ev: DragEvents
 ) => {
-  console.log("tree drag leave:", dropNode.label);
+  // console.log("tree drag leave:", dropNode.label);
 };
 const handleDragOver = (draggingNode: Node, dropNode: Node, ev: DragEvents) => {
-  console.log("tree drag over:", dropNode.label);
+  // console.log("tree drag over:", dropNode.label);
 };
 const handleDragEnd = (
   draggingNode: Node,
@@ -196,7 +196,7 @@ const handleDragEnd = (
   dropType: NodeDropType,
   ev: DragEvents
 ) => {
-  console.log("tree drag end:", draggingNode, dropNode, dropType, ev);
+  // console.log("tree drag end:", draggingNode, dropNode, dropType, ev);
 };
 const handleDrop = (
   draggingNode: Node,
@@ -235,7 +235,7 @@ const addfileClick = () => {
     editInput: null,
     type: "files",
   });
-  console.log(TreeData, "242");
+  // console.log(TreeData, "242");
   window.localStorage.setItem("treedata", JSON.stringify(TreeData.value));
 };
 const showPopover = () => {
@@ -255,7 +255,7 @@ mitts.on("recommand", (contentValue: any) => {
 });
 //渲染
 const favoriteClick = (label) => {
-  // console.log(label,'246')
+  // // console.log(label,'246')
   mitts.emit("favo", label);
 };
 </script>

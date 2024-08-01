@@ -212,7 +212,7 @@ mitts.on("favo", (cypher) => {
       } else {
         const endTime = performance.now();
         const responseTime = endTime - startTime;
-        console.log(JSON.parse(data), "data");
+        // console.log(JSON.parse(data), "data");
         const result = {};
         result.records = [];
         result.summary = {};
@@ -242,7 +242,7 @@ mitts.on("favo", (cypher) => {
 const funClick = async () => {
   await nextTick();
   if (contentValue.value === "") {
-    console.log(111);
+    // console.log(111);
   } else {
     loadingFlag.value = !loadingFlag.value;
     if (!window.localStorage.getItem("address")) {
@@ -255,7 +255,7 @@ const funClick = async () => {
       // result.summary.server.address = window.localStorage.getItem('address');
       // result.summary.server.agent = "PandaDB";
       result.error = error;
-      console.log(result, "257");
+      // console.log(result, "257");
       mitts.emit("params", result);
       store.commit("ScrollChange", result);
       
@@ -275,9 +275,9 @@ const funClick = async () => {
       .then((data) => {
         loadingFlag.value = !loadingFlag.value;
         const data2 = JSON.parse(data);
-        console.log(data2, "278");
+        // console.log(data2, "278");
         if (data2.error) {
-          // console.log(data2, "186");
+          // // console.log(data2, "186");
           const result = {};
           result.summary = {};
           result.summary.query = {};
@@ -292,7 +292,7 @@ const funClick = async () => {
         } else {
           const endTime = performance.now();
           const responseTime = endTime - startTime;
-          console.log(JSON.parse(data), "data");
+          // console.log(JSON.parse(data), "data");
           const result = {};
           result.records = [];
           result.summary = {};
