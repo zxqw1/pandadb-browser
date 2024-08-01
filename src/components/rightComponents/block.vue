@@ -97,22 +97,14 @@
             <el-tab-pane label="graph">
               <!-- label标题 -->
               <template #label>
-                <span
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                  "
-                >
+                <div style=" display: flex;align-items: center;flex-direction: column;">
                   <img
                     src="../../../public/graph.png"
                     alt=""
                     style="width: 24px; height: 24px"
                   />
-                  <span style="font-weight: 600; color: #666666" class="graph"
-                    >graph</span
-                  >
-                </span>
+                  <div style="font-weight: 600; color: #666666">graph</div>
+                </div>
               </template>
               <!-- 图 -->
               <div
@@ -375,7 +367,7 @@
             </el-tab-pane>
             <el-tab-pane label="table">
               <template #label>
-                <div>
+                <div style=" display: flex;align-items: center;flex-direction: column;">
                   <img
                     src="../../../public/table.png"
                     alt=""
@@ -446,7 +438,7 @@
             </el-tab-pane>
             <el-tab-pane label="text">
               <template #label>
-                <div>
+                <div style=" display: flex;align-items: center;flex-direction: column;">
                   <img
                     src="../../../public/text.png"
                     alt=""
@@ -492,7 +484,7 @@
             </el-tab-pane>
             <el-tab-pane label="code">
               <template #label>
-                <div>
+                <div style=" display: flex;align-items: center;flex-direction: column;">
                   <img
                     src="../../../public/code.png"
                     alt=""
@@ -564,23 +556,15 @@
           >
             <el-tab-pane label="graph">
               <!-- graph标题 -->
-              <template #label>
-                <span
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                  "
-                >
+                <template #label>
+                <div style=" display: flex;align-items: center;flex-direction: column;">
                   <img
                     src="../../../public/graph.png"
                     alt=""
                     style="width: 24px; height: 24px"
                   />
-                  <span style="font-weight: 600; color: #666666" class="graph"
-                    >graph</span
-                  >
-                </span>
+                  <div style="font-weight: 600; color: #666666">graph</div>
+                </div>
               </template>
               <div
                 style="
@@ -1031,7 +1015,7 @@
             </el-tab-pane>
             <el-tab-pane label="table">
               <template #label>
-                <div>
+                <div style=" display: flex;align-items: center;flex-direction: column;">
                   <img
                     src="../../../public/table.png"
                     alt=""
@@ -1101,7 +1085,7 @@
             </el-tab-pane>
             <el-tab-pane label="text">
               <template #label>
-                <div>
+                <div style=" display: flex;align-items: center;flex-direction: column;">
                   <img
                     src="../../../public/text.png"
                     alt=""
@@ -1142,7 +1126,7 @@
             </el-tab-pane>
             <el-tab-pane label="code">
               <template #label>
-                <div>
+                <div style=" display: flex;align-items: center;flex-direction: column;">
                   <img
                     src="../../../public/code.png"
                     alt=""
@@ -1219,7 +1203,7 @@
           >
             <el-tab-pane label="table">
               <template #label>
-                <div>
+                <div style=" display: flex;align-items: center;flex-direction: column;">
                   <img
                     src="../../../public/table.png"
                     alt=""
@@ -1291,7 +1275,7 @@
             </el-tab-pane>
             <el-tab-pane label="text">
               <template #label>
-                <div>
+                <div style=" display: flex;align-items: center;flex-direction: column;">
                   <img
                     src="../../../public/text.png"
                     alt=""
@@ -1331,7 +1315,7 @@
             </el-tab-pane>
             <el-tab-pane label="code">
               <template #label>
-                <div>
+                <div style=" display: flex;align-items: center;flex-direction: column;">
                   <img
                     src="../../../public/code.png"
                     alt=""
@@ -1419,7 +1403,7 @@
           >
             <el-tab-pane label="table">
               <template #label>
-                <div>
+                <div style=" display: flex;align-items: center;flex-direction: column;">
                   <img
                     src="../../../public/table.png"
                     alt=""
@@ -1468,7 +1452,7 @@
             </el-tab-pane>
             <el-tab-pane label="text">
               <template #label>
-                <div>
+                <div style=" display: flex;align-items: center;flex-direction: column;">
                   <img
                     src="../../../public/text.png"
                     alt=""
@@ -1508,7 +1492,7 @@
             </el-tab-pane>
             <el-tab-pane label="code">
               <template #label>
-                <div>
+                <div style=" display: flex;align-items: center;flex-direction: column;">
                   <img
                     src="../../../public/code.png"
                     alt=""
@@ -2738,6 +2722,10 @@ mitts.on("params", (result: any) => {
 }
 </style>
 <style>
+.graphMenu .el-tabs__nav{
+  display: flex;
+  align-items: center;
+}
 .graphMenu .el-tabs__item {
   height: 72px;
 }
