@@ -8,7 +8,7 @@
     <!-- 顶部 -->
     <a-col :span="24">
       <!-- 左面导航 -->
-      <a-col :span="24" style="display: flex;">
+      <a-col :span="24" style="display: flex;justify-content: space-between;">
         <LeftMenu></LeftMenu>
         <RightContent></RightContent>
       </a-col>

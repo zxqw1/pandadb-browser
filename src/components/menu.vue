@@ -3,7 +3,7 @@
     v-model="tabsName"
     @tab-click="tabsClick"
     :tab-position="tabPosition"
-    style="height: 960px;max-width: 25%;"
+    style="height: 960px;overflow: initial;"
     class="demo-tabs Leftmenu"
   >
     <el-tab-pane name="首页" :disabled="loginelse">
