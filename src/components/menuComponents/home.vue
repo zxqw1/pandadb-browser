@@ -39,10 +39,10 @@
         <div class="circle"></div>
         <div class="name">节点标签</div>
       </a-col>
-      <a-col style="margin-top: 20px">
+      <a-col style="margin-top: 20px;">
         <a-tag
           color="rgb(145, 149, 160)"
-          style="cursor: pointer"
+          style="cursor: pointer;margin-left: 10px;"
           @click="labelShow"
         >
           *({{ nodeNumber }})</a-tag
@@ -63,7 +63,7 @@
         <div class="name">关系类型</div>
       </a-col>
       <a-col style="margin-top: 20px" >
-        <a-tag style="cursor: pointer" @click="relationShow($event)"
+        <a-tag style="cursor: pointer;margin-left: 10px;" @click="relationShow($event)"
           >*({{ TypeNumber }})</a-tag
         >
         <a-tag

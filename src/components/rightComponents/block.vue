@@ -69,6 +69,7 @@
           height: isFullscreen ? '100vh' : 'auto',
         }"
       >
+      <!-- 报错 -->
       <el-col v-if="item.flagshowER":style="{ height: isFullscreen ? '100vh' : '324px' }"
       style="padding: 18px;"
       >
@@ -1040,7 +1041,6 @@
                 </div>
               </template>
               <!-- 详情 -->
-
               <div
                 style="overflow: auto"
                 :style="{ height: isFullscreen ? '100vh' : '324px' }"
