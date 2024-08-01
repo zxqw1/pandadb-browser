@@ -362,7 +362,11 @@
                   :options="options"
                   style="height: 336px"
                   :style="{ height: isFullscreen ? '100vh' : '324px' }"
-                ></RelationGraph>
+                >
+                <template #node="{node}" >
+                  <div style="overflow: hidden;white-space:nowrap text-overflow: ellipsis;text-align: center;vertical-align:middle">{{ node.text }}</div>
+                </template>
+              </RelationGraph>
               </div>
             </el-tab-pane>
             <el-tab-pane label="table">
@@ -1010,7 +1014,11 @@
                   :options="options"
                   style="height: 336px"
                   :style="{ height: isFullscreen ? '100vh' : '324px' }"
-                ></RelationGraph>
+                >
+                <template #node="{node}" >
+                  <div style="overflow: hidden; text-overflow: ellipsis; white-space:nowrap ; text-align: center;vertical-align:middle">{{ node.text }}</div>
+                </template>
+              </RelationGraph>
               </div>
             </el-tab-pane>
             <el-tab-pane label="table">
@@ -1606,7 +1614,6 @@ const options = {};
 const isFullscreen = ref(false);
 const isunfold = ref(false);
 const isres = ref(false);
-// const overview = ref(false);
 const list = ref([]);
 const resultNodes = ref([]);
 const labelList = ref([]);
@@ -1614,12 +1621,9 @@ const resultRelation = ref([]);
 const relationList = ref([]);
 const tagName = ref("");
 // const error = ref("");
-
 const getRefDom = (val: any, item: any) => {
-  // // console.log(val, item, 11111);
   item.graphRef = val;
 };
-
 //控制list条数
 if (
   list.value.length > window.localStorage.getItem("item")
@@ -2682,6 +2686,11 @@ mitts.on("params", (result: any) => {
 </script>
 
 <style scoped>
+ ::v-deep.relation-graph .rel-node-shape-0 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 .size li {
   background-color: rgb(170, 170, 170);
   list-style-type: none;

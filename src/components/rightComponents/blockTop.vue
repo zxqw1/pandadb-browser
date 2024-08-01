@@ -360,7 +360,11 @@
                   :options="options"
                   style="height: 336px"
                   :style="{ height: isFullscreen ? '100vh' : '324px' }"
-                ></RelationGraph>
+                >
+                <template #node="{node}" >
+                  <div style="overflow: hidden;white-space:nowrap; text-overflow: ellipsis;text-align: center;vertical-align:middle">{{ node.text }}</div>
+                </template>
+              </RelationGraph>
               </div>
             </el-tab-pane>
             <el-tab-pane label="table">
@@ -1008,7 +1012,11 @@
                   :options="options"
                   style="height: 336px"
                   :style="{ height: isFullscreen ? '100vh' : '324px' }"
-                ></RelationGraph>
+                >
+                <template #node="{node}" >
+                  <div style="overflow: hidden;white-space:nowrap; text-overflow: ellipsis;text-align: center;vertical-align:middle">{{ node.text }}</div>
+                </template>
+              </RelationGraph>
               </div>
             </el-tab-pane>
             <el-tab-pane label="table">
@@ -1689,7 +1697,7 @@ mitts.on("revamp2", (data) => {
           item._fields[i] !== null &&
           !item._fields[i].start &&
           !item._fields[i].end &&
-          item._fields[i].labels && 
+          item._fields[i].labels &&
           item._fields[i].properties
         ) {
           result.flagshowN = true;
@@ -2254,12 +2262,17 @@ const generateRandomId = () => {
   return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
 };
 //下载图片
-mitts.on('download',(item) => {
-  item.graphRef.getInstance().downloadAsImage('png',"graph")
-})
+mitts.on("download", (item) => {
+  item.graphRef.getInstance().downloadAsImage("png", "graph");
+});
 </script>
 
 <style scoped>
+::v-deep.relation-graph .rel-node-shape-0 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .size li {
   background-color: rgb(170, 170, 170);
   list-style-type: none;
@@ -2300,7 +2313,7 @@ mitts.on('download',(item) => {
 }
 </style>
 <style>
-.graphMenu .el-tabs__nav{
+.graphMenu .el-tabs__nav {
   display: flex;
   align-items: center;
 }
