@@ -1192,7 +1192,6 @@ import mitts from "../../utils/bus.js";
 //组件
 import search2 from "./blockcomponents/search2.vue";
 import mitt from "mitt";
-import { json2Node } from "node_modules/relation-graph/types/types/relation-graph-models/models/RGNode.js";
 // import { useStore } from "vuex";
 // const store = useStore();
 //变量

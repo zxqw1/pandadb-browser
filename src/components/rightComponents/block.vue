@@ -1192,7 +1192,6 @@ import mitts from "../../utils/bus.js";
 //组件
 import search2 from "../rightComponents/blockcomponents/search2.vue";
 import mitt from "mitt";
-import { json2Node } from "node_modules/relation-graph/types/types/relation-graph-models/models/RGNode.js";
 // import { useStore } from "vuex";
 // const store = useStore();
 //变量
@@ -1230,7 +1229,7 @@ const NodeClick = (event, item) => {
 };
 //单个line信息
 const lineClick = (event, item) => {
-  console.log(event,'1205')
+  // console.log(event,'1205')
   item.overview = true;
   item.propertiesFlag = true
   item.graphData.lines.forEach(item2=>{
@@ -2339,7 +2338,7 @@ mitts.on("params", (result: any) => {
       result.graphRef.value.setJsonData(result.graphData);
     });
   }
-  console.log(list.value, "2688");
+  // console.log(list.value, "2688");
   nextTick(() => {
     // console.log(list.value, "nextTick-2290");
   });
