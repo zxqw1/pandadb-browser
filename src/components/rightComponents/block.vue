@@ -41,7 +41,8 @@
           <div style="width: 100%;background-color: rgb(210, 213, 218);padding: 20px;margin-top: 10px">
             {{ item.error }}
           </div>
-          <RelationGraph :ref="dom => { getRefDom(dom, item) }" :options="options" style="display: none"></RelationGraph>
+          <RelationGraph :ref="dom => { getRefDom(dom, item) }" :options="options" style="display: none">
+          </RelationGraph>
         </el-col>
         <!-- node -->
         <el-col v-if="item.flagshowN">
@@ -101,8 +102,9 @@
                   <el-row v-if="item.propertiesFlag" style="padding: 10px 0 0 10px; ">
                     <el-col style="font-weight: 500">
                       <el-row>
-                         <div style="font-size: 16px; font-weight: 500;">{{ item.Properties.name }}</div>
-                        <CopyDocument style="width: 14px; margin-left: 10px;" @click="copyClick2(item.Properties.properties)" />
+                        <div style="font-size: 16px; font-weight: 500;">{{ item.Properties.name }}</div>
+                        <CopyDocument style="width: 14px; margin-left: 10px;"
+                          @click="copyClick2(item.Properties.properties)" />
                       </el-row>
                     </el-col>
                     <el-col
@@ -111,14 +113,25 @@
                         :color="getTagColor(item)" style="margin-top: 10px;border: none;">{{ item }}</el-tag>
                     </el-col>
                     <el-col>
-                      <el-row v-for="(value,key) in item.Properties.properties"
+                      <el-row style="border-bottom: 1px #efefef solid;margin-top:10px;display: flex">
+                        <el-col :span="10" style="padding-left: 10px ;font-weight: 500 ">{{ "<id>" }}</el-col>
+                          <el-col :span="11"
+                          style="height: 30px;text-overflow: ellipsis;white-space: nowrap;overflow: hidden; "
+                          :title="item.Properties.id">{{ item.Properties.id }}</el-col>
+                          <el-col :span="3" style="padding-left: 10px">
+                          <CopyDocument style="width: 14px;" @click="copyClick('id', item.Properties.id)" />
+                        </el-col>
+                      </el-row>
+                    </el-col>
+                    <el-col>
+                      <el-row v-for="(value, key) in item.Properties.properties"
                         style="border-bottom: 1px #efefef solid;margin-top:10px;display: flex">
                         <el-col :span="10" style="padding-left: 10px ;font-weight: 500 ">{{ key }}</el-col>
                         <el-col :span="11"
                           style="height: 30px;text-overflow: ellipsis;white-space: nowrap;overflow: hidden; "
                           :title="value">{{ value }}</el-col>
                         <el-col :span="3" style="padding-left: 10px">
-                          <CopyDocument style="width: 14px;" @click="copyClick(key,value)" />
+                          <CopyDocument style="width: 14px;" @click="copyClick(key, value)" />
                         </el-col>
                       </el-row>
                     </el-col>
@@ -137,7 +150,7 @@
                         <template #reference>
                           <el-tag @click="tagClick(key)" effect="dark" round :color="getTagColor(key)"
                             style="margin-right: 10px; margin-top: 10px; cursor: pointer;border: none">{{ key }}({{
-                            value }})</el-tag>
+                              value }})</el-tag>
                         </template>
                         <el-row>
                           <el-col>
@@ -225,13 +238,13 @@
                               @click="idClick($event)">
                               {{ "<id>" }}
                             </el-tag>
-                            <div v-for="(pathTagItem,pathTagIndex) in item.records[0]._fields">
+                            <div v-for="(pathTagItem, pathTagIndex) in item.records[0]._fields">
                               <div v-if="pathTagItem.labels">
                                 <el-tag type="info" size="small"
                                   style="margin-top: 10px; margin-left: 10px;cursor: pointer"
                                   v-for="(value4, key4) in pathTagItem.properties " :key="key4"
-                                  @click="fileClick($event,value4)">{{
-                                  key4 }}</el-tag>
+                                  @click="fileClick($event, value4)">{{
+                                    key4 }}</el-tag>
                               </div>
                             </div>
                           </el-col>
@@ -244,9 +257,8 @@
                     </el-col>
                   </el-row>
                 </div>
-                <RelationGraph @node-click="NodeClick($event,index,item)" @canvas-click="itemClick(item)"
-                  :ref="dom => { getRefDom(dom, item) }" :options="options" style="height: 336px"
-                  :style="{ height: isFullscreen ? '100vh' : '324px' }">
+                <RelationGraph @node-click="NodeClick($event, item)" @canvas-click="itemClick(item)" :ref="dom => { getRefDom(dom, item) }" :options="options"
+                  style="height: 336px" :style="{ height: isFullscreen ? '100vh' : '324px' }">
                   <template #node="{ node }">
                     <div
                       style="overflow: hidden;white-space:nowrap;text-overflow: ellipsis;text-align: center;vertical-align:middle">
@@ -301,7 +313,7 @@
                       ">
           <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;"
             @click="tableCopy(item4)" />
-          {{ JSON.stringify(item4 === null ? null : item4, null, 1)}}
+          {{ JSON.stringify(item4 === null ? null : item4, null, 1) }}
         </pre>
                   </a-col>
                 </a-row>
@@ -328,11 +340,11 @@
                     style="border-right: none; border: 1px dashed #666666" v-for="(item7, index7) in item6._fields"
                     :key="index7">
                     {{
-                    item7 === null
-                    ? "null"
-                    : item7.properties
-                    ? item7.properties
-                    : item7
+                      item7 === null
+                        ? "null"
+                        : item7.properties
+                          ? item7.properties
+                          : item7
                     }}
                   </el-col>
                 </el-row>
@@ -445,12 +457,13 @@
                       cursor: pointer;
                       z-index: 10;
                     " @click="OverviewClick(item)" />
-                 <!-- 节点详情 -->
-                 <el-row v-if="item.propertiesFlag" style="padding: 10px 0 0 10px; ">
+                  <!-- 节点详情 -->
+                  <el-row v-if="item.propertiesFlag" style="padding: 10px 0 0 10px; ">
                     <el-col style="font-weight: 500">
                       <el-row>
-                         <div style="font-size: 16px; font-weight: 500;">{{ item.Properties.name }}</div>
-                        <CopyDocument style="width: 14px; margin-left: 10px;" @click="copyClick2(item.Properties.properties)" />
+                        <div style="font-size: 16px; font-weight: 500;">{{ item.Properties.name }}</div>
+                        <CopyDocument style="width: 14px; margin-left: 10px;"
+                          @click="copyClick2(item.Properties.properties)" />
                       </el-row>
                     </el-col>
                     <el-col
@@ -459,19 +472,30 @@
                         :color="getTagColor(item)" style="margin-top: 10px;border: none;">{{ item }}</el-tag>
                     </el-col>
                     <el-col>
-                      <el-row v-for="(value,key) in item.Properties.properties"
+                      <el-row style="border-bottom: 1px #efefef solid;margin-top:10px;display: flex">
+                        <el-col :span="10" style="padding-left: 10px ;font-weight: 500 ">{{ "<id>" }}</el-col>
+                          <el-col :span="11"
+                          style="height: 30px;text-overflow: ellipsis;white-space: nowrap;overflow: hidden; "
+                          :title="item.Properties.id">{{ item.Properties.id }}</el-col>
+                          <el-col :span="3" style="padding-left: 10px">
+                          <CopyDocument style="width: 14px;" @click="copyClick('id', item.Properties.id)" />
+                        </el-col>
+                      </el-row>
+                    </el-col>
+                    <el-col>
+                      <el-row v-for="(value, key) in item.Properties.properties"
                         style="border-bottom: 1px #efefef solid;margin-top:10px;display: flex">
                         <el-col :span="10" style="padding-left: 10px ;font-weight: 500 ">{{ key }}</el-col>
                         <el-col :span="11"
                           style="height: 30px;text-overflow: ellipsis;white-space: nowrap;overflow: hidden; "
                           :title="value">{{ value }}</el-col>
                         <el-col :span="3" style="padding-left: 10px">
-                          <CopyDocument style="width: 14px;" @click="copyClick(key,value)" />
+                          <CopyDocument style="width: 14px;" @click="copyClick(key, value)" />
                         </el-col>
                       </el-row>
                     </el-col>
                   </el-row>
-                   <!-- overview信息 -->
+                  <!-- overview信息 -->
                   <el-row v-else>
                     <el-col style="margin: 10px; font-size: 18px; font-weight: 500">
                       Overview
@@ -485,7 +509,7 @@
                         <template #reference>
                           <el-tag @click="tagClick(key2)" effect="dark" round :color="getTagColor(key2)"
                             style="margin-right: 10px; cursor: pointer;margin-top: 10px;border: none">{{ key2 }}({{
-                            value2 }})</el-tag>
+                              value2 }})</el-tag>
                         </template>
                         <el-row>
                           <el-col>
@@ -565,7 +589,7 @@
                             <div>Caption:</div>
                             <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer"
                               @click="idClick($event)">{{ "<id>" }}</el-tag>
-                            <div v-for="(pathTagItem,pathTagIndex) in item.records[0]._fields">
+                            <div v-for="(pathTagItem, pathTagIndex) in item.records[0]._fields">
                               <div v-if="pathTagItem.segments">
                                 <div v-if="pathTagItem.end.labels.indexOf(key2) !== -1">
                                   <el-tag type="info" size="small"
@@ -593,7 +617,7 @@
                         <template #reference>
                           <el-tag @click="tagClick(value)" effect="dark"
                             style="margin-left: 10px; cursor: pointer;margin-top: 10px;border: none"
-                            :color="getLineColor(value) ">{{ value }}({{ key }})</el-tag>
+                            :color="getLineColor(value)">{{ value }}({{ key }})</el-tag>
                         </template>
                         <el-row>
                           <el-col>
@@ -682,7 +706,7 @@
                               flex-wrap: wrap;
                             ">
                             <div>Caption:</div>
-                            <div v-for="(pathTagItem,pathTagIndex) in item.records[0]._fields">
+                            <div v-for="(pathTagItem, pathTagIndex) in item.records[0]._fields">
                               <div v-if="pathTagItem.segments">
                                 <el-tag type="info" size="small"
                                   style="margin-top: 10px;margin-left: 10px;cursor:pointer"
@@ -709,8 +733,9 @@
                     </el-col>
                   </el-row>
                 </div>
-                <RelationGraph  @node-click="NodeClick($event,index,item)" @canvas-click="itemClick(item)" 
-                :ref="dom => { getRefDom(dom,item)}" :options="options" style="height: 336px" 
+                <RelationGraph @node-click="NodeClick($event, item)" @canvas-click="itemClick(item)" 
+                  @line-click="lineClick($event, item)"
+                  :ref="dom => { getRefDom(dom, item) }" :options="options" style="height: 336px"
                   :style="{ height: isFullscreen ? '100vh' : '324px' }">
                   <template #node="{ node }">
                     <div
@@ -794,8 +819,8 @@
                     :key="index7">
 
                     {{
-                    item7 === null ? "null" : item7.start && item7.start.properties ?
-                    [item7.start.properties,item7.end.properties] : item7.properties ? item7.properties : item7
+                      item7 === null ? "null" : item7.start && item7.start.properties ?
+                        [item7.start.properties, item7.end.properties] : item7.properties ? item7.properties : item7
                     }}
                   </el-col>
                 </el-row>
@@ -857,7 +882,7 @@
         </el-col>
         <!-- relaion -->
         <el-col v-if="item.flagshowR">
-          <RelationGraph :ref="dom => { getRefDom(dom, item)}" :options="options" style="display: none"
+          <RelationGraph :ref="dom => { getRefDom(dom, item) }" :options="options" style="display: none"
             :style="{ height: isFullscreen ? '100vh' : '324px' }"></RelationGraph>
           <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu"
             :style="{ height: isFullscreen ? '100vh' : '324px' }">
@@ -999,7 +1024,7 @@
         </el-col>
         <!-- keys -->
         <el-col v-if="item.flagshowE">
-          <RelationGraph :ref="dom => { getRefDom(dom, item)}" :options="options" style="display: none"
+          <RelationGraph :ref="dom => { getRefDom(dom, item) }" :options="options" style="display: none"
             :style="{ height: isFullscreen ? '100vh' : '324px' }"></RelationGraph>
           <div v-if="item.records.length === 0" :style="{ height: isFullscreen ? '100vh' : '324px' }"
             style="padding: 18px;">
@@ -1024,7 +1049,7 @@
                     align-items: flex-start;
                   ">
                   <a-col v-for="(item4, index4) in item3._fields" :key="index4">
-                    {{ item3.keys[index4]}}
+                    {{ item3.keys[index4] }}
                     <pre style="
                         margin-bottom: 10px;
                         padding: 10px;
@@ -1036,7 +1061,7 @@
                       ">
               <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;"
                 @click="tableCopy(item4)" />
-              {{ JSON.stringify(item4 === null ? "null" : item4 , null, 2)}}
+              {{ JSON.stringify(item4 === null ? "null" : item4, null, 2) }}
             </pre>
                   </a-col>
                 </a-row>
@@ -1185,12 +1210,11 @@ const getRefDom = (val: any, item: any) => {
   item.graphRef = val;
 };
 //单个node信息
-const NodeClick = (event, index, item) => {
-  console.log(item)
+const NodeClick = (event, item) => {
   item.overview = true;
   item.propertiesFlag = true
-  item.graphData.nodes.forEach(item2=>{
-    if(item2.id === event.id){
+  item.graphData.nodes.forEach(item2 => {
+    if (item2.id === event.id) {
       item.Properties.name = "Node properties";
       item.Properties.label = item2.label;
       item.Properties.id = item2.id;
@@ -1198,6 +1222,21 @@ const NodeClick = (event, index, item) => {
     }
   })
 };
+//单个line信息
+const lineClick = (event, item) => {
+  console.log(event,'1205')
+  item.overview = true;
+  item.propertiesFlag = true
+  item.graphData.lines.forEach(item2=>{
+    if(item2.id = event.id){
+      item.Properties.name = "Relationship properties";
+      item.Properties.label = [];
+      item.Properties.label.push(item2.type)
+      item.Properties.id = item2.id;
+      item.Properties.properties = item2.properties
+    }
+  })
+}
 //取消选中节点
 const itemClick = (item) => {
   const graphInstance = item.graphRef?.getInstance();
@@ -2342,6 +2381,7 @@ mitts.on("params", (result: any) => {
   justify-content: space-between;
   overflow-wrap: break-word;
 }
+
 .searchText:focus {
   outline: none;
 }
