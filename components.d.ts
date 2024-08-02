@@ -14,7 +14,6 @@ declare module 'vue' {
     ATag: typeof import('ant-design-vue/es')['Tag']
     Block: typeof import('./src/components/rightComponents/block.vue')['default']
     BlockTop: typeof import('./src/components/rightComponents/blockTop.vue')['default']
-    copy: typeof import('./src/components/rightComponents/block copy.vue')['default']
     Favorate: typeof import('./src/components/menuComponents/Favorate.vue')['default']
     Guides: typeof import('./src/components/menuComponents/guides.vue')['default']
     Header: typeof import('./src/components/header.vue')['default']

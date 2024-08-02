@@ -98,20 +98,20 @@
                     " @click="OverviewClick(item)" />
                   <!-- overview展开 -->
                   <!-- 节点详情 -->
-                  <el-row v-if="Properties.propertiesFlag" style="padding: 10px 0 0 10px; ">
+                  <el-row v-if="item.propertiesFlag" style="padding: 10px 0 0 10px; ">
                     <el-col style="font-weight: 500">
                       <el-row>
-                         <div style="font-size: 16px; font-weight: 500;">{{ Properties.name }}</div>
-                        <CopyDocument style="width: 14px; margin-left: 10px;" @click="copyClick2(Properties.properties)" />
+                         <div style="font-size: 16px; font-weight: 500;">{{ item.Properties.name }}</div>
+                        <CopyDocument style="width: 14px; margin-left: 10px;" @click="copyClick2(item.Properties.properties)" />
                       </el-row>
                     </el-col>
                     <el-col
                       style="display: flex;flex-direction: column; padding-left: 10px;padding-right: 10px;padding-top: 10px">
-                      <el-tag v-for="(item, index) in Properties.label" :key="index" round effect="dark"
+                      <el-tag v-for="(item, index) in item.Properties.label" :key="index" round effect="dark"
                         :color="getTagColor(item)" style="margin-top: 10px;border: none;">{{ item }}</el-tag>
                     </el-col>
                     <el-col>
-                      <el-row v-for="(value,key) in Properties.properties"
+                      <el-row v-for="(value,key) in item.Properties.properties"
                         style="border-bottom: 1px #efefef solid;margin-top:10px;display: flex">
                         <el-col :span="10" style="padding-left: 10px ;font-weight: 500 ">{{ key }}</el-col>
                         <el-col :span="11"
@@ -445,21 +445,21 @@
                       cursor: pointer;
                       z-index: 10;
                     " @click="OverviewClick(item)" />
-                      <!-- 节点详情 -->
-                  <el-row v-if="Properties.propertiesFlag" style="padding: 10px 0 0 10px; ">
+                 <!-- 节点详情 -->
+                 <el-row v-if="item.propertiesFlag" style="padding: 10px 0 0 10px; ">
                     <el-col style="font-weight: 500">
                       <el-row>
-                         <div  style="font-size: 16px; font-weight: 500;">{{ Properties.name }}</div>
-                        <CopyDocument style="width: 14px; margin-left: 10px;" @click="copyClick2(Properties.properties)" />
+                         <div style="font-size: 16px; font-weight: 500;">{{ item.Properties.name }}</div>
+                        <CopyDocument style="width: 14px; margin-left: 10px;" @click="copyClick2(item.Properties.properties)" />
                       </el-row>
                     </el-col>
                     <el-col
                       style="display: flex;flex-direction: column; padding-left: 10px;padding-right: 10px;padding-top: 10px">
-                      <el-tag v-for="(item, index) in Properties.label" :key="index" round effect="dark"
+                      <el-tag v-for="(item, index) in item.Properties.label" :key="index" round effect="dark"
                         :color="getTagColor(item)" style="margin-top: 10px;border: none;">{{ item }}</el-tag>
                     </el-col>
                     <el-col>
-                      <el-row v-for="(value,key) in Properties.properties"
+                      <el-row v-for="(value,key) in item.Properties.properties"
                         style="border-bottom: 1px #efefef solid;margin-top:10px;display: flex">
                         <el-col :span="10" style="padding-left: 10px ;font-weight: 500 ">{{ key }}</el-col>
                         <el-col :span="11"
@@ -1179,32 +1179,32 @@ const labelList = ref([]);
 const resultRelation = ref([]);
 const relationList = ref([]);
 const tagName = ref("");
-const Properties = ref({ propertiesFlag: false });
+// const Properties = ref({ propertiesFlag: false });
 // const error = ref("");
 const getRefDom = (val: any, item: any) => {
   item.graphRef = val;
 };
 //单个node信息
 const NodeClick = (event, index, item) => {
+  console.log(item)
   item.overview = true;
-  list.value[index].graphData.nodes.forEach((item) => {
-    if (item.id === event.id) {
-      Properties.value.propertiesFlag = true;
-      Properties.value.name = "Node properties";
-      Properties.value.label = item.label;
-      Properties.value.id = item.id;
-      Properties.value.properties = item.properties;
+  item.propertiesFlag = true
+  item.graphData.nodes.forEach(item2=>{
+    if(item2.id === event.id){
+      item.Properties.name = "Node properties";
+      item.Properties.label = item2.label;
+      item.Properties.id = item2.id;
+      item.Properties.properties = item2.properties
     }
-  });
+  })
 };
 //取消选中节点
 const itemClick = (item) => {
-  console.log(item, "1665");
   const graphInstance = item.graphRef?.getInstance();
   if (graphInstance) {
     graphInstance.clearChecked();
   }
-  Properties.value.propertiesFlag = false;
+  item.propertiesFlag = false
 };
 
 //详情复制
@@ -1905,6 +1905,8 @@ mitts.on("params", (result: any) => {
   result.overview = false;
   result.graph = false;
   result.graphRef = ref(null);
+  result.propertiesFlag = false;
+  result.Properties = {}
   list.value.unshift(result);
 
   let textName = "";
