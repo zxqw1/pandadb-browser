@@ -168,7 +168,7 @@ onMounted(()=>{
   font-size: 16px;
 }
 .content {
-  width: 460px;
+  width: 414px;
 }
 </style>
 <style>

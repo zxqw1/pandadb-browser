@@ -1,353 +1,240 @@
 <template>
-  <div
-    style="background-color: #ffffff"
-    v-for="(item, index) in list"
-    :key="item.id"
-    :id="item.id"
-    :style="{
-      position: isFullscreen ? 'fixed' : 'static',
-      top: isFullscreen ? '0' : '0',
-      left: isFullscreen ? '0' : '0',
-      width: isFullscreen ? '100vw' : 'auto',
-      zIndex: isFullscreen ? '5' : '0',
-    }"
-  >
+  <div style="background-color: #ffffff" v-for="(item, index) in list" :key="item.id" :id="item.id" :style="{
+    position: isFullscreen ? 'fixed' : 'static',
+    top: isFullscreen ? '0' : '0',
+    left: isFullscreen ? '0' : '0',
+    width: isFullscreen ? '100vw' : 'auto',
+    zIndex: isFullscreen ? '5' : '0',
+  }">
     <el-row>
-      <div
-        style="background-color: #f6f6f6; width: 100%; height: 24px"
-        v-if="!isFullscreen"
-      ></div>
+      <div style="background-color: #f6f6f6; width: 100%; height: 24px" v-if="!isFullscreen"></div>
       <!-- 右上 -->
-      <el-col
-        style="
+      <el-col style="
           background-color: #ffffff;
           display: flex;
           flex-direction: row-reverse;
           height: 24px;
           padding-right: 14px;
           padding-top: 4px;
-        "
-      >
+        ">
         <div class="topIcon">
-          <Pushpin-outlined
-            style="margin-left: 16px"
-            @click="topClick(index, item)"
-          />
-          <Down-outlined
-            style="margin-left: 16px"
-            v-if="item.show"
-            @click="item.show = false"
-          />
-          <Up-outlined
-            v-else
-            style="margin-left: 16px"
-            @click="item.show = true"
-          />
-          <ExpandAltOutlined
-            style="margin-left: 16px"
-            @click="toggleFullScreen"
-            v-if="!isFullscreen"
-          />
-          <ShrinkOutlined
-            style="margin-left: 16px"
-            @click="toggleFullScreen"
-            v-else
-          />
-          <CloseOutlined
-            style="margin-left: 16px"
-            @click="removeModule(index)"
-          />
+          <Pushpin-outlined style="margin-left: 16px" @click="topClick(index, item)" />
+          <Down-outlined style="margin-left: 16px" v-if="item.show" @click="item.show = false" />
+          <Up-outlined v-else style="margin-left: 16px" @click="item.show = true" />
+          <ExpandAltOutlined style="margin-left: 16px" @click="toggleFullScreen" v-if="!isFullscreen" />
+          <ShrinkOutlined style="margin-left: 16px" @click="toggleFullScreen" v-else />
+          <CloseOutlined style="margin-left: 16px" @click="removeModule(index)" />
         </div>
       </el-col>
       <!-- 搜索 -->
-      <search2 :command="item.summary.query.text" :index="index"  :item="item"/>
+      <search2 :command="item.summary.query.text" :index="index" :item="item" />
       <!-- 展示 -->
-      <el-col
-        style="height: 348px; margin-top: 12px"
-        v-show="!item.show"
-        :style="{
-          height: isFullscreen ? '100vh' : 'auto',
-        }"
-      >
-      <!-- 报错 -->
-      <el-col v-if="item.flagshowER":style="{ height: isFullscreen ? '100vh' : '324px' }"
-      style="padding: 18px;"
-      >
-        <div style="display: flex">
-          <el-tag effect="dark" type="danger"> ERROR </el-tag>
-          <h3 style="font-weight: 500;margin-left: 16px;align-items: center;">pandaDB, Error message</h3>
-        </div>
-        <div style="width: 100%;background-color: rgb(210, 213, 218);padding: 20px;margin-top: 10px">
-          {{ item.error }}
-        </div>
-        <RelationGraph
-          :ref="dom=>{getRefDom(dom,item)}"
-          :options="options"
-          style="display: none"  
-        ></RelationGraph>
-      </el-col>
+      <el-col style="height: 348px; margin-top: 12px" v-show="!item.show" :style="{
+        height: isFullscreen ? '100vh' : 'auto',
+      }">
+        <!-- 报错 -->
+        <el-col v-if="item.flagshowER" :style="{ height: isFullscreen ? '100vh' : '324px' }" style="padding: 18px;">
+          <div style="display: flex">
+            <el-tag effect="dark" type="danger"> ERROR </el-tag>
+            <h3 style="font-weight: 500;margin-left: 16px;align-items: center;">pandaDB, Error message</h3>
+          </div>
+          <div style="width: 100%;background-color: rgb(210, 213, 218);padding: 20px;margin-top: 10px">
+            {{ item.error }}
+          </div>
+          <RelationGraph :ref="dom => { getRefDom(dom, item) }" :options="options" style="display: none"></RelationGraph>
+        </el-col>
         <!-- node -->
-        <el-col
-          v-if="item.flagshowN">
-          <el-tabs
-            :tab-position="tabPosition"
-            class="demo-tabs graphMenu"
-            :style="{ height: isFullscreen ? '100vh' : '324px' }"
-          >
+        <el-col v-if="item.flagshowN">
+          <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu"
+            :style="{ height: isFullscreen ? '100vh' : '324px' }">
             <el-tab-pane label="graph">
               <!-- label标题 -->
               <template #label>
                 <div style=" display: flex;align-items: center;flex-direction: column;">
-                  <img
-                    src="../../../public/graph.png"
-                    alt=""
-                    style="width: 24px; height: 24px"
-                  />
+                  <img src="../../../public/graph.png" alt="" style="width: 24px; height: 24px" />
                   <div style="font-weight: 600; color: #666666">graph</div>
                 </div>
               </template>
               <!-- 图 -->
-              <div
-                style="
+              <div style="
                   border: #efefef solid 1px;
                   width: 100%;
                   display: flex;
                   flex-direction: row-reverse;
                   position: relative;
-                "
-                :style="{ height: isFullscreen ? '100vh' : '324px' }"
-              >
+                " :style="{ height: isFullscreen ? '100vh' : '324px' }">
                 <!-- overview按钮 -->
-                <div
-                  style="
+                <div style="
                     background-color: #dcdcdc30;
                     width: 45px;
                     height: 28px;
                     position: absolute;
-                    z-index: 1;
+                    z-index: 10;
                     right: 15px;
                     top: 8px;
                     box-shadow: 0 0 2px #ccc;
                     line-height: 33px;
                     text-align: center;
                     cursor: pointer;
-                  "
-                  @click="OverviewClick(item)" 
-                  v-if="!item.overview"
-                >
+                  " @click="OverviewClick(item)" v-if="!item.overview">
                   <ArrowLeftBold color="#999999" style="width: 16px" />
                 </div>
-                <div
-                  style="
+                <div style="
                     width: 328px;
                     min-height: 452px;
                     background-color: #ffffff;
                     box-shadow: 0 0 2px #ccc;
-                    z-index: 1;
+                    z-index: 10;
                     position: relative;
-                  "
-                  v-else
-                >
-                  <ArrowLeftBold
-                    color="#999999"
-                    style="
+                  " v-else>
+                  <ArrowLeftBold color="#999999" style="
                       width: 16px;
                       position: absolute;
                       right: 0px;
                       top: 0px;
                       margin: 18px;
                       cursor: pointer;
-                      z-index: 1;
-                    "
-                    @click="OverviewClick(item)"
-                  />
+                      z-index: 10;
+                    " @click="OverviewClick(item)" />
                   <!-- overview展开 -->
-                  <el-row>
+                  <!-- 节点详情 -->
+                  <el-row v-if="Properties.propertiesFlag" style="padding: 10px 0 0 10px; ">
+                    <el-col style="font-weight: 500">
+                      <el-row>
+                         <div style="font-size: 16px; font-weight: 500;">{{ Properties.name }}</div>
+                        <CopyDocument style="width: 14px; margin-left: 10px;" @click="copyClick2(Properties.properties)" />
+                      </el-row>
+                    </el-col>
                     <el-col
-                      style="margin: 10px; font-size: 18px; font-weight: 500"
-                    >
+                      style="display: flex;flex-direction: column; padding-left: 10px;padding-right: 10px;padding-top: 10px">
+                      <el-tag v-for="(item, index) in Properties.label" :key="index" round effect="dark"
+                        :color="getTagColor(item)" style="margin-top: 10px;border: none;">{{ item }}</el-tag>
+                    </el-col>
+                    <el-col>
+                      <el-row v-for="(value,key) in Properties.properties"
+                        style="border-bottom: 1px #efefef solid;margin-top:10px;display: flex">
+                        <el-col :span="10" style="padding-left: 10px ;font-weight: 500 ">{{ key }}</el-col>
+                        <el-col :span="11"
+                          style="height: 30px;text-overflow: ellipsis;white-space: nowrap;overflow: hidden; "
+                          :title="value">{{ value }}</el-col>
+                        <el-col :span="3" style="padding-left: 10px">
+                          <CopyDocument style="width: 14px;" @click="copyClick(key,value)" />
+                        </el-col>
+                      </el-row>
+                    </el-col>
+                  </el-row>
+                  <!-- overview信息 -->
+                  <el-row v-else style="padding-left: 10px;">
+                    <el-col style=" font-size: 18px; font-weight: 500 ;">
                       Overview
                     </el-col>
-                    <el-col style="margin: 0 0 0 10px">
+                    <el-col>
                       <div style="font-weight: bold">Node labels</div>
-                      <el-tag effect="dark" round >*({{ resultNodes.length }})</el-tag>
-                      <el-popover
-                        placement="bottom"
-                        :width="260"
-                        trigger="click"
-                        v-for="(value, key) in item.labelList" :key="key"
-                      >
-                      <template #reference>
-                          <el-tag
-                            @click="tagClick(key)"
-                            effect="dark"
-                            round
-                            :color="getTagColor(key)"
-                            style="margin-left: 10px; cursor: pointer;border: none"
-                          >{{ key }}({{ value }})</el-tag>
+                      <el-tag effect="dark" round style="margin-top: 10px; margin-right: 10px;">*({{ resultNodes.length
+                        }})</el-tag>
+                      <el-popover placement="bottom" :width="260" trigger="click" v-for="(value, key) in item.labelList"
+                        :key="key">
+                        <template #reference>
+                          <el-tag @click="tagClick(key)" effect="dark" round :color="getTagColor(key)"
+                            style="margin-right: 10px; margin-top: 10px; cursor: pointer;border: none">{{ key }}({{
+                            value }})</el-tag>
                         </template>
                         <el-row>
                           <el-col>
-                          <!-- v-for="(value, key) in item.labelList" :key="key" -->
-                            <el-tag
-                              effect="dark"
-                              round
-                              :color="getTagColor(key)"
-                              style="width: 100%;border: none;margin-bottom: 10px"
-                              >{{ key }}({{ value }})</el-tag
-                            >
+                            <!-- v-for="(value, key) in item.labelList" :key="key" -->
+                            <el-tag effect="dark" round :color="getTagColor(key)"
+                              style="width: 100%;border: none;margin-bottom: 10px">{{ key }}({{ value }})</el-tag>
                           </el-col>
-                          <el-col style="display: flex; margin-top: 12px" >
-                            <ul
-                              class="color"
-                              style="
+                          <el-col style="display: flex; margin-top: 12px">
+                            <ul class="color" style="
                                 display: flex;
                                 align-items: center;
                                 justify-content: space-around;
                                 width: 100%;
                                 padding-left: 0;
-                              "
-                              @click="colorClick($event)"
-                            >
+                              " @click="colorClick($event)">
                               <div>color:</div>
-                              <li
-                                style="background-color: rgb(96, 74, 14);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(201, 144, 192);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(247, 151, 103);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(87, 199, 227);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(241, 102, 103);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(217, 200, 174);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(141, 204, 147);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(236, 181, 201);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(76, 142, 218);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(255, 196, 84);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(218, 113, 148);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(86, 148, 128);cursor: pointer;"
-                                class="li"
-                              ></li>
+                              <li style="background-color: rgb(96, 74, 14);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(201, 144, 192);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(247, 151, 103);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(87, 199, 227);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(241, 102, 103);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(217, 200, 174);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(141, 204, 147);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(236, 181, 201);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(76, 142, 218);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(255, 196, 84);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(218, 113, 148);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(86, 148, 128);cursor: pointer;" class="li"></li>
                             </ul>
                           </el-col>
                           <el-col style="display: flex; margin-top: 12px">
-                            <ul
-                              class="size"
-                              style="
+                            <ul class="size" style="
                                 display: flex;
                                 align-items: center;
                                 width: 100%;
                                 padding-left: 0;
-                              "
-                              @click="sizeClick($event)"
-                            >
+                              " @click="sizeClick($event)">
                               <div>size:</div>
-                              <li
-                                class="sizeLi"
-                                style="
+                              <li class="sizeLi" style="
                                   background-color: rgb(170, 170, 170);
                                   width: 12px;
                                   height: 12px;
                                   border-radius: 50%;
                                   cursor: pointer;
-                                "
-                                data-size="40"
-                              ></li>
-                              <li
-                              class="sizeLi"
-                                style="
+                                " data-size="40"></li>
+                              <li class="sizeLi" style="
                                   background-color: rgb(170, 170, 170);
                                   width: 14px;
                                   height: 14px;
                                   border-radius: 50%;
                                   cursor: pointer;
-                                "
-                                data-size="60"
-                              ></li>
-                              <li
-                              class="sizeLi"
-                                style="
+                                " data-size="60"></li>
+                              <li class="sizeLi" style="
                                   background-color: rgb(170, 170, 170);
                                   width: 16px;
                                   height: 16px;
                                   border-radius: 50%;
                                   cursor: pointer;
-                                "
-                                data-size="80"
-                              ></li>
-                              <li
-                              class="sizeLi"
-                                style="
+                                " data-size="80"></li>
+                              <li class="sizeLi" style="
                                   background-color: rgb(170, 170, 170);
                                   width: 18px;
                                   height: 18px;
                                   border-radius: 50%;
                                   cursor: pointer;
-                                "
-                                data-size="100"
-                              ></li>
-                              <li
-                              class="sizeLi"
-                                style="
+                                " data-size="100"></li>
+                              <li class="sizeLi" style="
                                   background-color: rgb(170, 170, 170);
                                   width: 20px;
                                   height: 20px;
                                   border-radius: 50%;
                                   cursor: pointer;
-                                "
-                                data-size="120"
-                              ></li>
+                                " data-size="120"></li>
                             </ul>
                           </el-col>
-                          <el-col
-                            style="
+                          <el-col style="
                               display: flex;
                               margin-top: 12px;
                               align-items: center;
                               flex-wrap: wrap;
                               cursor: pointer;
-                            "
-                          >
+                            ">
                             <div>Caption:</div>
-                            <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer " @click="idClick($event)">
-                             {{ "<id>" }}
+                            <el-tag type="info" size="small" style="margin-top: 10px;cursor: pointer "
+                              @click="idClick($event)">
+                              {{ "<id>" }}
                             </el-tag>
                             <div v-for="(pathTagItem,pathTagIndex) in item.records[0]._fields">
-                                <div v-if="pathTagItem.labels">
-                                    <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" v-for="(value4,key4) in pathTagItem.properties " :key="key4" @click="fileClick($event,value4)">{{ key4 }}</el-tag>
-                                </div>
+                              <div v-if="pathTagItem.labels">
+                                <el-tag type="info" size="small"
+                                  style="margin-top: 10px; margin-left: 10px;cursor: pointer"
+                                  v-for="(value4, key4) in pathTagItem.properties " :key="key4"
+                                  @click="fileClick($event,value4)">{{
+                                  key4 }}</el-tag>
                               </div>
-                          </el-col> 
+                            </div>
+                          </el-col>
                         </el-row>
                       </el-popover>
                     </el-col>
@@ -357,36 +244,28 @@
                     </el-col>
                   </el-row>
                 </div>
-                <RelationGraph
-                  :ref="dom=>{getRefDom(dom,item)}"
-                  :options="options"
-                  style="height: 336px"
-                  :style="{ height: isFullscreen ? '100vh' : '324px' }"
-                >
-                <template #node="{node}" >
-                  <div style="overflow: hidden;white-space:nowrap text-overflow: ellipsis;text-align: center;vertical-align:middle">{{ node.text }}</div>
-                </template>
-              </RelationGraph>
+                <RelationGraph @node-click="NodeClick($event,index,item)" @canvas-click="itemClick(item)"
+                  :ref="dom => { getRefDom(dom, item) }" :options="options" style="height: 336px"
+                  :style="{ height: isFullscreen ? '100vh' : '324px' }">
+                  <template #node="{ node }">
+                    <div
+                      style="overflow: hidden;white-space:nowrap;text-overflow: ellipsis;text-align: center;vertical-align:middle">
+                      {{ node.text }}</div>
+                  </template>
+                </RelationGraph>
+
               </div>
             </el-tab-pane>
             <el-tab-pane label="table">
               <template #label>
                 <div style=" display: flex;align-items: center;flex-direction: column;">
-                  <img
-                    src="../../../public/table.png"
-                    alt=""
-                    style="width: 24px; height: 24px"
-                  />
+                  <img src="../../../public/table.png" alt="" style="width: 24px; height: 24px" />
                   <div style="font-weight: 600; color: #666666">table</div>
                 </div>
               </template>
               <!-- 详情 -->
-              <div
-                style="overflow: auto"
-                :style="{ height: isFullscreen ? '100vh' : '324px' }"
-              >
-                <a-row
-                  style="
+              <div style="overflow: auto" :style="{ height: isFullscreen ? '100vh' : '324px' }">
+                <a-row style="
                     font-size: 16px;
                     color: #666666;
                     height: 32px;
@@ -397,33 +276,21 @@
                     position: sticky;
                     top: 0;
                     flex-wrap: nowrap;
-                  "
-                >
-                  <a-col
-                    v-for="(item2, index2) in item.records[0].keys"
-                    :key="index2"
-                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
-                  >
+                  ">
+                  <a-col v-for="(item2, index2) in item.records[0].keys" :key="index2"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'">
                     {{ item2 }}
                   </a-col>
                 </a-row>
-                <a-row
-                  v-for="(item3, index3) in item.records"
-                  :key="index3"
-                  style="
+                <a-row v-for="(item3, index3) in item.records" :key="index3" style="
                     flex-wrap: nowrap;
                     display: flex;
                     flex-direction: row;
                     align-items: flex-start;
-                  "
-                >
-                  <a-col
-                    v-for="(item4, index4) in item3._fields"
-                    :key="index4"
-                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
-                  >
-                    <pre
-                      style="
+                  ">
+                  <a-col v-for="(item4, index4) in item3._fields" :key="index4"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'">
+                    <pre style="
                         margin-bottom: 10px;
                         padding: 10px;
                         margin-top: 10px;
@@ -431,11 +298,11 @@
                         background-color: rgb(239, 239, 239);
                         border-bottom: 1px solid #000000;
                         position: relative;
-                      "
-                    >
-                  <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;" @click="tableCopy(item4)"/>
-                  {{ JSON.stringify(item4 === null ? null : item4, null, 1)}}
-                </pre>
+                      ">
+          <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;"
+            @click="tableCopy(item4)" />
+          {{ JSON.stringify(item4 === null ? null : item4, null, 1)}}
+        </pre>
                   </a-col>
                 </a-row>
               </div>
@@ -443,44 +310,29 @@
             <el-tab-pane label="text">
               <template #label>
                 <div style=" display: flex;align-items: center;flex-direction: column;">
-                  <img
-                    src="../../../public/text.png"
-                    alt=""
-                    style="width: 24px; height: 24px"
-                  />
+                  <img src="../../../public/text.png" alt="" style="width: 24px; height: 24px" />
                   <div style="font-weight: 600; color: #666666">text</div>
                 </div>
               </template>
               <!-- 详情 -->
-              <div
-                style="padding: 10px; overflow-y: auto"
-                :style="{ height: isFullscreen ? '100vh' : '324px' }"
-              >
+              <div style="padding: 10px; overflow-y: auto" :style="{ height: isFullscreen ? '100vh' : '324px' }">
                 <el-row style="flex-wrap: nowrap; display: flex">
-                  <el-col
-                    style="border-right: none; border: 1px dashed #666666"
-                    class="td"
-                    v-for="(item5, index5) in item.records[0].keys"
-                    :key="index5"
-                    :span="item.records[0].keys.length !== 1 ? 6 : 24"
-                  >
+                  <el-col style="border-right: none; border: 1px dashed #666666" class="td"
+                    v-for="(item5, index5) in item.records[0].keys" :key="index5"
+                    :span="item.records[0].keys.length !== 1 ? 6 : 24">
                     {{ item5 }}
                   </el-col>
                 </el-row>
                 <el-row v-for="(item6, index6) in item.records" :key="index6">
-                  <el-col
-                    class="td"
-                    :span="item.records[0].keys.length !== 1 ? 6 : 24"
-                    style="border-right: none; border: 1px dashed #666666"
-                    v-for="(item7, index7) in item6._fields"
-                    :key="index7"
-                  >
+                  <el-col class="td" :span="item.records[0].keys.length !== 1 ? 6 : 24"
+                    style="border-right: none; border: 1px dashed #666666" v-for="(item7, index7) in item6._fields"
+                    :key="index7">
                     {{
-                      item7 === null
-                        ? "null"
-                        : item7.properties
-                        ? item7.properties
-                        : item7
+                    item7 === null
+                    ? "null"
+                    : item7.properties
+                    ? item7.properties
+                    : item7
                     }}
                   </el-col>
                 </el-row>
@@ -489,11 +341,7 @@
             <el-tab-pane label="code">
               <template #label>
                 <div style=" display: flex;align-items: center;flex-direction: column;">
-                  <img
-                    src="../../../public/code.png"
-                    alt=""
-                    style="width: 24px; height: 24px"
-                  />
+                  <img src="../../../public/code.png" alt="" style="width: 24px; height: 24px" />
                   <div style="font-weight: 600; color: #666666">code</div>
                 </div>
               </template>
@@ -523,11 +371,8 @@
                     <CaretRightOutlined v-if="!isunfold" @click="unfoldClick" />
                     <CaretDownOutlined v-else @click="unfoldClick" />
                   </el-col>
-                  <el-col
-                    :span="16"
-                    :style="{ height: isunfold ? '100%' : '30px' }"
-                    style="font-size: 16px; color: #666666; overflow: hidden"
-                  >
+                  <el-col :span="16" :style="{ height: isunfold ? '100%' : '30px' }"
+                    style="font-size: 16px; color: #666666; overflow: hidden">
                     {{ item.summary }}
                   </el-col>
                 </el-row>
@@ -535,13 +380,10 @@
                   <el-col class="severTitle" :span="8">
                     Response
                     <CaretRightOutlined v-if="!isres" @click="resClick" />
-                    <CaretDownOutlined v-else @click="resClick"
-                  /></el-col>
-                  <el-col
-                    :span="16"
-                    :style="{ height: isres ? '100%' : '30px' }"
-                    style="font-size: 16px; color: #666666; overflow: hidden"
-                  >
+                    <CaretDownOutlined v-else @click="resClick" />
+                  </el-col>
+                  <el-col :span="16" :style="{ height: isres ? '100%' : '30px' }"
+                    style="font-size: 16px; color: #666666; overflow: hidden">
                     {{ item.records }}
                   </el-col>
                 </el-row>
@@ -550,495 +392,344 @@
           </el-tabs>
         </el-col>
         <!-- path -->
-        <el-col
-          v-if="item.flagshowP"
-        >
-          <el-tabs
-            :tab-position="tabPosition"
-            class="demo-tabs graphMenu"
-            :style="{ height: isFullscreen ? '100vh' : '324px' }"
-          >
+        <el-col v-if="item.flagshowP">
+          <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu"
+            :style="{ height: isFullscreen ? '100vh' : '324px' }">
             <el-tab-pane label="graph">
               <!-- graph标题 -->
-                <template #label>
+              <template #label>
                 <div style=" display: flex;align-items: center;flex-direction: column;">
-                  <img
-                    src="../../../public/graph.png"
-                    alt=""
-                    style="width: 24px; height: 24px"
-                  />
+                  <img src="../../../public/graph.png" alt="" style="width: 24px; height: 24px" />
                   <div style="font-weight: 600; color: #666666">graph</div>
                 </div>
               </template>
-              <div
-                style="
+              <div style="
                   border: #efefef solid 1px;
                   width: 100%;
                   display: flex;
                   flex-direction: row-reverse;
                   position: relative;
-                "
-                :style="{ height: isFullscreen ? '100vh' : '324px' }"
-              >
+                " :style="{ height: isFullscreen ? '100vh' : '324px' }">
                 <!-- overview按钮 -->
-                <div
-                  style="
+                <div style="
                     background-color: #dcdcdc30;
                     width: 45px;
                     height: 28px;
                     position: absolute;
-                    z-index: 1;
+                    z-index: 10;
                     right: 15px;
                     top: 8px;
                     box-shadow: 0 0 2px #ccc;
                     line-height: 33px;
                     text-align: center;
                     cursor: pointer;
-                  "
-                  @click="OverviewClick(item)"
-                  v-if="!item.overview"
-                >
+                  " @click="OverviewClick(item)" v-if="!item.overview">
                   <ArrowLeftBold color="#999999" style="width: 16px" />
                 </div>
-                <div
-                  style="
+                <div style="
                     width: 328px;
-                    min-height: 452px;
+                    /* min-height: 452px; */
+                    overflow: auto;
                     background-color: #ffffff;
                     box-shadow: 0 0 2px #ccc;
-                    z-index: 1;
+                    z-index: 10;
                     position: relative;
-                  "
-                  v-else
-                >
-                <!-- overview展开 -->
-                  <ArrowLeftBold
-                    color="#999999"
-                    style="
+                  " v-else>
+                  <!-- overview展开 -->
+                  <ArrowLeftBold color="#999999" style="
                       width: 16px;
                       position: absolute;
                       right: 0px;
                       top: 0px;
                       margin: 18px;
                       cursor: pointer;
-                      z-index: 1;
-                    "
-                    @click="OverviewClick(item)"
-                  />
-                  <el-row>
+                      z-index: 10;
+                    " @click="OverviewClick(item)" />
+                      <!-- 节点详情 -->
+                  <el-row v-if="Properties.propertiesFlag" style="padding: 10px 0 0 10px; ">
+                    <el-col style="font-weight: 500">
+                      <el-row>
+                         <div  style="font-size: 16px; font-weight: 500;">{{ Properties.name }}</div>
+                        <CopyDocument style="width: 14px; margin-left: 10px;" @click="copyClick2(Properties.properties)" />
+                      </el-row>
+                    </el-col>
                     <el-col
-                      style="margin: 10px; font-size: 18px; font-weight: 500"
-                    >
+                      style="display: flex;flex-direction: column; padding-left: 10px;padding-right: 10px;padding-top: 10px">
+                      <el-tag v-for="(item, index) in Properties.label" :key="index" round effect="dark"
+                        :color="getTagColor(item)" style="margin-top: 10px;border: none;">{{ item }}</el-tag>
+                    </el-col>
+                    <el-col>
+                      <el-row v-for="(value,key) in Properties.properties"
+                        style="border-bottom: 1px #efefef solid;margin-top:10px;display: flex">
+                        <el-col :span="10" style="padding-left: 10px ;font-weight: 500 ">{{ key }}</el-col>
+                        <el-col :span="11"
+                          style="height: 30px;text-overflow: ellipsis;white-space: nowrap;overflow: hidden; "
+                          :title="value">{{ value }}</el-col>
+                        <el-col :span="3" style="padding-left: 10px">
+                          <CopyDocument style="width: 14px;" @click="copyClick(key,value)" />
+                        </el-col>
+                      </el-row>
+                    </el-col>
+                  </el-row>
+                   <!-- overview信息 -->
+                  <el-row v-else>
+                    <el-col style="margin: 10px; font-size: 18px; font-weight: 500">
                       Overview
                     </el-col>
                     <el-col style="margin: 0 0 0 10px">
                       <div style="font-weight: bold;">Node labels</div>
-                      <el-tag effect="dark" round style="margin-right: 10px;margin-top: 10px;"
-                        >*({{ resultNodes.length }})</el-tag>
-                      <el-popover
-                        placement="bottom"
-                        :width="260"
-                        trigger="click"
-                        v-for="(value2, key2) in item.labelList" :key="key2"
-                      >
+                      <el-tag effect="dark" round style="margin-right: 10px;margin-top: 10px;">*({{ resultNodes.length
+                        }})</el-tag>
+                      <el-popover placement="bottom" :width="260" trigger="click"
+                        v-for="(value2, key2) in item.labelList" :key="key2">
                         <template #reference>
-                          <el-tag
-                            @click="tagClick(key2)"
-                            effect="dark"
-                            round
-                            :color="getTagColor(key2)"
-                            style="margin-right: 10px; cursor: pointer;margin-top: 10px;border: none"
-                            >{{ key2 }}({{ value2 }})</el-tag>
+                          <el-tag @click="tagClick(key2)" effect="dark" round :color="getTagColor(key2)"
+                            style="margin-right: 10px; cursor: pointer;margin-top: 10px;border: none">{{ key2 }}({{
+                            value2 }})</el-tag>
                         </template>
-                        <el-row >
+                        <el-row>
                           <el-col>
                             <!-- v-for="(value2, key2) in item.labelList" :key="key2" -->
-                            <el-tag effect="dark" round style="width: 100%;margin-top: 10px; border: none" :color="getTagColor(key2)">{{ key2 }}({{ value2 }})</el-tag>
+                            <el-tag effect="dark" round style="width: 100%;margin-top: 10px; border: none"
+                              :color="getTagColor(key2)">{{ key2 }}({{ value2 }})</el-tag>
                           </el-col>
                           <el-col style="display: flex; margin-top: 12px">
-                            <ul
-                              class="color"
-                              style="
+                            <ul class="color" style="
                                 display: flex;
                                 align-items: center;
                                 justify-content: space-around;
                                 width: 100%;
                                 padding-left: 0;
-                              "
-                              @click="colorClick($event)"
-                            >
+                              " @click="colorClick($event)">
                               <div>color:</div>
-                              <li
-                                style="background-color: rgb(96, 74, 14);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(201, 144, 192);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(247, 151, 103);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(87, 199, 227);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(241, 102, 103);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(217, 200, 174);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(141, 204, 147);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(236, 181, 201);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(76, 142, 218);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(255, 196, 84);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(218, 113, 148);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(86, 148, 128);cursor: pointer;"
-                                class="li"
-                              ></li>
+                              <li style="background-color: rgb(96, 74, 14);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(201, 144, 192);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(247, 151, 103);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(87, 199, 227);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(241, 102, 103);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(217, 200, 174);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(141, 204, 147);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(236, 181, 201);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(76, 142, 218);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(255, 196, 84);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(218, 113, 148);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(86, 148, 128);cursor: pointer;" class="li"></li>
                             </ul>
                           </el-col>
                           <el-col style="display: flex; margin-top: 12px">
-                            <ul
-                              class="size"
-                              style="
+                            <ul class="size" style="
                                 display: flex;
                                 align-items: center;
                                 width: 100%;
                                 padding-left: 0;
-                              "
-                              @click="sizeClick($event)"
-                            >
+                              " @click="sizeClick($event)">
                               <div>size:</div>
-                              <li
-                              class="sizeLi"
-                                style="
+                              <li class="sizeLi" style="
                                   background-color: rgb(170, 170, 170);
                                   width: 12px;
                                   height: 12px;
                                   border-radius: 50%;
-                                "
-                                data-size="40"
-                              ></li>
-                              <li
-                              class="sizeLi"
-                                style="
+                                " data-size="40"></li>
+                              <li class="sizeLi" style="
                                   background-color: rgb(170, 170, 170);
                                   width: 14px;
                                   height: 14px;
                                   border-radius: 50%;
-                                "
-                                data-size="60"
-                              ></li>
-                              <li
-                              class="sizeLi"
-                                style="
+                                " data-size="60"></li>
+                              <li class="sizeLi" style="
                                   background-color: rgb(170, 170, 170);
                                   width: 16px;
                                   height: 16px;
                                   border-radius: 50%;
-                                "
-                                data-size="80"
-                              ></li>
-                              <li
-                              class="sizeLi"
-                                style="
+                                " data-size="80"></li>
+                              <li class="sizeLi" style="
                                   background-color: rgb(170, 170, 170);
                                   width: 18px;
                                   height: 18px;
                                   border-radius: 50%;
-                                "
-                                data-size="100"
-                              ></li>
-                              <li
-                              class="sizeLi"
-                                style="
+                                " data-size="100"></li>
+                              <li class="sizeLi" style="
                                   background-color: rgb(170, 170, 170);
                                   width: 20px;
                                   height: 20px;
                                   border-radius: 50%;
-                                "
-                                data-size="120"
-                              ></li>
+                                " data-size="120"></li>
                             </ul>
                           </el-col>
-                          <el-col
-                            style="
+                          <el-col style="
                               display: flex;
                               margin-top: 12px;
                               align-items: center;
                               flex-wrap: wrap;
-                            "
-                          >
+                            ">
                             <div>Caption:</div>
-                            <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" @click="idClick($event)">{{ "<id>" }}</el-tag>
-                              <div v-for="(pathTagItem,pathTagIndex) in item.records[0]._fields">
-                                <div v-if="pathTagItem.segments">
-                                  <div v-if="pathTagItem.end.labels.indexOf(key2) !== -1">
-                                    <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" v-for="(value4,key4) in pathTagItem.end.properties " :key="key4" @click="fileClick($event)">{{ key4 }}</el-tag>
-                                  </div>
-                                  <div v-if="pathTagItem.start.labels.indexOf(key2) !== -1">
-                                    <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer" v-for="(value4,key4) in pathTagItem.start.properties " :key="key4"  @click="fileClick($event)">{{ key4 }}</el-tag>
-                                  </div>
+                            <el-tag type="info" size="small" style="margin-top: 10px; margin-left: 10px;cursor: pointer"
+                              @click="idClick($event)">{{ "<id>" }}</el-tag>
+                            <div v-for="(pathTagItem,pathTagIndex) in item.records[0]._fields">
+                              <div v-if="pathTagItem.segments">
+                                <div v-if="pathTagItem.end.labels.indexOf(key2) !== -1">
+                                  <el-tag type="info" size="small"
+                                    style="margin-top: 10px; margin-left: 10px;cursor: pointer"
+                                    v-for="(value4, key4) in pathTagItem.end.properties " :key="key4"
+                                    @click="fileClick($event)">{{ key4 }}</el-tag>
                                 </div>
+                                <!-- <div v-if="pathTagItem.start.labels.indexOf(key2) !== -1">
+                                  <el-tag type="info" size="small"
+                                    style="margin-top: 10px; margin-left: 10px;cursor: pointer"
+                                    v-for="(value4, key4) in pathTagItem.start.properties " :key="key4"
+                                    @click="fileClick($event)">{{ key4 }}</el-tag>
+                                </div> -->
                               </div>
-                          </el-col> 
+                            </div>
+                          </el-col>
                         </el-row>
                       </el-popover>
                     </el-col>
                     <el-col style="margin: 0 0 0 10px">
                       <div style="font-weight: bold;margin-top: 10px">Relationship types</div>
-                      <el-tag effect="dark" round style="margin-top: 10px">*({{ relationList.length }})</el-tag
-                      >
-                      <el-popover
-                        placement="bottom"
-                        :width="260"
-                        trigger="click"
-                         v-for="(key, value) in item.relationList" :key="key"
-                      >
+                      <el-tag effect="dark" round style="margin-top: 10px">*({{ relationList.length }})</el-tag>
+                      <el-popover placement="bottom" :width="260" trigger="click"
+                        v-for="(key, value) in item.relationList" :key="key">
                         <template #reference>
-                          <el-tag
-                            @click="tagClick(value)"
-                            effect="dark"
-                            style="margin-left: 10px; cursor: pointer;margin-top: 10px;border: none" 
-                            :color="getLineColor(value)" 
-                            >{{ value }}({{ key }})</el-tag>
+                          <el-tag @click="tagClick(value)" effect="dark"
+                            style="margin-left: 10px; cursor: pointer;margin-top: 10px;border: none"
+                            :color="getLineColor(value) ">{{ value }}({{ key }})</el-tag>
                         </template>
                         <el-row>
                           <el-col>
-                            <el-tag
-                              effect="dark"
-                              :color="getLineColor(value)"
-                              style="width: 100%;border: none"
-                              >{{ value }}</el-tag>
+                            <el-tag effect="dark" :color="getLineColor(value)" style="width: 100%;border: none">{{ value
+                              }}</el-tag>
                           </el-col>
                           <el-col style="display: flex; margin-top: 12px">
-                            <ul
-                              class="color"
-                              style="
+                            <ul class="color" style="
                                 display: flex;
                                 align-items: center;
                                 justify-content: space-around;
                                 width: 100%;
                                 padding-left: 0;
-                              "
-                              @click="colorRelaClick($event)"
-                            >
+                              " @click="colorRelaClick($event)">
                               <div>color:</div>
-                              <li
-                                style="background-color: rgb(96, 74, 14);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(201, 144, 192);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(247, 151, 103);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(87, 199, 227);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(241, 102, 103);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(217, 200, 174);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(141, 204, 147);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(236, 181, 201);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(76, 142, 218);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(255, 196, 84);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(218, 113, 148);cursor: pointer;"
-                                class="li"
-                              ></li>
-                              <li
-                                style="background-color: rgb(86, 148, 128);cursor: pointer;"
-                                class="li"
-                              ></li>
+                              <li style="background-color: rgb(96, 74, 14);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(201, 144, 192);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(247, 151, 103);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(87, 199, 227);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(241, 102, 103);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(217, 200, 174);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(141, 204, 147);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(236, 181, 201);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(76, 142, 218);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(255, 196, 84);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(218, 113, 148);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(86, 148, 128);cursor: pointer;" class="li"></li>
                             </ul>
                           </el-col>
                           <el-col style="display: flex; margin-top: 12px">
-                            <ul
-                              class="size"
-                              style="
+                            <ul class="size" style="
                                 display: flex;
                                 align-items: center;
                                 width: 100%;
                                 padding-left: 0;
-                              "
-                              @click="sizeRelaClick($event)"
-                            >
+                              " @click="sizeRelaClick($event)">
                               <div>Line width:</div>
-                              <li
-                              class="sizeLi"
-                                style="
+                              <li class="sizeLi" style="
                                   background-color: rgb(170, 170, 170);
                                   width: 5px;
                                   height: 12px;
                                   cursor: pointer
-                                "
-                                data-size= '1'
-                              ></li>
-                              <li
-                              class="sizeLi"
-                                style="
+                                " data-size='1'></li>
+                              <li class="sizeLi" style="
                                   background-color: rgb(170, 170, 170);
                                   width: 8px;
                                   height: 12px;
                                   cursor: pointer
-                                "
-                                data-size= '3'
-                              ></li>
-                              <li
-                              class="sizeLi"
-                                style="
+                                " data-size='3'></li>
+                              <li class="sizeLi" style="
                                   background-color: rgb(170, 170, 170);
                                   width: 11px;
                                   height: 12px;
                                   cursor: pointer
-                                "
-                                data-size= '5'
-                              ></li>
-                              <li
-                              class="sizeLi"
-                                style="
+                                " data-size='5'></li>
+                              <li class="sizeLi" style="
                                   background-color: rgb(170, 170, 170);
                                   width: 14px;
                                   height: 12px;
                                   cursor: pointer
-                                "
-                                data-size= '7'
-                              ></li>
-                              <li
-                              class="sizeLi"
-                                style="
+                                " data-size='7'></li>
+                              <li class="sizeLi" style="
                                   background-color: rgb(170, 170, 170);
                                   width: 17px;
                                   height: 12px;
                                   cursor: pointer
-                                "
-                                data-size= '8'
-                              ></li>
-                              <li
-                              class="sizeLi"
-                                style="
+                                " data-size='8'></li>
+                              <li class="sizeLi" style="
                                   background-color: rgb(170, 170, 170);
                                   width: 20px;
                                   height: 12px;
                                   cursor: pointer
-                                "
-                                data-size= '10'
-                              ></li>
-                              <li
-                              class="sizeLi"
-                                style="
+                                " data-size='10'></li>
+                              <li class="sizeLi" style="
                                   background-color: rgb(170, 170, 170);
                                   width: 23px;
                                   height: 12px;
                                   cursor: pointer
-                                "
-                                data-size= '12'
-                              ></li>
+                                " data-size='12'></li>
                             </ul>
                           </el-col>
-                          <el-col
-                            style="
+                          <el-col style="
                               display: flex;
                               margin-top: 12px;
                               align-items: center;
                               flex-wrap: wrap;
-                            "
-                          >
+                            ">
                             <div>Caption:</div>
                             <div v-for="(pathTagItem,pathTagIndex) in item.records[0]._fields">
-                                <div v-if="pathTagItem.segments">
-                                  <el-tag type="info" size="small" style="margin-top: 10px;margin-left: 10px;cursor:pointer" @click="lineIdClick($event)"> {{ "<id>" }}</el-tag>
-                                  <el-tag type="info" size="small" style="margin-top: 10px;margin-left: 10px;cursor:pointer" @click="lineTypeClick($event)"> {{ "<type>" }}</el-tag>
-                                 <div v-for="items3 in pathTagItem.segments">
+                              <div v-if="pathTagItem.segments">
+                                <el-tag type="info" size="small"
+                                  style="margin-top: 10px;margin-left: 10px;cursor:pointer"
+                                  @click="lineIdClick($event)"> {{ "<id>" }}</el-tag>
+                                <el-tag type="info" size="small"
+                                  style="margin-top: 10px;margin-left: 10px;cursor:pointer"
+                                  @click="lineTypeClick($event)"> {{ "<type>" }}</el-tag>
+                                <div v-for="items3 in pathTagItem.segments">
                                   <div v-if="items3.relationship">
-                                    <el-tag v-for="(key5,value5) in items3.relationship.properties" :key="key5" type="info" size="small" style="margin-top: 10px;margin-left: 10px;cursor:pointer" @click="lineFileClick($event)">{{ value5 }}</el-tag>
+                                    <el-tag v-for="(key5, value5) in items3.relationship.properties" :key="key5"
+                                      type="info" size="small" style="margin-top: 10px;margin-left: 10px;cursor:pointer"
+                                      @click="lineFileClick($event)">{{ value5 }}</el-tag>
                                   </div>
-                                 </div>
                                 </div>
                               </div>
-                          </el-col> 
+                            </div>
+                          </el-col>
                         </el-row>
                       </el-popover>
                     </el-col>
                     <el-col style="margin: 10px 0 0 10px">
-                      Displaying {{ resultNodes.length }} nodes, {{relationList.length}}
+                      Displaying {{ resultNodes.length }} nodes, {{ relationList.length }}
                       relationships.
                     </el-col>
                   </el-row>
                 </div>
-                <RelationGraph
-                 :ref="dom=>{getRefDom(dom,item)}"
-                  :options="options"
-                  style="height: 336px"
-                  :style="{ height: isFullscreen ? '100vh' : '324px' }"
-                >
-                <template #node="{node}" >
-                  <div style="overflow: hidden; text-overflow: ellipsis; white-space:nowrap ; text-align: center;vertical-align:middle">{{ node.text }}</div>
-                </template>
-              </RelationGraph>
+                <RelationGraph  @node-click="NodeClick($event,index,item)" @canvas-click="itemClick(item)" 
+                :ref="dom => { getRefDom(dom,item)}" :options="options" style="height: 336px" 
+                  :style="{ height: isFullscreen ? '100vh' : '324px' }">
+                  <template #node="{ node }">
+                    <div
+                      style="overflow: hidden; text-overflow: ellipsis; white-space:nowrap ; text-align: center;vertical-align:middle">
+                      {{ node.text }}</div>
+                  </template>
+                </RelationGraph>
               </div>
             </el-tab-pane>
             <el-tab-pane label="table">
               <template #label>
                 <div style=" display: flex;align-items: center;flex-direction: column;">
-                  <img
-                    src="../../../public/table.png"
-                    alt=""
-                    style="width: 24px; height: 24px"
-                  />
+                  <img src="../../../public/table.png" alt="" style="width: 24px; height: 24px" />
                   <div style="font-weight: 600; color: #666666">table</div>
                 </div>
               </template>
               <!-- 详情 -->
-              <div
-                style="overflow: auto"
-                :style="{ height: isFullscreen ? '100vh' : '324px' }"
-              >
-                <a-row
-                  style="
+              <div style="overflow: auto" :style="{ height: isFullscreen ? '100vh' : '324px' }">
+                <a-row style="
                     font-size: 16px;
                     color: #666666;
                     height: 32px;
@@ -1049,33 +740,21 @@
                     position: sticky;
                     top: 0;
                     flex-wrap: nowrap;
-                  "
-                >
-                  <a-col
-                    v-for="(item2, index2) in item.records[0].keys"
-                    :key="index2"
-                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
-                  >
+                  ">
+                  <a-col v-for="(item2, index2) in item.records[0].keys" :key="index2"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'">
                     {{ item2 }}
                   </a-col>
                 </a-row>
-                <a-row
-                  v-for="(item3, index3) in item.records"
-                  :key="index3"
-                  style="
+                <a-row v-for="(item3, index3) in item.records" :key="index3" style="
                     flex-wrap: nowrap;
                     display: flex;
                     flex-direction: row;
                     align-items: flex-start;
-                  "
-                >
-                  <a-col
-                    v-for="(item4, index4) in item3._fields"
-                    :key="index4"
-                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
-                  >
-                    <pre
-                      style="
+                  ">
+                  <a-col v-for="(item4, index4) in item3._fields" :key="index4"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'">
+                    <pre style="
                         margin-bottom: 10px;
                         padding: 10px;
                         margin-top: 10px;
@@ -1083,10 +762,11 @@
                         background-color: rgb(239, 239, 239);
                         border-bottom: 1px solid #000000;
                         position: relative;
-                      "
-                    >
-                    <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;" @click="tableCopy(item4)"/>
-                  {{ JSON.stringify(item4 === null ? "null" : item4, null, 2)  }} </pre>
+                      ">
+              <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;"
+                @click="tableCopy(item4)" />
+              {{ JSON.stringify(item4 === null ? "null" : item4, null, 2) }}
+            </pre>
                   </a-col>
                 </a-row>
               </div>
@@ -1094,11 +774,7 @@
             <el-tab-pane label="text">
               <template #label>
                 <div style=" display: flex;align-items: center;flex-direction: column;">
-                  <img
-                    src="../../../public/text.png"
-                    alt=""
-                    style="width: 24px; height: 24px"
-                  />
+                  <img src="../../../public/text.png" alt="" style="width: 24px; height: 24px" />
                   <div style="font-weight: 600; color: #666666">text</div>
                 </div>
               </template>
@@ -1106,27 +782,20 @@
 
               <div style="padding: 10px; overflow-y: auto">
                 <el-row style="flex-wrap: nowrap; display: flex">
-                  <el-col
-                    style="border-right: none; border: 1px dashed #666666"
-                    class="td"
-                    v-for="(item5, index5) in item.records[0].keys"
-                    :key="index5"
-                    :span="item.records[0].keys.length != 1 ? 6 : 24"
-                  >
+                  <el-col style="border-right: none; border: 1px dashed #666666" class="td"
+                    v-for="(item5, index5) in item.records[0].keys" :key="index5"
+                    :span="item.records[0].keys.length != 1 ? 6 : 24">
                     {{ item5 }}
                   </el-col>
                 </el-row>
                 <el-row v-for="(item6, index6) in item.records" :key="index6">
-                  <el-col
-                    class="td"
-                    :span="item.records[0].keys.length != 1 ? 6 : 24"
-                    style="border-right: none; border: 1px dashed #666666"
-                    v-for="(item7, index7) in item6._fields"
-                    :key="index7"
-                  >
-                    
+                  <el-col class="td" :span="item.records[0].keys.length != 1 ? 6 : 24"
+                    style="border-right: none; border: 1px dashed #666666" v-for="(item7, index7) in item6._fields"
+                    :key="index7">
+
                     {{
-                      item7 === null ? "null" : item7.start && item7.start.properties ? [item7.start.properties,item7.end.properties] : item7.properties ? item7.properties : item7
+                    item7 === null ? "null" : item7.start && item7.start.properties ?
+                    [item7.start.properties,item7.end.properties] : item7.properties ? item7.properties : item7
                     }}
                   </el-col>
                 </el-row>
@@ -1135,11 +804,7 @@
             <el-tab-pane label="code">
               <template #label>
                 <div style=" display: flex;align-items: center;flex-direction: column;">
-                  <img
-                    src="../../../public/code.png"
-                    alt=""
-                    style="width: 24px; height: 24px"
-                  />
+                  <img src="../../../public/code.png" alt="" style="width: 24px; height: 24px" />
                   <div style="font-weight: 600; color: #666666">code</div>
                 </div>
               </template>
@@ -1170,11 +835,8 @@
                     <CaretRightOutlined v-if="!isunfold" @click="unfoldClick" />
                     <CaretDownOutlined v-else @click="unfoldClick" />
                   </el-col>
-                  <el-col
-                    :span="16"
-                    :style="{ height: isunfold ? '100%' : '30px' }"
-                    style="font-size: 16px; color: #666666; overflow: hidden"
-                  >
+                  <el-col :span="16" :style="{ height: isunfold ? '100%' : '30px' }"
+                    style="font-size: 16px; color: #666666; overflow: hidden">
                     {{ item.summary }}
                   </el-col>
                 </el-row>
@@ -1182,13 +844,10 @@
                   <el-col class="severTitle" :span="8">
                     Response
                     <CaretRightOutlined v-if="!isres" @click="resClick" />
-                    <CaretDownOutlined v-else @click="resClick"
-                  /></el-col>
-                  <el-col
-                    :span="16"
-                    :style="{ height: isres ? '100%' : '30px' }"
-                    style="font-size: 16px; color: #666666; overflow: hidden"
-                  >
+                    <CaretDownOutlined v-else @click="resClick" />
+                  </el-col>
+                  <el-col :span="16" :style="{ height: isres ? '100%' : '30px' }"
+                    style="font-size: 16px; color: #666666; overflow: hidden">
                     {{ item.records }}
                   </el-col>
                 </el-row>
@@ -1196,37 +855,22 @@
             </el-tab-pane>
           </el-tabs>
         </el-col>
-         <!-- relaion -->
-         <el-col v-if="item.flagshowR">
-          <RelationGraph
-          :ref="dom=>{getRefDom(dom,item)}"
-          :options="options"
-          style="display: none"
-          :style="{ height: isFullscreen ? '100vh' : '324px' }"
-        ></RelationGraph>
-          <el-tabs
-            :tab-position="tabPosition"
-            class="demo-tabs graphMenu"
-            :style="{ height: isFullscreen ? '100vh' : '324px' }"
-          >
+        <!-- relaion -->
+        <el-col v-if="item.flagshowR">
+          <RelationGraph :ref="dom => { getRefDom(dom, item)}" :options="options" style="display: none"
+            :style="{ height: isFullscreen ? '100vh' : '324px' }"></RelationGraph>
+          <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu"
+            :style="{ height: isFullscreen ? '100vh' : '324px' }">
             <el-tab-pane label="table">
               <template #label>
                 <div style=" display: flex;align-items: center;flex-direction: column;">
-                  <img
-                    src="../../../public/table.png"
-                    alt=""
-                    style="width: 24px; height: 24px"
-                  />
+                  <img src="../../../public/table.png" alt="" style="width: 24px; height: 24px" />
                   <div style="font-weight: 600; color: #666666">table</div>
                 </div>
               </template>
               <!-- 详情 -->
-              <div
-                style="overflow-y: auto"
-                :style="{ height: isFullscreen ? '100vh' : '324px' }"
-              >
-                <a-row
-                  style="
+              <div style="overflow-y: auto" :style="{ height: isFullscreen ? '100vh' : '324px' }">
+                <a-row style="
                     font-size: 16px;
                     color: #666666;
                     height: 32px;
@@ -1237,33 +881,21 @@
                     position: sticky;
                     top: 0;
                     flex-wrap: nowrap;
-                  "
-                >
-                  <a-col
-                    v-for="(item2, index2) in item.records[0].keys"
-                    :key="index2"
-                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
-                  >
+                  ">
+                  <a-col v-for="(item2, index2) in item.records[0].keys" :key="index2"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'">
                     {{ item2 }}
                   </a-col>
                 </a-row>
-                <a-row
-                  v-for="(item3, index3) in item.records"
-                  :key="index3"
-                  style="
+                <a-row v-for="(item3, index3) in item.records" :key="index3" style="
                     flex-wrap: nowrap;
                     display: flex;
                     flex-direction: row;
                     align-items: flex-start;
-                  "
-                >
-                  <a-col
-                    v-for="(item4, index4) in item3._fields"
-                    :key="index4"
-                    :span="item.records[0].keys.length != 1 ? '6' : '24'"
-                  >
-                    <pre
-                      style="
+                  ">
+                  <a-col v-for="(item4, index4) in item3._fields" :key="index4"
+                    :span="item.records[0].keys.length != 1 ? '6' : '24'">
+                    <pre style="
                         margin-bottom: 10px;
                         padding: 10px;
                         margin-top: 10px;
@@ -1271,12 +903,13 @@
                         background-color: rgb(239, 239, 239);
                         border-bottom: 1px solid #000000;
                         position: relative;
-                      "
-                    >
-                    <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;" @click="tableCopy(item4)"/>
-                  {{
-                        JSON.stringify(item4 === null ? "null" : item4, null, 2)
-                      }}</pre>
+                      ">
+              <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;"
+                @click="tableCopy(item4)" />
+              {{
+                JSON.stringify(item4 === null ? "null" : item4, null, 2)
+              }}
+            </pre>
                   </a-col>
                 </a-row>
               </div>
@@ -1284,38 +917,23 @@
             <el-tab-pane label="text">
               <template #label>
                 <div style=" display: flex;align-items: center;flex-direction: column;">
-                  <img
-                    src="../../../public/text.png"
-                    alt=""
-                    style="width: 24px; height: 24px"
-                  />
+                  <img src="../../../public/text.png" alt="" style="width: 24px; height: 24px" />
                   <div style="font-weight: 600; color: #666666">text</div>
                 </div>
               </template>
               <!-- 详情 -->
-              <div
-                style="padding: 10px; overflow-y: auto"
-                :style="{ height: isFullscreen ? '100vh' : '324px' }"
-              >
+              <div style="padding: 10px; overflow-y: auto" :style="{ height: isFullscreen ? '100vh' : '324px' }">
                 <el-row style="flex-wrap: nowrap; display: flex">
-                  <el-col
-                    style="border-right: none; border: 1px dashed #666666"
-                    class="td"
-                    v-for="(item5, index5) in item.records[0].keys"
-                    :key="index5"
-                    :span="item.records[0].keys.length != 1 ? 6 : 24"
-                  >
+                  <el-col style="border-right: none; border: 1px dashed #666666" class="td"
+                    v-for="(item5, index5) in item.records[0].keys" :key="index5"
+                    :span="item.records[0].keys.length != 1 ? 6 : 24">
                     {{ item5 }}
                   </el-col>
                 </el-row>
                 <el-row v-for="(item6, index6) in item.records" :key="index6">
-                  <el-col
-                    class="td"
-                    :span="item.records[0].keys.length != 1 ? 6 : 24"
-                    style="border-right: none; border: 1px dashed #666666"
-                    v-for="(item7, index7) in item6._fields"
-                    :key="index7"
-                  >
+                  <el-col class="td" :span="item.records[0].keys.length != 1 ? 6 : 24"
+                    style="border-right: none; border: 1px dashed #666666" v-for="(item7, index7) in item6._fields"
+                    :key="index7">
                     {{ item7 === null ? "null" : item7.properties }}
                   </el-col>
                 </el-row>
@@ -1324,11 +942,7 @@
             <el-tab-pane label="code">
               <template #label>
                 <div style=" display: flex;align-items: center;flex-direction: column;">
-                  <img
-                    src="../../../public/code.png"
-                    alt=""
-                    style="width: 24px; height: 24px"
-                  />
+                  <img src="../../../public/code.png" alt="" style="width: 24px; height: 24px" />
                   <div style="font-weight: 600; color: #666666">code</div>
                 </div>
               </template>
@@ -1358,11 +972,8 @@
                     <CaretRightOutlined v-if="!isunfold" @click="unfoldClick" />
                     <CaretDownOutlined v-else @click="unfoldClick" />
                   </el-col>
-                  <el-col
-                    :span="16"
-                    :style="{ height: isunfold ? '100%' : '30px' }"
-                    style="font-size: 16px; color: #666666; overflow: hidden"
-                  >
+                  <el-col :span="16" :style="{ height: isunfold ? '100%' : '30px' }"
+                    style="font-size: 16px; color: #666666; overflow: hidden">
                     {{ item.summary }}
                   </el-col>
                 </el-row>
@@ -1370,13 +981,10 @@
                   <el-col class="severTitle" :span="8">
                     Response
                     <CaretRightOutlined v-if="!isres" @click="resClick" />
-                    <CaretDownOutlined v-else @click="resClick"
-                  /></el-col>
-                  <el-col
-                    :span="16"
-                    :style="{ height: isres ? '100%' : '30px' }"
-                    style="font-size: 16px; color: #666666; overflow: hidden"
-                  >
+                    <CaretDownOutlined v-else @click="resClick" />
+                  </el-col>
+                  <el-col :span="16" :style="{ height: isres ? '100%' : '30px' }"
+                    style="font-size: 16px; color: #666666; overflow: hidden">
                     {{ item.records }}
                   </el-col>
                 </el-row>
@@ -1391,57 +999,33 @@
         </el-col>
         <!-- keys -->
         <el-col v-if="item.flagshowE">
-          <RelationGraph
-            :ref="dom=>{getRefDom(dom,item)}"
-            :options="options"
-            style="display: none"
-            :style="{ height: isFullscreen ? '100vh' : '324px' }"
-          ></RelationGraph>
-          <div v-if="item.records.length === 0"
-          :style="{ height: isFullscreen ? '100vh' : '324px' }"
-          style="padding: 18px;"
-          >
+          <RelationGraph :ref="dom => { getRefDom(dom, item)}" :options="options" style="display: none"
+            :style="{ height: isFullscreen ? '100vh' : '324px' }"></RelationGraph>
+          <div v-if="item.records.length === 0" :style="{ height: isFullscreen ? '100vh' : '324px' }"
+            style="padding: 18px;">
             (no changes, no records)
           </div>
-          <el-tabs
-            :tab-position="tabPosition"
-            class="demo-tabs graphMenu"
-            :style="{ height: isFullscreen ? '100vh' : '324px' }"
-            v-if="item.records.length !== 0"
-          >
+          <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu"
+            :style="{ height: isFullscreen ? '100vh' : '324px' }" v-if="item.records.length !== 0">
             <el-tab-pane label="table">
               <template #label>
                 <div style=" display: flex;align-items: center;flex-direction: column;">
-                  <img
-                    src="../../../public/table.png"
-                    alt=""
-                    style="width: 24px; height: 24px"
-                  />
+                  <img src="../../../public/table.png" alt="" style="width: 24px; height: 24px" />
                   <div style="font-weight: 600; color: #666666">table</div>
                 </div>
               </template>
               <!-- 详情 -->
-              <div
-                style="overflow-x: scroll; position: absolute; width: 100%;"
-                :style="{ height: isFullscreen ? '100vh' : '324px' }"
-              >
-                <a-row
-                  v-for="(item3, index3) in item.records"
-                  :key="index3"
-                  style="
+              <div style="overflow-x: scroll; position: absolute; width: 100%;"
+                :style="{ height: isFullscreen ? '100vh' : '324px' }">
+                <a-row v-for="(item3, index3) in item.records" :key="index3" style="
                     flex-wrap: nowrap;
                     display: flex;
                     flex-direction: row;
                     align-items: flex-start;
-                  "
-                >
-                  <a-col
-                    v-for="(item4, index4) in item3._fields"
-                    :key="index4"
-                  >
-                    {{item3.keys[index4]}}
-                    <pre
-                      style="
+                  ">
+                  <a-col v-for="(item4, index4) in item3._fields" :key="index4">
+                    {{ item3.keys[index4]}}
+                    <pre style="
                         margin-bottom: 10px;
                         padding: 10px;
                         margin-top: 10px;
@@ -1449,11 +1033,11 @@
                         background-color: rgb(239, 239, 239);
                         border-bottom: 1px solid #000000;
                         position: relative;
-                      "
-                    >
-                    <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;" @click="tableCopy(item4)"/>
-                    {{JSON.stringify(item4 === null ? "null" : item4 , null, 2)}}
-                  </pre>
+                      ">
+              <CopyDocument style="width: 14px;height: 14px; position: absolute;right: 16px; cursor: pointer;"
+                @click="tableCopy(item4)" />
+              {{ JSON.stringify(item4 === null ? "null" : item4 , null, 2)}}
+            </pre>
                   </a-col>
                 </a-row>
               </div>
@@ -1461,38 +1045,23 @@
             <el-tab-pane label="text">
               <template #label>
                 <div style=" display: flex;align-items: center;flex-direction: column;">
-                  <img
-                    src="../../../public/text.png"
-                    alt=""
-                    style="width: 24px; height: 24px"
-                  />
+                  <img src="../../../public/text.png" alt="" style="width: 24px; height: 24px" />
                   <div style="font-weight: 600; color: #666666">text</div>
                 </div>
               </template>
               <!-- 详情 -->
-              <div
-                style="padding: 10px; overflow-y: auto"
-                :style="{ height: isFullscreen ? '100vh' : '324px' }"
-              >
+              <div style="padding: 10px; overflow-y: auto" :style="{ height: isFullscreen ? '100vh' : '324px' }">
                 <el-row style="flex-wrap: nowrap; display: flex">
-                  <el-col
-                    style="border-right: none; border: 1px dashed #666666"
-                    class="td"
-                    v-for="(item5, index5) in item.records[0].keys"
-                    :key="index5"
-                    :span="item.records[0].keys.length != 1 ? 6 : 24"
-                  >
+                  <el-col style="border-right: none; border: 1px dashed #666666" class="td"
+                    v-for="(item5, index5) in item.records[0].keys" :key="index5"
+                    :span="item.records[0].keys.length != 1 ? 6 : 24">
                     {{ item5 }}
                   </el-col>
                 </el-row>
                 <el-row v-for="(item6, index6) in item.records" :key="index6">
-                  <el-col
-                    class="td"
-                    :span="item.records[0].keys.length != 1 ? 6 : 24"
-                    style="border-right: none; border: 1px dashed #666666"
-                    v-for="(item7, index7) in item6._fields"
-                    :key="index7"
-                  >
+                  <el-col class="td" :span="item.records[0].keys.length != 1 ? 6 : 24"
+                    style="border-right: none; border: 1px dashed #666666" v-for="(item7, index7) in item6._fields"
+                    :key="index7">
                     {{ item7 === null ? "null" : item7 }}
                   </el-col>
                 </el-row>
@@ -1501,11 +1070,7 @@
             <el-tab-pane label="code">
               <template #label>
                 <div style=" display: flex;align-items: center;flex-direction: column;">
-                  <img
-                    src="../../../public/code.png"
-                    alt=""
-                    style="width: 24px; height: 24px"
-                  />
+                  <img src="../../../public/code.png" alt="" style="width: 24px; height: 24px" />
                   <div style="font-weight: 600; color: #666666">code</div>
                 </div>
               </template>
@@ -1535,11 +1100,8 @@
                     <CaretRightOutlined v-if="!isunfold" @click="unfoldClick" />
                     <CaretDownOutlined v-else @click="unfoldClick" />
                   </el-col>
-                  <el-col
-                    :span="16"
-                    :style="{ height: isunfold ? '100%' : '30px' }"
-                    style="font-size: 16px; color: #666666; overflow: hidden"
-                  >
+                  <el-col :span="16" :style="{ height: isunfold ? '100%' : '30px' }"
+                    style="font-size: 16px; color: #666666; overflow: hidden">
                     {{ item.summary }}
                   </el-col>
                 </el-row>
@@ -1547,13 +1109,10 @@
                   <el-col class="severTitle" :span="8">
                     Response
                     <CaretRightOutlined v-if="!isres" @click="resClick" />
-                    <CaretDownOutlined v-else @click="resClick"
-                  /></el-col>
-                  <el-col
-                    :span="16"
-                    :style="{ height: isres ? '100%' : '30px' }"
-                    style="font-size: 16px; color: #666666; overflow: hidden"
-                  >
+                    <CaretDownOutlined v-else @click="resClick" />
+                  </el-col>
+                  <el-col :span="16" :style="{ height: isres ? '100%' : '30px' }"
+                    style="font-size: 16px; color: #666666; overflow: hidden">
                     {{ item.records }}
                   </el-col>
                 </el-row>
@@ -1567,17 +1126,14 @@
           ></RelationGraph> -->
         </el-col>
       </el-col>
-      <div
-        style="
+      <div style="
           width: 100%;
           height: 24px;
           border-top: 1px #666666 solid;
           background-color: #ffffff;
           line-height: 24px;
           padding-left: 16px;
-        "
-        v-if="!item.flagshowER"
-      >
+        " v-if="!item.flagshowER">
         Transmit {{ item.records.length }} records within {{ item.resTime }}.
       </div>
     </el-row>
@@ -1605,11 +1161,14 @@ import mitts from "../../utils/bus.js";
 //组件
 import search2 from "../rightComponents/blockcomponents/search2.vue";
 import mitt from "mitt";
+import { json2Node } from "node_modules/relation-graph/types/types/relation-graph-models/models/RGNode.js";
 // import { useStore } from "vuex";
 // const store = useStore();
 //变量
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
-const options = {};
+const options = {
+  disableNodeClickEffect: false,
+};
 // const graphRef = ref<RelationGraph>();
 const isFullscreen = ref(false);
 const isunfold = ref(false);
@@ -1620,9 +1179,66 @@ const labelList = ref([]);
 const resultRelation = ref([]);
 const relationList = ref([]);
 const tagName = ref("");
+const Properties = ref({ propertiesFlag: false });
 // const error = ref("");
 const getRefDom = (val: any, item: any) => {
   item.graphRef = val;
+};
+//单个node信息
+const NodeClick = (event, index, item) => {
+  item.overview = true;
+  list.value[index].graphData.nodes.forEach((item) => {
+    if (item.id === event.id) {
+      Properties.value.propertiesFlag = true;
+      Properties.value.name = "Node properties";
+      Properties.value.label = item.label;
+      Properties.value.id = item.id;
+      Properties.value.properties = item.properties;
+    }
+  });
+};
+//取消选中节点
+const itemClick = (item) => {
+  console.log(item, "1665");
+  const graphInstance = item.graphRef?.getInstance();
+  if (graphInstance) {
+    graphInstance.clearChecked();
+  }
+  Properties.value.propertiesFlag = false;
+};
+
+//详情复制
+const copyClick = (key, value) => {
+  const obj = {};
+  obj[key] = value;
+  // console.log(obj);
+  let result = "";
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      result += `${key}:${obj[key]}\n`;
+    }
+  }
+  navigator.clipboard.writeText(result);
+  ElMessage({
+    message: "内容已复制到剪贴板",
+    type: "success",
+    plain: true,
+  });
+};
+//详情全局复制
+const copyClick2 = (propertiesData) => {
+  let result = "";
+  for (const key in propertiesData) {
+    if (propertiesData.hasOwnProperty(key)) {
+      result += `${key}:${propertiesData[key]}\n`;
+    }
+  }
+  navigator.clipboard.writeText(result);
+  ElMessage({
+    message: "内容已复制到剪贴板",
+    type: "success",
+    plain: true,
+  });
 };
 //控制list条数
 if (
@@ -1651,12 +1267,6 @@ const tagClick = (name) => {
 };
 const OverviewClick = (record) => {
   record.overview = !record.overview;
-  // record = !record
-  // list.value.forEach(item=>{
-  //   if(item.id === id){
-  //     item.overview = !item.overview
-  //   }
-  // })
 };
 //折叠
 const unfoldClick = () => {
@@ -1665,18 +1275,18 @@ const unfoldClick = () => {
 const resClick = () => {
   isres.value = !isres.value;
 };
-// 置顶
-const topClick = (index: Number, item: any) => {
-  list.value.splice(index, 1);
-  mitts.emit("topData", item);
-};
-//取消置顶
-mitts.on("untopData", (item: any) => {
-  list.value.push(item);
-  nextTick(() => {
-    item.graphRef.value.setJsonData(item.graphData);
-  });
-});
+// // 置顶
+// const topClick = (index: Number, item: any) => {
+//   list.value.splice(index, 1);
+//   mitts.emit("topData", item);
+// };
+// //取消置顶
+// mitts.on("untopData", (item: any) => {
+//   list.value.push(item);
+//   nextTick(() => {
+//     item.graphRef.value.setJsonData(item.graphData);
+//   });
+// });
 //放大
 const toggleFullScreen = () => {
   isFullscreen.value = !isFullscreen.value;
@@ -1772,9 +1382,9 @@ mitts.on("revamp", (data) => {
                   } else {
                     textName =
                       item._fields[i].segments[k].start.properties[
-                        window.localStorage.getItem(
-                          item._fields[i].segments[k].start.labels[t]
-                        )
+                      window.localStorage.getItem(
+                        item._fields[i].segments[k].start.labels[t]
+                      )
                       ];
                   }
                 } else {
@@ -1798,9 +1408,9 @@ mitts.on("revamp", (data) => {
                   } else {
                     textTitle =
                       item._fields[i].segments[k].end.properties[
-                        window.localStorage.getItem(
-                          item._fields[i].segments[k].end.labels[l]
-                        )
+                      window.localStorage.getItem(
+                        item._fields[i].segments[k].end.labels[l]
+                      )
                       ];
                   }
                 } else {
@@ -1829,9 +1439,9 @@ mitts.on("revamp", (data) => {
                   } else {
                     lineText =
                       item._fields[i].segments[k].relation.properties[
-                        window.localStorage.getItem(
-                          item._fields[i].segments[k].relation.types
-                        )
+                      window.localStorage.getItem(
+                        item._fields[i].segments[k].relation.types
+                      )
                       ];
                   }
                 } else {
@@ -1844,8 +1454,8 @@ mitts.on("revamp", (data) => {
                     item._fields[i].segments[k].start.labels[t] + "color"
                   )
                     ? window.localStorage.getItem(
-                        item._fields[i].segments[k].start.labels[t] + "color"
-                      )
+                      item._fields[i].segments[k].start.labels[t] + "color"
+                    )
                     : "#21a1ff",
                   label: item._fields[i].segments[k].start.labels,
                   properties: item._fields[i].segments[k].start.properties,
@@ -1853,15 +1463,15 @@ mitts.on("revamp", (data) => {
                     item._fields[i].segments[k].start.labels[t] + "size"
                   )
                     ? window.localStorage.getItem(
-                        item._fields[i].segments[k].start.labels[t] + "size"
-                      )
+                      item._fields[i].segments[k].start.labels[t] + "size"
+                    )
                     : 80,
                   height: window.localStorage.getItem(
                     item._fields[i].segments[k].start.labels[t] + "size"
                   )
                     ? window.localStorage.getItem(
-                        item._fields[i].segments[k].start.labels[t] + "size"
-                      )
+                      item._fields[i].segments[k].start.labels[t] + "size"
+                    )
                     : 80,
                 });
                 result.graphData.nodes.push({
@@ -1871,8 +1481,8 @@ mitts.on("revamp", (data) => {
                     item._fields[i].segments[k].end.labels[l] + "color"
                   )
                     ? window.localStorage.getItem(
-                        item._fields[i].segments[k].end.labels[l] + "color"
-                      )
+                      item._fields[i].segments[k].end.labels[l] + "color"
+                    )
                     : "#21a1ff",
                   label: item._fields[i].segments[k].end.labels,
                   properties: item._fields[i].segments[k].end.properties,
@@ -1880,15 +1490,15 @@ mitts.on("revamp", (data) => {
                     item._fields[i].segments[k].end.labels[l] + "size"
                   )
                     ? window.localStorage.getItem(
-                        item._fields[i].segments[k].end.labels[l] + "size"
-                      )
+                      item._fields[i].segments[k].end.labels[l] + "size"
+                    )
                     : 80,
                   height: window.localStorage.getItem(
                     item._fields[i].segments[k].end.labels[l] + "size"
                   )
                     ? window.localStorage.getItem(
-                        item._fields[i].segments[k].end.labels[l] + "size"
-                      )
+                      item._fields[i].segments[k].end.labels[l] + "size"
+                    )
                     : 80,
                 });
                 result.graphData.lines.push({
@@ -1902,15 +1512,15 @@ mitts.on("revamp", (data) => {
                     item._fields[i].segments[k].relation.types + "linesize"
                   )
                     ? window.localStorage.getItem(
-                        item._fields[i].segments[k].relation.types + "linesize"
-                      )
+                      item._fields[i].segments[k].relation.types + "linesize"
+                    )
                     : 1,
                   color: window.localStorage.getItem(
                     item._fields[i].segments[k].relation.types + "linecolor"
                   )
                     ? window.localStorage.getItem(
-                        item._fields[i].segments[k].relation.types + "linecolor"
-                      )
+                      item._fields[i].segments[k].relation.types + "linecolor"
+                    )
                     : "#666666",
                 });
               }
@@ -1968,7 +1578,7 @@ mitts.on("revamp", (data) => {
             } else {
               textName =
                 item._fields[i].properties[
-                  window.localStorage.getItem(item._fields[i].labels[0])
+                window.localStorage.getItem(item._fields[i].labels[0])
                 ];
             }
           } else {
@@ -2096,7 +1706,6 @@ const tableCopy = (item4: any) => {
 const removeModule = (index: Number) => {
   list.value.splice(index, 1);
 };
-
 //overview修改颜色
 const colorClick = (e) => {
   if (e.target.className === "li") {
@@ -2368,9 +1977,9 @@ mitts.on("params", (result: any) => {
                   } else {
                     textName =
                       item._fields[i].segments[k].start.properties[
-                        window.localStorage.getItem(
-                          item._fields[i].segments[k].start.labels[t]
-                        )
+                      window.localStorage.getItem(
+                        item._fields[i].segments[k].start.labels[t]
+                      )
                       ];
                   }
                 } else {
@@ -2394,9 +2003,9 @@ mitts.on("params", (result: any) => {
                   } else {
                     textTitle =
                       item._fields[i].segments[k].end.properties[
-                        window.localStorage.getItem(
-                          item._fields[i].segments[k].end.labels[l]
-                        )
+                      window.localStorage.getItem(
+                        item._fields[i].segments[k].end.labels[l]
+                      )
                       ];
                   }
                 } else {
@@ -2425,9 +2034,9 @@ mitts.on("params", (result: any) => {
                   } else {
                     lineText =
                       item._fields[i].segments[k].relation.properties[
-                        window.localStorage.getItem(
-                          item._fields[i].segments[k].relation.types
-                        )
+                      window.localStorage.getItem(
+                        item._fields[i].segments[k].relation.types
+                      )
                       ];
                   }
                 } else {
@@ -2440,8 +2049,8 @@ mitts.on("params", (result: any) => {
                     item._fields[i].segments[k].start.labels[t] + "color"
                   )
                     ? window.localStorage.getItem(
-                        item._fields[i].segments[k].start.labels[t] + "color"
-                      )
+                      item._fields[i].segments[k].start.labels[t] + "color"
+                    )
                     : "#21a1ff",
                   label: item._fields[i].segments[k].start.labels,
                   properties: item._fields[i].segments[k].start.properties,
@@ -2449,15 +2058,15 @@ mitts.on("params", (result: any) => {
                     item._fields[i].segments[k].start.labels[t] + "size"
                   )
                     ? window.localStorage.getItem(
-                        item._fields[i].segments[k].start.labels[t] + "size"
-                      )
+                      item._fields[i].segments[k].start.labels[t] + "size"
+                    )
                     : 80,
                   height: window.localStorage.getItem(
                     item._fields[i].segments[k].start.labels[t] + "size"
                   )
                     ? window.localStorage.getItem(
-                        item._fields[i].segments[k].start.labels[t] + "size"
-                      )
+                      item._fields[i].segments[k].start.labels[t] + "size"
+                    )
                     : 80,
                 });
                 result.graphData.nodes.push({
@@ -2467,8 +2076,8 @@ mitts.on("params", (result: any) => {
                     item._fields[i].segments[k].end.labels[l] + "color"
                   )
                     ? window.localStorage.getItem(
-                        item._fields[i].segments[k].end.labels[l] + "color"
-                      )
+                      item._fields[i].segments[k].end.labels[l] + "color"
+                    )
                     : "#21a1ff",
                   label: item._fields[i].segments[k].end.labels,
                   properties: item._fields[i].segments[k].end.properties,
@@ -2476,15 +2085,15 @@ mitts.on("params", (result: any) => {
                     item._fields[i].segments[k].end.labels[l] + "size"
                   )
                     ? window.localStorage.getItem(
-                        item._fields[i].segments[k].end.labels[l] + "size"
-                      )
+                      item._fields[i].segments[k].end.labels[l] + "size"
+                    )
                     : 80,
                   height: window.localStorage.getItem(
                     item._fields[i].segments[k].end.labels[l] + "size"
                   )
                     ? window.localStorage.getItem(
-                        item._fields[i].segments[k].end.labels[l] + "size"
-                      )
+                      item._fields[i].segments[k].end.labels[l] + "size"
+                    )
                     : 80,
                 });
                 result.graphData.lines.push({
@@ -2498,15 +2107,15 @@ mitts.on("params", (result: any) => {
                     item._fields[i].segments[k].relation.types + "linesize"
                   )
                     ? window.localStorage.getItem(
-                        item._fields[i].segments[k].relation.types + "linesize"
-                      )
+                      item._fields[i].segments[k].relation.types + "linesize"
+                    )
                     : 1,
                   color: window.localStorage.getItem(
                     item._fields[i].segments[k].relation.types + "linecolor"
                   )
                     ? window.localStorage.getItem(
-                        item._fields[i].segments[k].relation.types + "linecolor"
-                      )
+                      item._fields[i].segments[k].relation.types + "linecolor"
+                    )
                     : "#666666",
                 });
               }
@@ -2565,7 +2174,7 @@ mitts.on("params", (result: any) => {
             } else {
               textName =
                 item._fields[i].properties[
-                  window.localStorage.getItem(item._fields[i].labels[0])
+                window.localStorage.getItem(item._fields[i].labels[0])
                 ];
             }
           } else {
@@ -2673,12 +2282,10 @@ mitts.on("params", (result: any) => {
   if (result.graphData.nodes.length !== 0) {
     nextTick(() => {
       // console.log(result.graphRef.value);
-
-      // graphRef.value[list.value.length - 1].setJsonData(result.graphData);
       result.graphRef.value.setJsonData(result.graphData);
     });
   }
-
+  console.log(list.value, "2688");
   nextTick(() => {
     // console.log(list.value, "nextTick-2290");
   });
@@ -2686,25 +2293,29 @@ mitts.on("params", (result: any) => {
 </script>
 
 <style scoped>
- ::v-deep.relation-graph .rel-node-shape-0 {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+::v-deep.relation-graph .rel-node-shape-0 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .size li {
   background-color: rgb(170, 170, 170);
   list-style-type: none;
   margin-left: 8px;
 }
+
 .color li {
   width: 12px;
   height: 12px;
   border-radius: 50%;
   list-style-type: none;
 }
+
 ::v-deep.relation-graph .rel-toolbar-v-center {
   top: calc((100% - 240px) / 2) !important;
 }
+
 .text {
   font-size: 16px;
   color: #666666;
@@ -2712,14 +2323,17 @@ mitts.on("params", (result: any) => {
   display: flex;
   justify-content: center;
 }
+
 .topIcon {
   padding: 0 16px;
 }
+
 .search {
   width: 100%;
   background-color: #ffffff;
   padding: 4px 16px 10px;
 }
+
 .searchBlock {
   display: flex;
   align-items: center;
@@ -2731,32 +2345,39 @@ mitts.on("params", (result: any) => {
 }
 </style>
 <style>
-.graphMenu .el-tabs__nav{
+.graphMenu .el-tabs__nav {
   display: flex;
   align-items: center;
 }
+
 .graphMenu .el-tabs__item {
   height: 72px;
 }
+
 .graphMenu .el-tabs__item.is-active {
   color: #6a8322 !important;
 }
+
 .graphMenu .el-tabs__active-bar {
   --el-tabs-header-height: 72px;
   background-color: #6a8322;
 }
+
 .graphMenu .el-tabs__content {
   height: 100%;
 }
+
 .graphMenu .el-tab-pane {
   height: 100%;
 }
+
 .td {
   border-bottom: 1px dashed black;
   font-size: 14px;
   color: #666666;
   padding: 10px;
 }
+
 .severTitle {
   font-size: 16px;
   color: #666666;

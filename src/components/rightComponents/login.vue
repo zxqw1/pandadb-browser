@@ -50,7 +50,7 @@
           <el-input
             v-model="input3"
             style="max-width: 600px"
-            placeholder="0.0.0.0:7600/query"
+            placeholder="0.0.0.0:7680/query"
             class="input-with-select"
           >
             <template #prepend>

@@ -15,7 +15,7 @@
         ref="scrollContainer"
       >
         <!-- <login2/> -->
-        <blockTop />
+        <!-- <blockTop /> -->
         <block />
         <login></login>
 
@@ -28,7 +28,7 @@
 import search from "./rightComponents/search.vue";
 import login from "./rightComponents/login.vue";
 import block from "./rightComponents/block.vue";
-import blockTop from "./rightComponents/blockTop.vue";
+// import blockTop from "./rightComponents/blockTop.vue";
 // import mitts from "../utils/bus.js";
 import { ref, watch, nextTick } from "vue";
 import { useStore } from "vuex";
