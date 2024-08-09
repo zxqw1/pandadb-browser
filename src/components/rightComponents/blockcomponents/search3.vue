@@ -138,6 +138,15 @@ const opt = ref({
   ],
 });
 let abortController: AbortController | null = null;
+let url:string|null = window.localStorage.getItem("address")//地址
+const closeurl = url.replace('/query', '/close')
+//唯一id
+const generateRandomId = () => {
+  const timestamp = new Date().getTime(); // 获取当前时间戳
+  const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
+  return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
+};
+const queryId = generateRandomId()
 //获取数据
 const funClick = async () => {
   await nextTick();
@@ -145,6 +154,10 @@ const funClick = async () => {
     // console.log(111);
   } else {
     loadingFlag.value = !loadingFlag.value;
+    const queryobj = {
+        'query' : contentValue.value,
+        'queryId':queryId
+      }
     const startTime = performance.now();
     // 创建新的 AbortController 实例
     abortController = new AbortController();
@@ -153,7 +166,7 @@ const funClick = async () => {
       headers: {
         "Content-Type": "text/plain",
       },
-      body: contentValue.value,
+      body: JSON.stringify(queryobj),
       signal: abortController.signal,
     })
       .then((response) => response.text())
@@ -212,6 +225,17 @@ const funClick = async () => {
         console.error("Error:", error);
       });
   }
+};
+//停止
+const breakClick = () => {
+  fetch(closeurl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain',
+    },
+    body: `${queryId}`
+  })
+  loadingFlag.value = !loadingFlag.value;
 };
 //下载图片
 const imgClick = () => {

@@ -104,7 +104,7 @@
                       <el-row>
                         <div style="font-size: 16px; font-weight: 500;">{{ item.Properties.name }}</div>
                         <CopyDocument style="width: 14px; margin-left: 10px;"
-                          @click="copyClick2(item.Properties.id,item.Properties.properties)" />
+                          @click="copyClick2(item.Properties.id, item.Properties.properties)" />
                       </el-row>
                     </el-col>
                     <el-col
@@ -115,10 +115,10 @@
                     <el-col>
                       <el-row style="border-bottom: 1px #efefef solid;margin-top:10px;display: flex">
                         <el-col :span="10" style="padding-left: 10px ;font-weight: 500 ">{{ "<id>" }}</el-col>
-                          <el-col :span="11"
+                        <el-col :span="11"
                           style="height: 30px;text-overflow: ellipsis;white-space: nowrap;overflow: hidden; "
                           :title="item.Properties.id">{{ item.Properties.id }}</el-col>
-                          <el-col :span="3" style="padding-left: 10px">
+                        <el-col :span="3" style="padding-left: 10px">
                           <CopyDocument style="width: 14px;" @click="copyClick('id', item.Properties.id)" />
                         </el-col>
                       </el-row>
@@ -259,12 +259,64 @@
                     </el-col>
                   </el-row>
                 </div>
-                <RelationGraph @node-click="NodeClick($event, item)" @canvas-click="itemClick(item)" :ref="dom => { getRefDom(dom, item) }" :options="options"
-                  style="height: 336px" :style="{ height: isFullscreen ? '100vh' : '324px' }">
+                <RelationGraph @node-click="NodeClick($event, item)" @canvas-click="itemClick(item)"
+                  :ref="dom => { getRefDom(dom, item) }" :options="options" style="height: 336px"
+                  :style="{ height: isFullscreen ? '100vh' : '324px' }">
                   <template #node="{ node }">
                     <div
                       style="overflow: hidden;white-space:nowrap;text-overflow: ellipsis;text-align: center;vertical-align:middle">
                       {{ node.text }}</div>
+                  </template>
+                  <!-- nodemenu -->
+                  <template #graph-plug>
+                    <div v-show="item.showNodeMenu" class="c-surround-menu-panel"
+                      style="display: flex;align-items: center;justify-content: center;place-items: center;" :style="{
+                        width: nodeMenuPanel.width + 'px',
+                        height: nodeMenuPanel.height + 'px',
+                        left: nodeMenuPanel.x + 'px',
+                        top: nodeMenuPanel.y + 'px'
+                      }">
+                      <svg width="100%" height="100%" viewBox="0 0 400 400">
+                        <g>
+                          <g fill="#000000">
+                            <path class="c-svg-button"
+                              d="m9.99469,187.08997c0,-40.82082 27.52652,-97.86001 62.20722,-128.85359c32.50037,-29.06937 66.90853,-43.9133 114.603,-49.41106l7.15417,-0.82466l0,61.84972l0,61.91844l-4.49691,0c-23.5747,0 -58.05098,34.01735 -58.18725,57.3828l0,4.46692l-60.64011,0l-60.64011,0l0,-6.52858z"
+                              @click="clickNodeMenu('lock', $event)" />
+                            <path class="c-svg-button"
+                              d="m269.58887,188.4644c-4.36064,-26.73282 -34.27188,-56.69558 -56.68828,-56.69558l-3.95183,0l0,-61.781l0,-61.71228l7.83552,0.68722c91.98219,8.52152 166.11303,82.60374 174.22109,174.00389l0.95389,10.6519l-60.77638,0l-60.77638,0l-0.81762,-5.15414z"
+                              @click="clickNodeMenu('nodehide', $event, item)" />
+                            <path class="c-svg-button"
+                              d="m176.92533,393.32443c-89.32493,-11.68273 -166.93065,-94.35519 -166.93065,-177.92103l0,-6.66603l60.43571,0l60.50384,0l0.68135,5.97881c2.52099,23.09056 29.02549,50.99166 52.12324,55.04625c11.3104,1.99294 10.22024,-4.87926 10.22024,63.43033l0,61.09378l-6.47282,-0.20617c-3.54302,-0.13744 -8.31246,-0.41233 -10.56092,-0.75594z"
+                              @click="clickNodeMenu('graph', $event)" />
+                            <path class="c-svg-button"
+                              d="m209.28944,332.98659l0.34067,-61.57483l7.49485,-1.64933c7.08604,-1.51188 11.51481,-3.22993 21.12184,-8.4528c6.06401,-3.22993 20.03168,-18.28003 23.43843,-25.22094c4.97385,-10.17084 7.22231,-15.94348 7.22231,-18.62364c0,-1.37444 0.40881,-3.91715 0.88575,-5.6352l0.81762,-3.09249l60.43571,0l60.50384,0l0,5.15414c-0.06813,86.31472 -81.62568,171.87351 -171.35942,179.77653l-11.24227,0.96211l0.34067,-61.64356z"
+                              @click="clickNodeMenu('card', $event,item)" />
+                          </g>
+                        </g>
+                      </svg>
+                      <div
+                        style="height:100%;width:100%;position: absolute;left: 0px;top:0px;user-select: none;pointer-events: none;color: #ffffff;font-size: 22px;">
+
+                        <div style="position: absolute;left:20px;top:20px;">
+                          <el-icon><Unlock /></el-icon>
+                        </div>
+                        <div style="position: absolute;right:20px;top:20px;">
+                          <el-icon><Hide /></el-icon>
+                        </div>
+                        <div style="position: absolute;left:20px;top:75px;transform: rotate(180deg);">
+                         <img src="../../assets//img/atlas.png" alt="" style="width: 20px;height: 20px">
+                        </div>
+                        <div style="position: absolute;right:20px;top:75px;">
+                          <el-icon><Warning /></el-icon>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="c-operate-panels">
+                      <!--- Node info card -->
+                      <div v-if="item.showNodeInfoCard" class="c-node-info-card" style="background-color: #ffffff;height: 200px;border: 1px #ccc solid;">
+                        <h3> Node info card</h3>
+                      </div>
+                    </div>
                   </template>
                 </RelationGraph>
 
@@ -465,7 +517,7 @@
                       <el-row>
                         <div style="font-size: 16px; font-weight: 500;">{{ item.Properties.name }}</div>
                         <CopyDocument style="width: 14px; margin-left: 10px;"
-                          @click="copyClick2(item.Properties.id,item.Properties.properties)" />
+                          @click="copyClick2(item.Properties.id, item.Properties.properties)" />
                       </el-row>
                     </el-col>
                     <el-col
@@ -476,10 +528,10 @@
                     <el-col>
                       <el-row style="border-bottom: 1px #efefef solid;margin-top:10px;display: flex">
                         <el-col :span="10" style="padding-left: 10px ;font-weight: 500 ">{{ "<id>" }}</el-col>
-                          <el-col :span="11"
+                        <el-col :span="11"
                           style="height: 30px;text-overflow: ellipsis;white-space: nowrap;overflow: hidden; "
                           :title="item.Properties.id">{{ item.Properties.id }}</el-col>
-                          <el-col :span="3" style="padding-left: 10px">
+                        <el-col :span="3" style="padding-left: 10px">
                           <CopyDocument style="width: 14px;" @click="copyClick('id', item.Properties.id)" />
                         </el-col>
                       </el-row>
@@ -739,10 +791,9 @@
                     </el-col>
                   </el-row>
                 </div>
-                <RelationGraph @node-click="NodeClick($event, item)" @canvas-click="itemClick(item)" 
-                  @line-click="lineClick($event, item)"
-                  :ref="dom => { getRefDom(dom, item) }" :options="options" style="height: 336px"
-                  :style="{ height: isFullscreen ? '100vh' : '324px' }">
+                <RelationGraph @node-click="NodeClick($event, item)" @canvas-click="itemClick(item)"
+                  @line-click="lineClick($event, item)" :ref="dom => { getRefDom(dom, item) }" :options="options"
+                  style="height: 336px" :style="{ height: isFullscreen ? '100vh' : '324px' }">
                   <template #node="{ node }">
                     <div
                       style="overflow: hidden; text-overflow: ellipsis; white-space:nowrap ; text-align: center;vertical-align:middle">
@@ -1186,20 +1237,20 @@ import {
   ShrinkOutlined,
   UpOutlined,
 } from "@ant-design/icons-vue";
-import { ArrowLeftBold, CopyDocument } from "@element-plus/icons-vue";
+import { ArrowLeftBold, CopyDocument,Unlock,Hide,Warning } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import mitts from "../../utils/bus.js";
 //组件
 import search2 from "../rightComponents/blockcomponents/search2.vue";
 import mitt from "mitt";
-// import { useStore } from "vuex";
-// const store = useStore();
+import type { RGUserEvent } from "relation-graph-vue3";
+import { anyType } from "ant-design-vue/es/_util/type.js";
 //变量
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
-const options = {
+const options = ref({
   disableNodeClickEffect: false,
-};
-// const graphRef = ref<RelationGraph>();
+  disableZoom: false,
+});
 const isFullscreen = ref(false);
 const isunfold = ref(false);
 const isres = ref(false);
@@ -1209,53 +1260,109 @@ const labelList = ref([]);
 const resultRelation = ref([]);
 const relationList = ref([]);
 const tagName = ref("");
-// const Properties = ref({ propertiesFlag: false });
-// const error = ref("");
+// const showNodeMenu = ref(false);
+const nodeMenuPanel = ref({ x: 0, y: 0, width: 120, height: 120 });
+const currentNode = ref<RGNode | null>(null);
+// const showNodeInfoCard = ref(false);
 const getRefDom = (val: any, item: any) => {
   item.graphRef = val;
 };
+// 节点展开
+const clickNodeMenu = (menutip: string, event: RGUserEvent, item: any)=>{
+ item.showNodeMenu = true;
+  if(menutip === 'lock'){
+    console.log('lock')
+  }else if(menutip === 'nodehide'){
+    const graphInstance = item.graphRef!.getInstance();//拿到图形实例
+    const _all_nodes = graphInstance.getNodes();//所有dom集合
+    _all_nodes.forEach(item2=>{
+      if(item2.id === item.Properties.id){
+        item2.opacity = 0
+      }
+    })
+  }else if(menutip === 'card'){
+    console.log('card')
+    item.showNodeInfoCard = !item.showNodeInfoCard;
+  }else if(menutip === 'graph'){
+    console.log('graph')
+  }
+}
+const updateNodeMenuPosition = (item) => {
+  if (!currentNode.value) return;
+  const graphInstance = item.graphRef?.getInstance();
+  if (graphInstance) {
+    const _base_position = graphInstance.getBoundingClientRect();
+    const viewCoordinate = graphInstance.getViewPointByCanvasPoint({
+      x: currentNode.value.x + currentNode.value.el.offsetWidth / 2,
+      y: currentNode.value.y + currentNode.value.el.offsetHeight / 2
+    });
+    nodeMenuPanel.value.x = viewCoordinate.x - nodeMenuPanel.value.width / 2;
+    nodeMenuPanel.value.y = viewCoordinate.y - nodeMenuPanel.value.height / 2;
+  }
+};
 //单个node信息
 const NodeClick = (event, item) => {
-  item.overview = true;
-  item.propertiesFlag = true
-  item.graphData.nodes.forEach(item2 => {
-    if (item2.id === event.id) {
-      item.Properties.name = "Node properties";
-      item.Properties.label = item2.label;
-      item.Properties.id = item2.id;
-      item.Properties.properties = item2.properties
+  let record = {}
+  list.value.forEach((item2)=>{
+    if(item2.id === item.id){
+      record = item2
     }
   })
+  record.overview = true;
+  record.propertiesFlag = true;
+  record.graphData.nodes.forEach(item2 => {
+    if (item2.id === event.id) {
+      record.Properties.name = "Node properties";
+      record.Properties.label = item2.label;
+      record.Properties.id = item2.id;
+      record.Properties.properties = item2.properties
+    }
+  })
+  currentNode.value = event;
+  updateNodeMenuPosition(record);
+  record.showNodeMenu = true;
 };
 //单个line信息
 const lineClick = (event, item) => {
-  // console.log(event,'1205')
-  item.overview = true;
-  item.propertiesFlag = true
-  item.graphData.lines.forEach(item2=>{
-    if(item2.id = event.id){
-      item.Properties.name = "Relationship properties";
-      item.Properties.label = [];
-      item.Properties.label.push(item2.type)
-      item.Properties.id = item2.id;
-      item.Properties.properties = item2.properties
+  let record = {}
+  list.value.forEach((item2)=>{
+    if(item2.id === item.id){
+      record = item2
+    }
+  })
+  record.overview = true;
+  record.propertiesFlag = true
+  record.graphData.lines.forEach(item2 => {
+    if (item2.id = event.id) {
+      record.Properties.name = "Relationship properties";
+      record.Properties.label = [];
+      record.Properties.label.push(item2.type)
+      record.Properties.id = item2.id;
+      record.Properties.properties = item2.properties
     }
   })
 }
 //取消选中节点
 const itemClick = (item) => {
-  const graphInstance = item.graphRef?.getInstance();
+  let record = {}
+  list.value.forEach((item2)=>{
+    if(item2.id === item.id){
+      record = item2
+    }
+  })
+  const graphInstance = record.graphRef?.getInstance();
   if (graphInstance) {
     graphInstance.clearChecked();
   }
-  item.propertiesFlag = false
+  record.propertiesFlag = false;
+  record.showNodeMenu = false;
+  record.showNodeInfoCard = false
 };
 
 //详情复制
 const copyClick = (key, value) => {
   const obj = {};
   obj[key] = value;
-  // console.log(obj);
   let result = "";
   for (const key in obj) {
     if (obj.hasOwnProperty(key)) {
@@ -1270,8 +1377,8 @@ const copyClick = (key, value) => {
   });
 };
 //详情全局复制
-const copyClick2 = (id,propertiesData) => {
-  let obj = {...propertiesData}
+const copyClick2 = (id, propertiesData) => {
+  let obj = { ...propertiesData }
   let result = "";
   obj['<id>'] = id
   for (const key in obj) {
@@ -1321,20 +1428,20 @@ const unfoldClick = () => {
 const resClick = () => {
   isres.value = !isres.value;
 };
- // 置顶
+// 置顶
 const topClick = (index: Number, item: any) => {
   list.value.splice(index, 1);
   mitts.emit("topData", item);
 };
 //取消置顶
 mitts.on("untopData", (item: any) => {
-  if(item.graphData.nodes.length!== 0){
+  if (item.graphData.nodes.length !== 0) {
     item.graphRef.value = undefined
-  list.value.unshift(item);
-  nextTick(() => {
-    item.graphRef.setJsonData(item.graphData);
-  });
-  } else{
+    list.value.unshift(item);
+    nextTick(() => {
+      item.graphRef.setJsonData(item.graphData);
+    });
+  } else {
     list.value.unshift(item);
   }
 });
@@ -1353,7 +1460,6 @@ const generateRandomId = () => {
 mitts.on("revamp", (data) => {
   const result = data.result;
   const index = data.index;
-  // console.log(data.id, "1673");
   result.id = data.id || generateRandomId();
   result.labelList = {};
   result.relationList = [];
@@ -1363,6 +1469,11 @@ mitts.on("revamp", (data) => {
   result.flagshowE = undefined;
   result.overview = false;
   result.graphRef = ref(null);
+  result.graph = false;
+  result.propertiesFlag = false;
+  result.Properties = {};
+  result.showNodeMenu = false;
+  result.showNodeInfoCard = false
   list.value[index] = result;
   let textName = "";
   let textTitle = "";
@@ -1607,7 +1718,6 @@ mitts.on("revamp", (data) => {
       },
       []
     ); // 初始累加器是一个空数组
-    // console.log(result.graphData);
     result.flagshowN = false;
     result.flagshowR = false;
     result.flagshowE = false;
@@ -1733,7 +1843,6 @@ mitts.on("revamp", (data) => {
     }
     return acc2;
   }, {});
-  // console.log(result, "2051");
   //渲染图形
   if (result.graphData.nodes.length !== 0) {
     nextTick(() => {
@@ -1856,7 +1965,6 @@ const idClick = (e) => {
               ) {
                 item2.text = item2.id;
               } else if (item5 !== null && item5.segments) {
-                // console.log(111);
                 item2.text = item2.id;
               }
             });
@@ -1957,9 +2065,10 @@ mitts.on("params", (result: any) => {
   result.graph = false;
   result.graphRef = ref(null);
   result.propertiesFlag = false;
-  result.Properties = {}
+  result.Properties = {};
+  result.showNodeMenu = false;
+  result.showNodeInfoCard = false
   list.value.unshift(result);
-
   let textName = "";
   let textTitle = "";
   let lineText = "";
@@ -2204,7 +2313,6 @@ mitts.on("params", (result: any) => {
       },
       []
     ); // 初始累加器是一个空数组
-    // console.log(result.graphData);
     result.flagshowN = false;
     result.flagshowR = false;
     result.flagshowE = false;
@@ -2334,18 +2442,30 @@ mitts.on("params", (result: any) => {
   //渲染图形
   if (result.graphData.nodes.length !== 0) {
     nextTick(() => {
-      // console.log(result.graphRef.value);
       result.graphRef.value.setJsonData(result.graphData);
     });
   }
-  // console.log(list.value, "2688");
-  nextTick(() => {
-    // console.log(list.value, "nextTick-2290");
-  });
 });
 </script>
 
 <style scoped>
+  .c-node-info-card {
+      text-align: left;padding:10px;
+      background-color: rgba(233, 210, 243, 0.68);
+      border-radius: 10px;
+      font-size: 12px;
+      line-height: 25px;
+  }
+  .c-operate-panels {
+      position: absolute;z-index: 700;left:30px; top:30px;width:200px;
+  }
+ .c-svg-button {
+      fill: rgba(26, 22, 28, 0.65);
+      cursor: pointer;
+  }
+ .c-svg-button:hover {
+      fill: rgba(26, 23, 28, 0.85);
+  }
 ::v-deep.relation-graph .rel-node-shape-0 {
   display: flex;
   align-items: center;
@@ -2396,6 +2516,27 @@ mitts.on("params", (result: any) => {
 
 .searchText:focus {
   outline: none;
+}
+
+@keyframes growUp {
+  from {
+      scale: 10%;
+      rotate: 0deg;
+  }
+  50% {
+      scale: 30%;
+      rotate: 90deg;
+  }
+  to {
+      scale: 100%;
+      rotate: 360deg;
+  }
+}
+.c-surround-menu-panel {
+  position:absolute;width:160px;height:160px;z-index:999;
+  animation: growUp 0.5s linear;
+  box-shadow: 0 0 0 38px rgba(255, 255, 255, 0.56) inset;
+  border-radius: 50%;
 }
 </style>
 <style>

@@ -175,6 +175,12 @@ const getNodeColor = (key) => {
     : "rgb(145, 149, 160)";
   return color;
 };
+//唯一id
+const generateRandomId = () => {
+  const timestamp = new Date().getTime(); // 获取当前时间戳
+  const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
+  return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
+};
 //节点展示全部
 const labelShow = () => {
   const startTime = performance.now()
@@ -183,7 +189,10 @@ const labelShow = () => {
     headers: {
       "Content-Type": "text/plain",
     },
-    body: "MATCH (n) RETURN n LIMIT 25",
+    body: `{
+    'query':'MATCH (n) RETURN n LIMIT 25',
+    'queryId':'${generateRandomId()}'
+    }`,
   })
     .then((response) => response.text())
     .then((data) => {
@@ -223,7 +232,10 @@ const graphShow = (e) => {
     headers: {
       "Content-Type": "text/plain",
     },
-    body: `MATCH (n:${e.target.innerText}) RETURN n LIMIT 25`,
+    body: `{
+    'query':'MATCH (n:${e.target.innerText}) RETURN n LIMIT 25',
+    'queryId':'${generateRandomId()}'
+    }`,
   })
     .then((response) => response.text())
     .then((data) => {
@@ -260,7 +272,10 @@ const relationShow = (e) => {
     headers: {
       "Content-Type": "text/plain",
     },
-    body: `MATCH p=()-->() RETURN p LIMIT 25`,
+    body: `{
+    'query':'MATCH p=()-->() RETURN p LIMIT 25',
+    'queryId':'${generateRandomId()}'
+    }`,
   })
     .then((response) => response.text())
     .then((data) => {
@@ -298,7 +313,10 @@ const relationClick = (e) => {
     headers: {
       "Content-Type": "text/plain",
     },
-    body: `MATCH p=()-[r:${e.target.innerText}]->() RETURN p LIMIT 25`,
+    body: `{
+    'query':'MATCH p=()-[r:${e.target.innerText}]->() RETURN p LIMIT 25',
+    'queryId':'${generateRandomId()}'
+    }`,
   })
     .then((response) => response.text())
     .then((data) => {

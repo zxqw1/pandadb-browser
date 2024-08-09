@@ -1,64 +1,33 @@
 <template>
-  <el-row
-    class="search"
-    :style="{
-      height: isFullscreen ? '100vh' : 'auto',
-      padding: isFullscreen ? '20px' : 'auto',
-      // position :isFullscreen ? 'fixed' : 'relative',
-      // top:isFullscreen ? '0' :'auto',
-      // right:isFullscreen ? '0' :'auto',
-      // bottom:isFullscreen ? '0' :'auto',
-      // Zindex:isFullscreen ?'9999999999' :'0'
-    }"
-  >
+  <el-row class="search" :style="{
+    height: isFullscreen ? '100vh' : 'auto',
+    padding: isFullscreen ? '20px' : 'auto',
+  }">
     <el-col :span="22" style="position: relative">
-      <div
-        class="bing-code-editor"
-        :style="{ height: isFullscreen ? '97vh' : 'auto' }"
-      >
-        <textarea
-          ref="textarea"
-          v-model="contentValue"
-          style="width: 70%; background-color: rgb(246, 246, 246)"
-        >
+      <div class="bing-code-editor" :style="{ height: isFullscreen ? '97vh' : 'auto' }">
+        <textarea ref="textarea" v-model="contentValue" style="width: 70%; background-color: rgb(246, 246, 246)">
         </textarea>
       </div>
-      <CaretRightOutlined
-        style="
+      <CaretRightOutlined style="
           color: #6a8322;
           font-size: 28px;
           position: absolute;
           right: 10px;
           top: 4px;
-        "
-        @click="funClick"
-        v-if="!loadingFlag"
-      />
-      <div
-        v-else
-        style="
+        " @click="funClick" v-if="!loadingFlag" />
+      <div v-else style="
           width: 14px;
           height: 14px;
           background-color: red;
           position: absolute;
           right: 16px;
           top: 10px;
-        "
-        @click="breakClick"
-      ></div>
+        " @click="breakClick"></div>
     </el-col>
     <el-col :span="2" style="display: flex">
       <el-col :span="12" style="text-align: center;padding-top: 8px;">
-        <ExpandAltOutlined
-          style="font-size: 20px;"
-          @click="toggleFullScreen"
-          v-if="!isFullscreen"
-        />
-        <ShrinkOutlined
-          style="font-size: 20px;"
-          @click="toggleFullScreen"
-          v-else
-        />
+        <ExpandAltOutlined style="font-size: 20px;" @click="toggleFullScreen" v-if="!isFullscreen" />
+        <ShrinkOutlined style="font-size: 20px;" @click="toggleFullScreen" v-else />
       </el-col>
       <el-col :span="12" style="text-align: center;padding-top: 8px;">
         <CloseOutlined style="font-size: 20px;" @click="deleteClick" />
@@ -142,6 +111,9 @@ const opt = ref({
   ],
 });
 let abortController: AbortController | null = null;
+let url:string|null = window.localStorage.getItem("address")//地址
+const closeurl = url.replace('/query', '/close')
+
 onMounted(() => {
   CodeMirror.defineMode("javascript", function () {
     return {
@@ -177,9 +149,19 @@ onMounted(() => {
 computed((_height) => {
   return Number(height.value) ? Number(height.value) + "px" : height.value;
 });
+//唯一id
+const generateRandomId = () => {
+  const timestamp = new Date().getTime(); // 获取当前时间戳
+  const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
+  return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
+};
 //喜好渲染
 mitts.on("favo", (cypher) => {
   loadingFlag.value = !loadingFlag.value;
+  const queryobj = {
+        'query' : cypher,
+        'queryId':queryId
+      }
   const startTime = performance.now();
   // 创建新的 AbortController 实例
   abortController = new AbortController();
@@ -188,7 +170,7 @@ mitts.on("favo", (cypher) => {
     headers: {
       "Content-Type": "text/plain",
     },
-    body: cypher,
+    body: JSON.stringify(queryobj),
     signal: abortController.signal,
   })
     .then((response) => response.text())
@@ -237,13 +219,19 @@ mitts.on("favo", (cypher) => {
       console.error("Error:", error);
     });
 });
+const queryId = generateRandomId()
 //获取数据
 const funClick = async () => {
   await nextTick();
+  // console.log(generateRandomId(),'219')
   if (contentValue.value === "") {
     // console.log(111);
   } else {
     loadingFlag.value = !loadingFlag.value;
+      const queryobj = {
+        'query' : contentValue.value,
+        'queryId':queryId
+      }
     if (!window.localStorage.getItem("address")) {
       const error = "No connection found, did you connect to PandaDB?";
       const result = {};
@@ -251,13 +239,9 @@ const funClick = async () => {
       result.summary.query = {};
       result.summary.server = {};
       result.summary.query.text = contentValue.value;
-      // result.summary.server.address = window.localStorage.getItem('address');
-      // result.summary.server.agent = "PandaDB";
       result.error = error;
-      // console.log(result, "257");
       mitts.emit("params", result);
       store.commit("ScrollChange", result);
-      
     }
     const startTime = performance.now();
     // 创建新的 AbortController 实例
@@ -267,14 +251,14 @@ const funClick = async () => {
       headers: {
         "Content-Type": "text/plain",
       },
-      body: contentValue.value,
+      body: JSON.stringify(queryobj),
       signal: abortController.signal,
     })
       .then((response) => response.text())
       .then((data) => {
         loadingFlag.value = !loadingFlag.value;
         const data2 = JSON.parse(data);
-        // console.log(data2, "278");
+        console.log(data2, "278");
         if (data2.error) {
           // // console.log(data2, "186");
           const result = {};
@@ -321,12 +305,16 @@ const funClick = async () => {
     deleteClick();
   }
 };
+//停止
 const breakClick = () => {
-  if (abortController) {
-    abortController.abort(); // 调用 abort 方法来取消请求
-    abortController = null; // 可选：重置 abortController
-    loadingFlag.value = !loadingFlag.value;
-  }
+  fetch(closeurl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain',
+    },
+    body: `${queryId}`
+  })
+  loadingFlag.value = !loadingFlag.value;
 };
 // 全屏
 const toggleFullScreen = () => {
@@ -345,11 +333,13 @@ const deleteClick = () => {
 .CodeMirror-line {
   padding-right: 16px !important;
 }
+
 .search {
   width: 100%;
   background-color: #ffffff;
   padding: 14px 16px;
 }
+
 .bing-code-editor {
   font-size: 14px;
   border: 1px dashed #c0c0c0;

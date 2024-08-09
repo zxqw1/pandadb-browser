@@ -11,13 +11,8 @@
       <a-col :span="24" style="display: flex;justify-content: space-between;">
         <LeftMenu></LeftMenu>
         <RightContent></RightContent>
+         <!-- <graph></graph> -->
       </a-col>
-      <!-- 左面导航 -->
-      <!-- 右面内容 -->
-      <!-- <a-col :span="19"> -->
-        <!-- style="flex: 1; max-width:100%; display: flex;" -->
-      <!-- </a-col> -->
-      <!-- 右面内容 -->
     </a-col>
   </a-row>
 
@@ -28,6 +23,7 @@
 import { ElMessageBox } from "element-plus";
 import headerNav from "../components/header.vue";
 import LeftMenu from "../components/menu.vue";
+// import graph from "../components/graph.vue";
 import RightContent from "../components/rightcontent.vue";
 import { onMounted } from "vue";
 

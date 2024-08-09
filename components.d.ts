@@ -15,6 +15,7 @@ declare module 'vue' {
     Block: typeof import('./src/components/rightComponents/block.vue')['default']
     BlockTop: typeof import('./src/components/rightComponents/blockTop.vue')['default']
     Favorate: typeof import('./src/components/menuComponents/Favorate.vue')['default']
+    Graph: typeof import('./src/components/graph.vue')['default']
     Guides: typeof import('./src/components/menuComponents/guides.vue')['default']
     Header: typeof import('./src/components/header.vue')['default']
     Help: typeof import('./src/components/menuComponents/help.vue')['default']
