@@ -1277,9 +1277,11 @@ const clickNodeMenu = (menutip: string, event: RGUserEvent, item: any)=>{
     const _all_nodes = graphInstance.getNodes();//所有dom集合
     _all_nodes.forEach(item2=>{
       if(item2.id === item.Properties.id){
-        item2.opacity = 0
+        item2.opacity = 0;
       }
+      item.showNodeMenu = false
     })
+
   }else if(menutip === 'card'){
     console.log('card')
     item.showNodeInfoCard = !item.showNodeInfoCard;

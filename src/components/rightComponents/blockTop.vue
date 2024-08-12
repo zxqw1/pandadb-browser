@@ -1279,6 +1279,7 @@ const clickNodeMenu = (menutip: string, event: RGUserEvent, item: any)=>{
       if(item2.id === item.Properties.id){
         item2.opacity = 0
       }
+      item.showNodeMenu = false
     })
   }else if(menutip === 'card'){
     console.log('card')

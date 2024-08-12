@@ -223,7 +223,6 @@ const queryId = generateRandomId()
 //获取数据
 const funClick = async () => {
   await nextTick();
-  // console.log(generateRandomId(),'219')
   if (contentValue.value === "") {
     // console.log(111);
   } else {
@@ -258,9 +257,7 @@ const funClick = async () => {
       .then((data) => {
         loadingFlag.value = !loadingFlag.value;
         const data2 = JSON.parse(data);
-        console.log(data2, "278");
         if (data2.error) {
-          // // console.log(data2, "186");
           const result = {};
           result.summary = {};
           result.summary.query = {};
@@ -293,6 +290,7 @@ const funClick = async () => {
           result.summary.server.address =
             window.localStorage.getItem("address");
           result.summary.server.agent = "PandaDB";
+          console.log(result,'293')
           mitts.emit("params", result);
           store.commit("ScrollChange", result);
         }
