@@ -14,15 +14,16 @@
           position: absolute;
           right: 10px;
           top: 4px;
-        " @click="funClick" v-if="!loadingFlag" />
-      <div v-else style="
+        " @click="funClick" />
+      <!-- v-if="!loadingFlag" -->
+      <!-- <div v-else style="
           width: 14px;
           height: 14px;
           background-color: red;
           position: absolute;
           right: 16px;
           top: 10px;
-        " @click="breakClick"></div>
+        " @click="breakClick"></div> -->
     </el-col>
     <el-col :span="2" style="display: flex">
       <el-col :span="12" style="text-align: center;padding-top: 8px;">
@@ -46,16 +47,14 @@ import {
   ShrinkOutlined,
 } from "@ant-design/icons-vue";
 import { ElMessageBox } from "element-plus";
-// import request from "../../utils/request.js";
 //框架
 import CodeMirror from "codemirror";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/darcula.css";
 //主题
 import "codemirror/theme/idea.css";
-import { error } from "neo4j-driver";
 import { useStore } from "vuex";
-const loadingFlag = ref(false);
+// const loadingFlag = ref(false);
 // const preventLoading = ref(false)
 const store = useStore();
 const mode = "javascript"; // 编译语言
@@ -111,8 +110,8 @@ const opt = ref({
   ],
 });
 let abortController: AbortController | null = null;
-let url:string|null = window.localStorage.getItem("address")//地址
-const closeurl = url.replace('/query', '/close')
+// let url: string | null = window.localStorage.getItem("address")//地址
+// const closeurl = url.replace('/query', '/close')
 
 onMounted(() => {
   CodeMirror.defineMode("javascript", function () {
@@ -157,11 +156,10 @@ const generateRandomId = () => {
 };
 //喜好渲染
 mitts.on("favo", (cypher) => {
-  loadingFlag.value = !loadingFlag.value;
   const queryobj = {
-        'query' : cypher,
-        'queryId':queryId
-      }
+    'query': cypher,
+    'queryId': queryId
+  }
   const startTime = performance.now();
   // 创建新的 AbortController 实例
   abortController = new AbortController();
@@ -175,7 +173,6 @@ mitts.on("favo", (cypher) => {
   })
     .then((response) => response.text())
     .then((data) => {
-      loadingFlag.value = !loadingFlag.value;
       const data2 = JSON.parse(data);
       if (!window.localStorage.getItem("address")) {
         data2.error = "No connection found, did you connect to PandaDB?";
@@ -194,7 +191,6 @@ mitts.on("favo", (cypher) => {
       } else {
         const endTime = performance.now();
         const responseTime = endTime - startTime;
-        // console.log(JSON.parse(data), "data");
         const result = {};
         result.records = [];
         result.summary = {};
@@ -219,18 +215,24 @@ mitts.on("favo", (cypher) => {
       console.error("Error:", error);
     });
 });
-const queryId = generateRandomId()
 //获取数据
 const funClick = async () => {
   await nextTick();
+const queryId = generateRandomId()
   if (contentValue.value === "") {
-    // console.log(111);
   } else {
-    loadingFlag.value = !loadingFlag.value;
-      const queryobj = {
-        'query' : contentValue.value,
-        'queryId':queryId
+    mitts.emit("params", {
+      "queryId":queryId,
+      'summary':{
+        'query':{
+          'text':contentValue.value
+        }
       }
+    });
+    const queryobj = {
+      'query': contentValue.value,
+      'queryId': queryId
+    }
     if (!window.localStorage.getItem("address")) {
       const error = "No connection found, did you connect to PandaDB?";
       const result = {};
@@ -255,8 +257,8 @@ const funClick = async () => {
     })
       .then((response) => response.text())
       .then((data) => {
-        loadingFlag.value = !loadingFlag.value;
         const data2 = JSON.parse(data);
+        console.log(data2, '254')
         if (data2.error) {
           const result = {};
           result.summary = {};
@@ -272,12 +274,12 @@ const funClick = async () => {
         } else {
           const endTime = performance.now();
           const responseTime = endTime - startTime;
-          // console.log(JSON.parse(data), "data");
           const result = {};
           result.records = [];
           result.summary = {};
           result.summary.query = {};
           result.summary.server = {};
+          result.queryId = data2.queryId
           result.resTime = Math.round(responseTime) + "ms";
           data2.response.forEach((value, index) => {
             const keys = Object.keys(value);
@@ -290,7 +292,6 @@ const funClick = async () => {
           result.summary.server.address =
             window.localStorage.getItem("address");
           result.summary.server.agent = "PandaDB";
-          console.log(result,'293')
           mitts.emit("params", result);
           store.commit("ScrollChange", result);
         }
@@ -298,22 +299,20 @@ const funClick = async () => {
       .catch((error) => {
         console.error("Error:", error);
       });
-    // 请求完成后，可以重置 abortController
-    // abortController = null;
     deleteClick();
   }
 };
 //停止
-const breakClick = () => {
-  fetch(closeurl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'text/plain',
-    },
-    body: `${queryId}`
-  })
-  loadingFlag.value = !loadingFlag.value;
-};
+// const breakClick = () => {
+//   fetch(closeurl, {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'text/plain',
+//     },
+//     body: `${queryId}`
+//   })
+//   // loadingFlag.value = !loadingFlag.value;
+// };
 // 全屏
 const toggleFullScreen = () => {
   isFullscreen.value = !isFullscreen.value;

@@ -15,7 +15,7 @@
           display: flex;
           align-items: center;
           justify-content: space-between;
-          border-bottom: 1px #999 solid;
+          border-bottom: 1px #999 solid;  
           padding-right: 10px;
         "
       >
@@ -136,7 +136,6 @@ import type {
 const buttonRef = ref(false);
 const input = ref("");
 const renameFlag = ref(false);
-// // console.log(,'139')
 const TreeData = ref(!JSON.parse(localStorage.getItem("treedata")) ? [] : JSON.parse(localStorage.getItem("treedata")));
 //删除
 const deleteClick = (scoped) => {

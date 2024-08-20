@@ -1,5 +1,5 @@
 <template>
-  <div style="background-color: #ffffff" v-for="(item, index) in list" :key="item.id" :id="item.id" :style="{
+  <div style="background-color: #ffffff" v-for="(item, index) in list" :key="item.id" :style="{
     position: isFullscreen ? 'fixed' : 'static',
     top: isFullscreen ? '0' : '0',
     left: isFullscreen ? '0' : '0',
@@ -41,9 +41,10 @@
           <div style="width: 100%;background-color: rgb(210, 213, 218);padding: 20px;margin-top: 10px">
             {{ item.error }}
           </div>
-          <RelationGraph :ref="dom => { getRefDom(dom, item) }" :options="options" style="display: none">
-          </RelationGraph>
         </el-col>
+        <!-- loading -->
+        <el-col v-if="item.flagshowL" v-loading="true" element-loading-background="rgba(221, 221, 221, 0.5)" :style="{ height: isFullscreen ? '100vh' : '324px' }"
+          style="padding: 18px;"></el-col>
         <!-- node -->
         <el-col v-if="item.flagshowN">
           <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu"
@@ -154,7 +155,6 @@
                         </template>
                         <el-row>
                           <el-col>
-                            <!-- v-for="(value, key) in item.labelList" :key="key" -->
                             <el-tag effect="dark" round :color="getTagColor(key)"
                               style="width: 100%;border: none;margin-bottom: 10px">{{ key }}({{ value }})</el-tag>
                           </el-col>
@@ -290,7 +290,7 @@
                               @click="clickNodeMenu('graph', $event)" />
                             <path class="c-svg-button"
                               d="m209.28944,332.98659l0.34067,-61.57483l7.49485,-1.64933c7.08604,-1.51188 11.51481,-3.22993 21.12184,-8.4528c6.06401,-3.22993 20.03168,-18.28003 23.43843,-25.22094c4.97385,-10.17084 7.22231,-15.94348 7.22231,-18.62364c0,-1.37444 0.40881,-3.91715 0.88575,-5.6352l0.81762,-3.09249l60.43571,0l60.50384,0l0,5.15414c-0.06813,86.31472 -81.62568,171.87351 -171.35942,179.77653l-11.24227,0.96211l0.34067,-61.64356z"
-                              @click="clickNodeMenu('card', $event,item)" />
+                              @click="clickNodeMenu('card', $event, item)" />
                           </g>
                         </g>
                       </svg>
@@ -298,22 +298,29 @@
                         style="height:100%;width:100%;position: absolute;left: 0px;top:0px;user-select: none;pointer-events: none;color: #ffffff;font-size: 22px;">
 
                         <div style="position: absolute;left:20px;top:20px;">
-                          <el-icon><Unlock /></el-icon>
+                          <el-icon>
+                            <Unlock />
+                          </el-icon>
                         </div>
                         <div style="position: absolute;right:20px;top:20px;">
-                          <el-icon><Hide /></el-icon>
+                          <el-icon>
+                            <Hide />
+                          </el-icon>
                         </div>
                         <div style="position: absolute;left:20px;top:75px;transform: rotate(180deg);">
-                         <img src="../../assets//img/atlas.png" alt="" style="width: 20px;height: 20px">
+                          <img src="../../assets//img/atlas.png" alt="" style="width: 20px;height: 20px">
                         </div>
                         <div style="position: absolute;right:20px;top:75px;">
-                          <el-icon><Warning /></el-icon>
+                          <el-icon>
+                            <Warning />
+                          </el-icon>
                         </div>
                       </div>
                     </div>
                     <div class="c-operate-panels">
                       <!--- Node info card -->
-                      <div v-if="item.showNodeInfoCard" class="c-node-info-card" style="background-color: #ffffff;height: 200px;border: 1px #ccc solid;">
+                      <div v-if="item.showNodeInfoCard" class="c-node-info-card"
+                        style="background-color: #ffffff;height: 200px;border: 1px #ccc solid;">
                         <h3> Node info card</h3>
                       </div>
                     </div>
@@ -1215,7 +1222,7 @@
           background-color: #ffffff;
           line-height: 24px;
           padding-left: 16px;
-        " v-if="!item.flagshowER">
+        " v-if="!(item.flagshowER || item.flagshowL)">
         Transmit {{ item.records.length }} records within {{ item.resTime }}.
       </div>
     </el-row>
@@ -1237,7 +1244,7 @@ import {
   ShrinkOutlined,
   UpOutlined,
 } from "@ant-design/icons-vue";
-import { ArrowLeftBold, CopyDocument,Unlock,Hide,Warning } from "@element-plus/icons-vue";
+import { ArrowLeftBold, CopyDocument, Unlock, Hide, Warning } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import mitts from "../../utils/bus.js";
 //组件
@@ -1260,32 +1267,29 @@ const labelList = ref([]);
 const resultRelation = ref([]);
 const relationList = ref([]);
 const tagName = ref("");
-// const showNodeMenu = ref(false);
 const nodeMenuPanel = ref({ x: 0, y: 0, width: 120, height: 120 });
 const currentNode = ref<RGNode | null>(null);
-// const showNodeInfoCard = ref(false);
+const queryIdList = ref([])
 const getRefDom = (val: any, item: any) => {
   item.graphRef = val;
 };
 // 节点展开
-const clickNodeMenu = (menutip: string, event: RGUserEvent, item: any)=>{
- item.showNodeMenu = true;
-  if(menutip === 'lock'){
+const clickNodeMenu = (menutip: string, event: RGUserEvent, item: any) => {
+  item.showNodeMenu = true;
+  if (menutip === 'lock') {
     console.log('lock')
-  }else if(menutip === 'nodehide'){
+  } else if (menutip === 'nodehide') {
     const graphInstance = item.graphRef!.getInstance();//拿到图形实例
     const _all_nodes = graphInstance.getNodes();//所有dom集合
-    _all_nodes.forEach(item2=>{
-      if(item2.id === item.Properties.id){
+    _all_nodes.forEach(item2 => {
+      if (item2.id === item.Properties.id) {
         item2.opacity = 0;
       }
       item.showNodeMenu = false
     })
-
-  }else if(menutip === 'card'){
-    console.log('card')
+  } else if (menutip === 'card') {
     item.showNodeInfoCard = !item.showNodeInfoCard;
-  }else if(menutip === 'graph'){
+  } else if (menutip === 'graph') {
     console.log('graph')
   }
 }
@@ -1305,8 +1309,8 @@ const updateNodeMenuPosition = (item) => {
 //单个node信息
 const NodeClick = (event, item) => {
   let record = {}
-  list.value.forEach((item2)=>{
-    if(item2.id === item.id){
+  list.value.forEach((item2) => {
+    if (item2.id === item.id) {
       record = item2
     }
   })
@@ -1327,8 +1331,8 @@ const NodeClick = (event, item) => {
 //单个line信息
 const lineClick = (event, item) => {
   let record = {}
-  list.value.forEach((item2)=>{
-    if(item2.id === item.id){
+  list.value.forEach((item2) => {
+    if (item2.id === item.id) {
       record = item2
     }
   })
@@ -1347,8 +1351,8 @@ const lineClick = (event, item) => {
 //取消选中节点
 const itemClick = (item) => {
   let record = {}
-  list.value.forEach((item2)=>{
-    if(item2.id === item.id){
+  list.value.forEach((item2) => {
+    if (item2.id === item.id) {
       record = item2
     }
   })
@@ -2056,13 +2060,14 @@ mitts.on("download", (item) => {
 });
 //数据
 mitts.on("params", (result: any) => {
-  result.id = generateRandomId();
+  result.id = result.queryId;
   result.labelList = {};
   result.relationList = [];
   result.flagshowN = undefined;
   result.flagshowP = undefined;
   result.flagshowR = undefined;
   result.flagshowE = undefined;
+  result.flagshowL = undefined;
   result.overview = false;
   result.graph = false;
   result.graphRef = ref(null);
@@ -2070,7 +2075,13 @@ mitts.on("params", (result: any) => {
   result.Properties = {};
   result.showNodeMenu = false;
   result.showNodeInfoCard = false
-  list.value.unshift(result);
+  if (queryIdList.value.indexOf(result.queryId) === -1) {//为第一次预渲染loading
+    queryIdList.value.unshift(result.queryId)
+    list.value.unshift(result);//渲染占位
+  } else {//第二次数据回来后
+    const uniquequeryIdList = [...new Set(queryIdList.value)];
+    list.value[uniquequeryIdList.lastIndexOf(result.queryId)] = result;
+  }
   let textName = "";
   let textTitle = "";
   let lineText = "";
@@ -2081,6 +2092,8 @@ mitts.on("params", (result: any) => {
   };
   if (result.error) {
     result.flagshowER = true;
+  } else if (!result.records && !result.error) {
+    result.flagshowL = true
   } else if (result.records.length === 0) {
     result.flagshowE = true;
   } else {
@@ -2451,23 +2464,32 @@ mitts.on("params", (result: any) => {
 </script>
 
 <style scoped>
-  .c-node-info-card {
-      text-align: left;padding:10px;
-      background-color: rgba(233, 210, 243, 0.68);
-      border-radius: 10px;
-      font-size: 12px;
-      line-height: 25px;
-  }
-  .c-operate-panels {
-      position: absolute;z-index: 700;left:30px; top:30px;width:200px;
-  }
- .c-svg-button {
-      fill: rgba(26, 22, 28, 0.65);
-      cursor: pointer;
-  }
- .c-svg-button:hover {
-      fill: rgba(26, 23, 28, 0.85);
-  }
+.c-node-info-card {
+  text-align: left;
+  padding: 10px;
+  background-color: rgba(233, 210, 243, 0.68);
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 25px;
+}
+
+.c-operate-panels {
+  position: absolute;
+  z-index: 700;
+  left: 30px;
+  top: 30px;
+  width: 200px;
+}
+
+.c-svg-button {
+  fill: rgba(26, 22, 28, 0.65);
+  cursor: pointer;
+}
+
+.c-svg-button:hover {
+  fill: rgba(26, 23, 28, 0.85);
+}
+
 ::v-deep.relation-graph .rel-node-shape-0 {
   display: flex;
   align-items: center;
@@ -2522,20 +2544,26 @@ mitts.on("params", (result: any) => {
 
 @keyframes growUp {
   from {
-      scale: 10%;
-      rotate: 0deg;
+    scale: 10%;
+    rotate: 0deg;
   }
+
   50% {
-      scale: 30%;
-      rotate: 90deg;
+    scale: 30%;
+    rotate: 90deg;
   }
+
   to {
-      scale: 100%;
-      rotate: 360deg;
+    scale: 100%;
+    rotate: 360deg;
   }
 }
+
 .c-surround-menu-panel {
-  position:absolute;width:160px;height:160px;z-index:999;
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  z-index: 999;
   animation: growUp 0.5s linear;
   box-shadow: 0 0 0 38px rgba(255, 255, 255, 0.56) inset;
   border-radius: 50%;

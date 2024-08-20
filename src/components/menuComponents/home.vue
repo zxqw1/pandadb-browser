@@ -15,7 +15,7 @@
       >
     </div>
     <!-- 内容 -->
-    <a-row style="display: flex; flex-direction: column">
+    <a-row style="display: flex; flex-direction: column"> 
       <!-- 数据库选择 -->
       <a-col style="margin-top: 20px; display: flex; align-items: center">
         <div class="circle"></div>
