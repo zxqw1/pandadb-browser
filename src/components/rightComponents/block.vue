@@ -3,7 +3,7 @@
     position: isFullscreen ? 'fixed' : 'relative',
     top: isFullscreen ? '0' : '0',
     left: isFullscreen ? '0' : '0',
-    width: isFullscreen ? '100vw' : 'auto', 
+    width: isFullscreen ? '100vw' : 'auto',
   }">
     <el-row>
       <div style="background-color: #f6f6f6; width: 100%; height: 24px" v-if="!isFullscreen"></div>
@@ -126,11 +126,13 @@
                     <el-col>
                       <el-row v-for="(value, key) in item.Properties.properties"
                         style="border-bottom: 1px #efefef solid;margin-top:10px;display: flex">
-                        <el-col :span="10" style="padding-left: 10px ;font-weight: 500">{{ key  }}
+                        <el-col :span="10" style="padding-left: 10px ;font-weight: 500">{{ key }}
                           <el-image v-if="item.unstructured && value.info"
                             style="width: 24px;height: 24px;position: relative; top: 8px;" src="./look.png"
-                            :zoom-rate="1.2" :max-scale="7" :min-scale="0.2" :preview-src-list="imgList" 
+                            :zoom-rate="1.2" :max-scale="7" :min-scale="0.2" :preview-src-list="imgList"
                             :initial-index="0" fit="cover" :z-index="500" />
+                          <ArrowDownOutlined v-if="item.downloadFlag && value.info"
+                            @click="downLoadClick(item.fileInfo, item)" />
                         </el-col>
                         <el-col :span="11"
                           style="height: 30px;text-overflow: ellipsis;white-space: nowrap;overflow: hidden; "
@@ -1246,7 +1248,7 @@ import {
   VerticalAlignBottomOutlined,
   ShrinkOutlined,
   UpOutlined,
-  EyeOutlined
+  ArrowDownOutlined
 } from "@ant-design/icons-vue";
 import { ArrowLeftBold, CopyDocument, Unlock, Hide, Warning } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -1335,7 +1337,7 @@ const NodeClick = (event, item) => {
     }
   })
   currentNode.value = event;
-  addImg(item.bytes)
+  addImg(item.fileInfo)
   updateNodeMenuPosition(record);
   record.showNodeMenu = true;
 };
@@ -1873,7 +1875,7 @@ mitts.on("revamp", (data) => {
         for (let key in item2.properties) {
           if (item2.properties[key] && item2.properties[key].info && item2.properties[key].bytes) {
             result.unstructured = true
-            result.bytes = item2.properties[key].bytes
+            result.fileInfo = item2.properties[key]
           }
         }
       })
@@ -2100,6 +2102,7 @@ mitts.on("params", (result: any) => {
   result.showNodeMenu = false;
   result.showNodeInfoCard = false
   result.unstructured = false
+  result.downloadFlag = false
   if (queryIdList.value.indexOf(result.queryId) === -1) {//为第一次预渲染loading
     queryIdList.value.unshift(result.queryId)
     list.value.unshift(result);//渲染占位
@@ -2489,24 +2492,76 @@ mitts.on("params", (result: any) => {
     result.records.forEach(item => {
       item._fields.forEach(item2 => {
         for (let key in item2.properties) {
-          if (item2.properties[key] && item2.properties[key].info && item2.properties[key].bytes) {
+          if (item2.properties[key] && item2.properties[key].bytes && item2.properties[key].info.indexOf("image") !== -1) {
             result.unstructured = true
-            result.bytes = item2.properties[key].bytes
+            result.fileInfo = item2.properties[key]
+            result.downloadFlag = true
+          } else if (item2.properties[key] && item2.properties[key].bytes) {
+            result.downloadFlag = true
           }
         }
       })
     })
   }
 });
-const addImg = (bytes) => {
-  imgList.value = [`data:image/png;base64,${bytes}`]
+const addImg = (fileInfo) => {
+  let mimeType = fileInfo.info.split("=")[fileInfo.info.split("=").length - 1]
+  let mimeType2 = mimeType.slice(0, mimeType.length - 1)
+  console.log(mimeType2, '2511')
+  imgList.value = [`data:${mimeType2};base64,${fileInfo.bytes}`]
+}
+const downLoadClick = async (fileInfo, scoped) => {
+  if (fileInfo.info && fileInfo.info !== "") {
+    let mimeType = fileInfo.info.split("=")[fileInfo.info.split("=").length - 1]
+    let mimeType2 = mimeType.slice(0, mimeType.length - 1)
+    let base64 = `data:${mimeType2};base64,${fileInfo.bytes}`
+    let filename = `${scoped.Properties.label[0]}.${mimeType2.split("/")[1]}`
+    // 创建一个a标签  
+    const link = document.createElement('a');
+    link.href = base64;
+    link.download = filename;
+    // 触发点击  
+    document.body.appendChild(link); // 需要先添加到文档流中  
+    link.click();
+    // 清理  
+    document.body.removeChild(link);
+  } else if (fileInfo.info && fileInfo.info === "") {
+    let byteStream = await base64ToByteStream(fileInfo.bytes)
+    let filename = await generateRandomFilename()
+    await saveByteStreamAsFile(byteStream, filename)
+  }
+}
+// Function to convert Base64 to Uint8Array (byte stream) // 将base64编码转换
+function base64ToByteStream(base64) {
+  const binaryString = atob(base64); // Decode Base64 string
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len); // Create a byte stream
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+}
+// Function to generate a random filename // 生成随机文件名称
+function generateRandomFilename() {
+  const randomString = Math.random().toString(36).substring(2, 15); // Generate a random string
+  return randomString + '.bin'; // Append .bin extension
+}
+// Function to save the byte stream as a file // 创建a标签进行下载
+function saveByteStreamAsFile(byteStream, filename) {
+  const blob = new Blob([byteStream], { type: 'application/octet-stream' }); // Create a Blob from the byte stream
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click(); // Trigger the download
 }
 </script>
 
 <style scoped>
-.el-image-viewer__wrapper {  
-  z-index: 9999 !important; /* 使用足够高的z-index，并使用!important确保优先级 */  
+.el-image-viewer__wrapper {
+  z-index: 9999 !important;
+  /* 使用足够高的z-index，并使用!important确保优先级 */
 }
+
 .c-node-info-card {
   text-align: left;
   padding: 10px;
