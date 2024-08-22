@@ -106,13 +106,6 @@
           </template>
         </el-tree>
       </a-col>
-
-      <!-- <a-col style="margin-top: 30px; display: flex; align-items: center">
-        <div class="circle"></div>
-        <div class="name">示例</div>
-      </a-col>
-      <a-col>
-      </a-col> -->
     </a-row>
   </div>
 </template>

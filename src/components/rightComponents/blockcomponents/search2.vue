@@ -132,24 +132,25 @@ const opt = ref({
 let abortController: AbortController | null = null;
 let url:string|null = window.localStorage.getItem("address")//地址
 const closeurl = url.replace('/query', '/close')
-//唯一id
-const generateRandomId = () => {
-  const timestamp = new Date().getTime(); // 获取当前时间戳
-  const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
-  return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
-};
-const queryId = generateRandomId()
 //获取数据
 const funClick = async () => {
   await nextTick();
+const queryId = props.item.queryId
   if (contentValue.value === "") {
-    // console.log(111);
   } else {
-    loadingFlag.value = !loadingFlag.value
-    const queryobj = {
-        'query' : contentValue.value,
-        'queryId':queryId
+    mitts.emit("params", {
+      "queryId":queryId,
+      'summary':{
+        'query':{
+          'text':contentValue.value
+        }
       }
+    });
+    const queryobj = {
+      'query': contentValue.value,
+      'queryId': queryId
+    }
+    loadingFlag.value = !loadingFlag.value
     const startTime = performance.now();
     // 创建新的 AbortController 实例  
     abortController = new AbortController();
@@ -166,7 +167,6 @@ const funClick = async () => {
       loadingFlag.value = !loadingFlag.value
         const data2 = JSON.parse(data);
         if (data2.error) {
-          // // console.log(data2, "186");
           const result = {};
           result.summary = {};
           result.summary.query = {};
@@ -175,6 +175,7 @@ const funClick = async () => {
           result.summary.server.address = window.localStorage.getItem('address');
           result.summary.server.agent = "PandaDB";
           result.error = data2.error;
+          result.queryId = data2.queryId
           mitts.emit("revamp", {result:result,index:props.index,id:props.item.id,item:props.item});
           store.commit("ScrollChange", result);
         }else{
@@ -186,13 +187,14 @@ const funClick = async () => {
           result.summary.server = {};
           const responseTime = endTime - startTime;
           result.resTime = Math.round(responseTime) + "ms";
-        data2.response.forEach((value, index) => {
+          data2.response.forEach((value, index) => {
             const keys = Object.keys(value);
           result.records.push({ keys: keys, _fields: [] });
             for (let key in value) {
           result.records[index]._fields.push(value[key]);
             }
           });
+          result.queryId = data2.queryId
           result.summary.query.text = data2.query;
           result.summary.server.address = window.localStorage.getItem('address');
           result.summary.server.agent = "PandaDB";

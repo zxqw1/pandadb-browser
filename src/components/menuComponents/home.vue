@@ -1,37 +1,25 @@
 <template>
-  <div
-    class="home"
-    style="
+  <div class="home" style="
       padding: 18px 0 0 26px;
       height: calc(100vh - 70px);
       overflow-y: auto;
-    "
-  >
+    ">
     <!-- 标题 -->
     <div class="titleS">
       <div class="icon"></div>
       <span style="font-size: 20px; color: #333333; font-weight: 600">
-        数据库基本信息</span
-      >
+        数据库基本信息</span>
     </div>
     <!-- 内容 -->
-    <a-row style="display: flex; flex-direction: column"> 
+    <a-row style="display: flex; flex-direction: column">
       <!-- 数据库选择 -->
       <a-col style="margin-top: 20px; display: flex; align-items: center">
         <div class="circle"></div>
         <div class="name">数据库选择</div>
       </a-col>
-      <a-col
-        style="margin-top: 20px; display: flex; align-items: center"
-        class="sele"
-      >
+      <a-col style="margin-top: 20px; display: flex; align-items: center" class="sele">
         <el-select v-model="value" placeholder="Select" style="width: 240px">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
+          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </a-col>
       <!-- 节点标签 -->
@@ -40,20 +28,10 @@
         <div class="name">节点标签</div>
       </a-col>
       <a-col style="margin-top: 20px;">
-        <a-tag
-          color="rgb(145, 149, 160)"
-          style="cursor: pointer;margin-left: 10px;"
-          @click="labelShow"
-        >
-          *({{ nodeNumber }})</a-tag
-        >
-        <a-tag
-          :color="getNodeColor(item)"
-          style="margin-left: 10px; margin-top: 10px; cursor: pointer"
-          v-for="(item, index) in labelList"
-          :key="index"
-          @click="graphShow($event)"
-        >
+        <a-tag color="rgb(145, 149, 160)" style="cursor: pointer;margin-left: 10px;" @click="labelShow">
+          *({{ nodeNumber }})</a-tag>
+        <a-tag :color="getNodeColor(item)" style="margin-left: 10px; margin-top: 10px; cursor: pointer"
+          v-for="(item, index) in labelList" :key="index" @click="graphShow($event)">
           {{ item }}
         </a-tag>
       </a-col>
@@ -62,17 +40,10 @@
         <div class="circle"></div>
         <div class="name">关系类型</div>
       </a-col>
-      <a-col style="margin-top: 20px" >
-        <a-tag style="cursor: pointer;margin-left: 10px;" @click="relationShow($event)"
-          >*({{ TypeNumber }})</a-tag
-        >
-        <a-tag
-          style="margin-left: 10px; margin-top: 10px; cursor: pointer"
-          v-for="(item, index) in typeList"
-          :key="index"
-          @click="relationClick($event)"
-          >{{ item }}</a-tag
-        >
+      <a-col style="margin-top: 20px">
+        <a-tag style="cursor: pointer;margin-left: 10px;" @click="relationShow($event)">*({{ TypeNumber }})</a-tag>
+        <a-tag style="margin-left: 10px; margin-top: 10px; cursor: pointer" v-for="(item, index) in typeList"
+          :key="index" @click="relationClick($event)">{{ item }}</a-tag>
       </a-col>
       <!-- 属性值 -->
       <!-- <a-col style="margin-top: 20px; display: flex; align-items: center">
@@ -95,28 +66,21 @@
       </a-col>
       <el-col style="margin-top: 12">
         <div style="margin-top: 8px">
-          <span style="font-size: 16px; color: #333; font-weight: 500"
-            >username:</span
-          >
+          <span style="font-size: 16px; color: #333; font-weight: 500">username:</span>
           <span style="margin-left: 14px">{{ username }}</span>
         </div>
         <div style="margin-top: 8px">
-          <span style="font-size: 16px; color: #333; font-weight: 500"
-            >address:</span
-          >
+          <span style="font-size: 16px; color: #333; font-weight: 500">address:</span>
           <span style="margin-left: 14px">{{ address }}</span>
         </div>
-        <div
-          style="
+        <div style="
             margin-top: 8px;
             font-size: 16px;
             color: #6a8322;
             font-weight: 500;
             text-decoration: underline;
             cursor: pointer;
-          "
-          @click="disconnectClick"
-        >
+          " @click="disconnectClick">
           disconnect
         </div>
       </el-col>
@@ -137,14 +101,14 @@ const labelList = ref(JSON.parse(window.localStorage.getItem('labelList')))
 const typeList = ref(JSON.parse(window.localStorage.getItem('typeList')))
 const nodeNumber = ref(window.localStorage.getItem('labelNumber'))
 const TypeNumber = ref(window.localStorage.getItem('TypeNumber'))
-watch(store.state.list, async ()=>{
-    await getJsonDataInfo()
+watch(store.state.list, async () => {
+  await getJsonDataInfo()
 
   labelList.value = JSON.parse(window.localStorage.getItem('labelList'))
   typeList.value = JSON.parse(window.localStorage.getItem('typeList'))
   nodeNumber.value = window.localStorage.getItem('labelNumber')
   TypeNumber.value = window.localStorage.getItem('TypeNumber')
-  
+
 
 })
 
@@ -183,16 +147,26 @@ const generateRandomId = () => {
 };
 //节点展示全部
 const labelShow = () => {
+  const queryId = generateRandomId()
+  mitts.emit("params", {
+    "queryId": queryId,
+    'summary': {
+      'query': {
+        'text': 'MATCH (n) RETURN n LIMIT 25'
+      }
+    }
+  });
+  const queryobj = {
+    'query': 'MATCH (n) RETURN n LIMIT 25',
+    'queryId': queryId
+  }
   const startTime = performance.now()
   fetch(window.localStorage.getItem('address'), {
     method: "POST",
     headers: {
       "Content-Type": "text/plain",
     },
-    body: `{
-    'query':'MATCH (n) RETURN n LIMIT 25',
-    'queryId':'${generateRandomId()}'
-    }`,
+    body: JSON.stringify(queryobj),
   })
     .then((response) => response.text())
     .then((data) => {
@@ -203,7 +177,6 @@ const labelShow = () => {
       result.summary = {};
       result.summary.query = {};
       result.summary.server = {};
-      // console.log(JSON.parse(data), "data");
       result.resTime = Math.round(responseTime) + 'ms'
       const data2 = JSON.parse(data);
       data2.response.forEach((value, key) => {
@@ -212,13 +185,13 @@ const labelShow = () => {
           result.records.push({ keys: keys, _fields: [value[key]] });
         }
       });
+      result.queryId = data2.queryId
       result.summary.query.text = data2.query;
       result.summary.server.address = window.localStorage.getItem('address');
       result.summary.server.agent = "PandaDB";
-      // console.log(result);
       mitts.emit("params", result);
       store.commit("ScrollChange", result);
-      
+
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -226,16 +199,26 @@ const labelShow = () => {
 };
 //节点展示部分
 const graphShow = (e) => {
+  const queryId = generateRandomId()
+  mitts.emit("params", {
+    "queryId": queryId,
+    'summary': {
+      'query': {
+        'text': `MATCH (n:${e.target.innerText}) RETURN n LIMIT 25`
+      }
+    }
+  });
+  const queryobj = {
+    'query': `MATCH (n:${e.target.innerText}) RETURN n LIMIT 25`,
+    'queryId': queryId
+  }
   const startTime = performance.now();
   fetch(window.localStorage.getItem('address'), {
     method: "POST",
     headers: {
       "Content-Type": "text/plain",
     },
-    body: `{
-    'query':'MATCH (n:${e.target.innerText}) RETURN n LIMIT 25',
-    'queryId':'${generateRandomId()}'
-    }`,
+    body: JSON.stringify(queryobj),
   })
     .then((response) => response.text())
     .then((data) => {
@@ -254,6 +237,7 @@ const graphShow = (e) => {
           result.records.push({ keys: keys, _fields: [value[key]] });
         }
       });
+      result.queryId = data2.queryId
       result.summary.query.text = data2.query;
       result.summary.server.address = window.localStorage.getItem('address');
       result.summary.server.agent = "PandaDB";
@@ -266,16 +250,26 @@ const graphShow = (e) => {
 };
 //关系展示全部
 const relationShow = (e) => {
+  const queryId = generateRandomId()
+  mitts.emit("params", {
+    "queryId": queryId,
+    'summary': {
+      'query': {
+        'text': 'MATCH p=()-->() RETURN p LIMIT 25'
+      }
+    }
+  });
+  const queryobj = {
+    'query': 'MATCH p=()-->() RETURN p LIMIT 25'  ,
+    'queryId': queryId
+  }
   const startTime = performance.now();
   fetch(window.localStorage.getItem('address'), {
     method: "POST",
     headers: {
       "Content-Type": "text/plain",
     },
-    body: `{
-    'query':'MATCH p=()-->() RETURN p LIMIT 25',
-    'queryId':'${generateRandomId()}'
-    }`,
+    body: JSON.stringify(queryobj),
   })
     .then((response) => response.text())
     .then((data) => {
@@ -307,16 +301,26 @@ const relationShow = (e) => {
 }
 //关系展示部分
 const relationClick = (e) => {
+  const queryId = generateRandomId()
+  mitts.emit("params", {
+    "queryId": queryId,
+    'summary': {
+      'query': {
+        'text': `MATCH p=()-[r:${e.target.innerText}]->() RETURN p LIMIT 25`
+      }
+    }
+  });
+  const queryobj = {
+    'query': `MATCH p=()-[r:${e.target.innerText}]->() RETURN p LIMIT 25`  ,
+    'queryId': queryId
+  }
   const startTime = performance.now();
   fetch(window.localStorage.getItem('address'), {
     method: "POST",
     headers: {
       "Content-Type": "text/plain",
     },
-    body: `{
-    'query':'MATCH p=()-[r:${e.target.innerText}]->() RETURN p LIMIT 25',
-    'queryId':'${generateRandomId()}'
-    }`,
+    body: JSON.stringify(queryobj),
   })
     .then((response) => response.text())
     .then((data) => {
@@ -337,6 +341,7 @@ const relationClick = (e) => {
           result.records.push({ keys: keys, _fields: [value[key]] });
         }
       });
+      result.queryId = data2.queryId
       result.summary.query.text = data2.query;
       result.summary.server.address = window.localStorage.getItem('address');
       result.summary.server.agent = "PandaDB";
@@ -349,8 +354,8 @@ const relationClick = (e) => {
     });
 }
 
-onMounted(()=>{
-  nextTick(()=>{
+onMounted(() => {
+  nextTick(() => {
     getJsonDataInfo() //vue3 created事件是哪个
   })
 })

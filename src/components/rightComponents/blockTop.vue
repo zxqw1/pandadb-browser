@@ -1,10 +1,9 @@
 <template>
-  <div style="background-color: #ffffff" v-for="(item, index) in toplist" :key="item.id" :id="item.id" :style="{
-    position: isFullscreen ? 'fixed' : 'static',
+  <div style="background-color: #ffffff" v-for="(item, index) in toplist" :key="item.id" :style="{
+    position: isFullscreen ? 'fixed' : 'relative',
     top: isFullscreen ? '0' : '0',
     left: isFullscreen ? '0' : '0',
-    width: isFullscreen ? '100vw' : 'auto',
-    zIndex: isFullscreen ? '5' : '0',
+    width: isFullscreen ? '100vw' : 'auto', 
   }">
     <el-row>
       <div style="background-color: #f6f6f6; width: 100%; height: 24px" v-if="!isFullscreen"></div>
@@ -18,7 +17,7 @@
           padding-top: 4px;
         ">
         <div class="topIcon">
-          <Pushpin-outlined style="margin-left: 16px;background-color: #ccc" @click="topClick(index, item)" />
+          <Pushpin-outlined style="margin-left: 16px;background-color: #cccccc" @click="topClick(index, item)" />
           <Down-outlined style="margin-left: 16px" v-if="item.show" @click="item.show = false" />
           <Up-outlined v-else style="margin-left: 16px" @click="item.show = true" />
           <ExpandAltOutlined style="margin-left: 16px" @click="toggleFullScreen" v-if="!isFullscreen" />
@@ -27,7 +26,7 @@
         </div>
       </el-col>
       <!-- 搜索 -->
-      <search3 :command="item.summary.query.text" :index="index" :item="item" />
+      <search2 :command="item.summary.query.text" :index="index" :item="item" />
       <!-- 展示 -->
       <el-col style="height: 348px; margin-top: 12px" v-show="!item.show" :style="{
         height: isFullscreen ? '100vh' : 'auto',
@@ -41,9 +40,10 @@
           <div style="width: 100%;background-color: rgb(210, 213, 218);padding: 20px;margin-top: 10px">
             {{ item.error }}
           </div>
-          <RelationGraph :ref="dom => { getRefDom(dom, item) }" :options="options" style="display: none">
-          </RelationGraph>
         </el-col>
+        <!-- loading -->
+        <el-col v-if="item.flagshowL" v-loading="true" element-loading-background="rgba(221, 221, 221, 0.5)"
+          :style="{ height: isFullscreen ? '100vh' : '324px' }" style="padding: 18px;"></el-col>
         <!-- node -->
         <el-col v-if="item.flagshowN">
           <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu"
@@ -85,7 +85,7 @@
                     min-height: 452px;
                     background-color: #ffffff;
                     box-shadow: 0 0 2px #ccc;
-                    z-index: 10;
+                    /* z-index: 1; */
                     position: relative;
                   " v-else>
                   <ArrowLeftBold color="#999999" style="
@@ -126,10 +126,15 @@
                     <el-col>
                       <el-row v-for="(value, key) in item.Properties.properties"
                         style="border-bottom: 1px #efefef solid;margin-top:10px;display: flex">
-                        <el-col :span="10" style="padding-left: 10px ;font-weight: 500 ">{{ key }}</el-col>
+                        <el-col :span="10" style="padding-left: 10px ;font-weight: 500">{{ key  }}
+                          <el-image v-if="item.unstructured && value.info"
+                            style="width: 24px;height: 24px;position: relative; top: 8px;" src="./look.png"
+                            :zoom-rate="1.2" :max-scale="7" :min-scale="0.2" :preview-src-list="imgList" 
+                            :initial-index="0" fit="cover" :z-index="500" />
+                        </el-col>
                         <el-col :span="11"
                           style="height: 30px;text-overflow: ellipsis;white-space: nowrap;overflow: hidden; "
-                          :title="value">{{ value }}</el-col>
+                          :title="value">{{ item.unstructured && value.info ? value.info : value }}</el-col>
                         <el-col :span="3" style="padding-left: 10px">
                           <CopyDocument style="width: 14px;" @click="copyClick(key, value)" />
                         </el-col>
@@ -154,7 +159,6 @@
                         </template>
                         <el-row>
                           <el-col>
-                            <!-- v-for="(value, key) in item.labelList" :key="key" -->
                             <el-tag effect="dark" round :color="getTagColor(key)"
                               style="width: 100%;border: none;margin-bottom: 10px">{{ key }}({{ value }})</el-tag>
                           </el-col>
@@ -268,7 +272,7 @@
                       {{ node.text }}</div>
                   </template>
                   <!-- nodemenu -->
-                  <template #graph-plug>
+                  <!-- <template #graph-plug>
                     <div v-show="item.showNodeMenu" class="c-surround-menu-panel"
                       style="display: flex;align-items: center;justify-content: center;place-items: center;" :style="{
                         width: nodeMenuPanel.width + 'px',
@@ -290,7 +294,7 @@
                               @click="clickNodeMenu('graph', $event)" />
                             <path class="c-svg-button"
                               d="m209.28944,332.98659l0.34067,-61.57483l7.49485,-1.64933c7.08604,-1.51188 11.51481,-3.22993 21.12184,-8.4528c6.06401,-3.22993 20.03168,-18.28003 23.43843,-25.22094c4.97385,-10.17084 7.22231,-15.94348 7.22231,-18.62364c0,-1.37444 0.40881,-3.91715 0.88575,-5.6352l0.81762,-3.09249l60.43571,0l60.50384,0l0,5.15414c-0.06813,86.31472 -81.62568,171.87351 -171.35942,179.77653l-11.24227,0.96211l0.34067,-61.64356z"
-                              @click="clickNodeMenu('card', $event,item)" />
+                              @click="clickNodeMenu('card', $event, item)" />
                           </g>
                         </g>
                       </svg>
@@ -298,28 +302,34 @@
                         style="height:100%;width:100%;position: absolute;left: 0px;top:0px;user-select: none;pointer-events: none;color: #ffffff;font-size: 22px;">
 
                         <div style="position: absolute;left:20px;top:20px;">
-                          <el-icon><Unlock /></el-icon>
+                          <el-icon>
+                            <Unlock />
+                          </el-icon>
                         </div>
                         <div style="position: absolute;right:20px;top:20px;">
-                          <el-icon><Hide /></el-icon>
+                          <el-icon>
+                            <Hide />
+                          </el-icon>
                         </div>
                         <div style="position: absolute;left:20px;top:75px;transform: rotate(180deg);">
-                         <img src="../../assets//img/atlas.png" alt="" style="width: 20px;height: 20px">
+                          <img src="../../assets//img/atlas.png" alt="" style="width: 20px;height: 20px">
                         </div>
                         <div style="position: absolute;right:20px;top:75px;">
-                          <el-icon><Warning /></el-icon>
+                          <el-icon>
+                            <Warning />
+                          </el-icon>
                         </div>
                       </div>
                     </div>
                     <div class="c-operate-panels">
-                      <!--- Node info card -->
-                      <div v-if="item.showNodeInfoCard" class="c-node-info-card" style="background-color: #ffffff;height: 200px;border: 1px #ccc solid;">
+                      - Node info card
+                      <div v-if="item.showNodeInfoCard" class="c-node-info-card"
+                        style="background-color: #ffffff;height: 200px;border: 1px #ccc solid;">
                         <h3> Node info card</h3>
                       </div>
                     </div>
-                  </template>
+                  </template> -->
                 </RelationGraph>
-
               </div>
             </el-tab-pane>
             <el-tab-pane label="table">
@@ -498,7 +508,7 @@
                     overflow: auto;
                     background-color: #ffffff;
                     box-shadow: 0 0 2px #ccc;
-                    z-index: 10;
+                    /* z-index: 10; */
                     position: relative;
                   " v-else>
                   <!-- overview展开 -->
@@ -1215,7 +1225,7 @@
           background-color: #ffffff;
           line-height: 24px;
           padding-left: 16px;
-        " v-if="!item.flagshowER">
+        " v-if="!(item.flagshowER || item.flagshowL)">
         Transmit {{ item.records.length }} records within {{ item.resTime }}.
       </div>
     </el-row>
@@ -1236,12 +1246,13 @@ import {
   VerticalAlignBottomOutlined,
   ShrinkOutlined,
   UpOutlined,
+  EyeOutlined
 } from "@ant-design/icons-vue";
-import { ArrowLeftBold, CopyDocument,Unlock,Hide,Warning } from "@element-plus/icons-vue";
+import { ArrowLeftBold, CopyDocument, Unlock, Hide, Warning } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import mitts from "../../utils/bus.js";
 //组件
-import search3 from "../rightComponents/blockcomponents/search3.vue";
+import search2 from "../rightComponents/blockcomponents/search2.vue";
 import mitt from "mitt";
 import type { RGUserEvent } from "relation-graph-vue3";
 import { anyType } from "ant-design-vue/es/_util/type.js";
@@ -1260,34 +1271,38 @@ const labelList = ref([]);
 const resultRelation = ref([]);
 const relationList = ref([]);
 const tagName = ref("");
-// const showNodeMenu = ref(false);
 const nodeMenuPanel = ref({ x: 0, y: 0, width: 120, height: 120 });
 const currentNode = ref<RGNode | null>(null);
-// const showNodeInfoCard = ref(false);
+const queryIdList = ref([])
+const imgList = ref([
+  // 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
+  // 'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
+  // 'https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg',
+  // 'https://fuss10.elemecdn.com/9/bb/e27858e973f5d7d3904835f46abbdjpeg.jpeg',
+])
 const getRefDom = (val: any, item: any) => {
   item.graphRef = val;
 };
 // 节点展开
-const clickNodeMenu = (menutip: string, event: RGUserEvent, item: any)=>{
- item.showNodeMenu = true;
-  if(menutip === 'lock'){
-    console.log('lock')
-  }else if(menutip === 'nodehide'){
-    const graphInstance = item.graphRef!.getInstance();//拿到图形实例
-    const _all_nodes = graphInstance.getNodes();//所有dom集合
-    _all_nodes.forEach(item2=>{
-      if(item2.id === item.Properties.id){
-        item2.opacity = 0
-      }
-      item.showNodeMenu = false
-    })
-  }else if(menutip === 'card'){
-    console.log('card')
-    item.showNodeInfoCard = !item.showNodeInfoCard;
-  }else if(menutip === 'graph'){
-    console.log('graph')
-  }
-}
+// const clickNodeMenu = (menutip: string, event: RGUserEvent, item: any) => {
+//   item.showNodeMenu = true;
+//   if (menutip === 'lock') {
+//     console.log('lock')
+//   } else if (menutip === 'nodehide') {
+//     const graphInstance = item.graphRef!.getInstance();//拿到图形实例
+//     const _all_nodes = graphInstance.getNodes();//所有dom集合
+//     _all_nodes.forEach(item2 => {
+//       if (item2.id === item.Properties.id) {
+//         item2.opacity = 0;
+//       }
+//       item.showNodeMenu = false
+//     })
+//   } else if (menutip === 'card') {
+//     item.showNodeInfoCard = !item.showNodeInfoCard;
+//   } else if (menutip === 'graph') {
+//     console.log('graph')
+//   }
+// }
 const updateNodeMenuPosition = (item) => {
   if (!currentNode.value) return;
   const graphInstance = item.graphRef?.getInstance();
@@ -1304,8 +1319,8 @@ const updateNodeMenuPosition = (item) => {
 //单个node信息
 const NodeClick = (event, item) => {
   let record = {}
-  toplist.value.forEach((item2)=>{
-    if(item2.id === item.id){
+  toplist.value.forEach((item2) => {
+    if (item2.id === item.id) {
       record = item2
     }
   })
@@ -1320,14 +1335,15 @@ const NodeClick = (event, item) => {
     }
   })
   currentNode.value = event;
+  addImg(item.bytes)
   updateNodeMenuPosition(record);
   record.showNodeMenu = true;
 };
 //单个line信息
 const lineClick = (event, item) => {
   let record = {}
-  toplist.value.forEach((item2)=>{
-    if(item2.id === item.id){
+  toplist.value.forEach((item2) => {
+    if (item2.id === item.id) {
       record = item2
     }
   })
@@ -1346,8 +1362,8 @@ const lineClick = (event, item) => {
 //取消选中节点
 const itemClick = (item) => {
   let record = {}
-  toplist.value.forEach((item2)=>{
-    if(item2.id === item.id){
+  toplist.value.forEach((item2) => {
+    if (item2.id === item.id) {
       record = item2
     }
   })
@@ -1434,15 +1450,15 @@ const topClick = (index: Number, item: any) => {
   toplist.value.splice(index, 1);
   mitts.emit("untopData", item);
 };
-// 置顶
+//置顶
 mitts.on("topData", (item: any) => {
-  if(item.graphData.nodes.length!== 0){
+  if (item.graphData.nodes.length !== 0) {
     item.graphRef.value = undefined
-  toplist.value.unshift(item);
-  nextTick(() => {
-    item.graphRef.setJsonData(item.graphData);
-  });
-  } else{
+    toplist.value.unshift(item);
+    nextTick(() => {
+      item.graphRef.setJsonData(item.graphData);
+    });
+  } else {
     toplist.value.unshift(item);
   }
 });
@@ -1460,8 +1476,8 @@ const generateRandomId = () => {
 //修改
 mitts.on("revamp2", (data) => {
   const result = data.result;
-  const index = data.index;
-  result.id = data.id || generateRandomId();
+  const index = data.index; 
+  result.id = data.queryId;
   result.labelList = {};
   result.relationList = [];
   result.flagshowN = undefined;
@@ -1475,6 +1491,7 @@ mitts.on("revamp2", (data) => {
   result.Properties = {};
   result.showNodeMenu = false;
   result.showNodeInfoCard = false
+  result.unstructured = false
   toplist.value[index] = result;
   let textName = "";
   let textTitle = "";
@@ -1719,7 +1736,6 @@ mitts.on("revamp2", (data) => {
       },
       []
     ); // 初始累加器是一个空数组
-    // console.log(result.graphData);
     result.flagshowN = false;
     result.flagshowR = false;
     result.flagshowE = false;
@@ -1851,7 +1867,19 @@ mitts.on("revamp2", (data) => {
       result.graphRef.value.setJsonData(result.graphData);
     });
   }
-});
+  if (result.records) { // 判断没有不走，第一次没有，不走，就不报错
+    result.records.forEach(item => {
+      item._fields.forEach(item2 => {
+        for (let key in item2.properties) {
+          if (item2.properties[key] && item2.properties[key].info && item2.properties[key].bytes) {
+            result.unstructured = true
+            result.bytes = item2.properties[key].bytes
+          }
+        }
+      })
+    })
+  }
+})
 
 //复制
 const tableCopy = (item4: any) => {
@@ -2053,27 +2081,39 @@ const lineFileClick = (e) => {
 //下载图片
 mitts.on("download", (item) => {
   item.graphRef.getInstance().downloadAsImage("png", "graph");
-});
+})
 </script>
 
 <style scoped>
-  .c-node-info-card {
-      text-align: left;padding:10px;
-      background-color: rgba(233, 210, 243, 0.68);
-      border-radius: 10px;
-      font-size: 12px;
-      line-height: 25px;
-  }
-  .c-operate-panels {
-      position: absolute;z-index: 700;left:30px; top:30px;width:200px;
-  }
- .c-svg-button {
-      fill: rgba(26, 22, 28, 0.65);
-      cursor: pointer;
-  }
- .c-svg-button:hover {
-      fill: rgba(26, 23, 28, 0.85);
-  }
+.el-image-viewer__wrapper {  
+  z-index: 9999 !important; /* 使用足够高的z-index，并使用!important确保优先级 */  
+}
+.c-node-info-card {
+  text-align: left;
+  padding: 10px;
+  background-color: rgba(233, 210, 243, 0.68);
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 25px;
+}
+
+.c-operate-panels {
+  position: absolute;
+  z-index: 700;
+  left: 30px;
+  top: 30px;
+  width: 200px;
+}
+
+.c-svg-button {
+  fill: rgba(26, 22, 28, 0.65);
+  cursor: pointer;
+}
+
+.c-svg-button:hover {
+  fill: rgba(26, 23, 28, 0.85);
+}
+
 ::v-deep.relation-graph .rel-node-shape-0 {
   display: flex;
   align-items: center;
@@ -2128,20 +2168,26 @@ mitts.on("download", (item) => {
 
 @keyframes growUp {
   from {
-      scale: 10%;
-      rotate: 0deg;
+    scale: 10%;
+    rotate: 0deg;
   }
+
   50% {
-      scale: 30%;
-      rotate: 90deg;
+    scale: 30%;
+    rotate: 90deg;
   }
+
   to {
-      scale: 100%;
-      rotate: 360deg;
+    scale: 100%;
+    rotate: 360deg;
   }
 }
+
 .c-surround-menu-panel {
-  position:absolute;width:160px;height:160px;z-index:999;
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  z-index: 999;
   animation: growUp 0.5s linear;
   box-shadow: 0 0 0 38px rgba(255, 255, 255, 0.56) inset;
   border-radius: 50%;

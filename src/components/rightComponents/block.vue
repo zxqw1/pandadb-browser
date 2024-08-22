@@ -1,10 +1,9 @@
 <template>
   <div style="background-color: #ffffff" v-for="(item, index) in list" :key="item.id" :style="{
-    position: isFullscreen ? 'fixed' : 'static',
+    position: isFullscreen ? 'fixed' : 'relative',
     top: isFullscreen ? '0' : '0',
     left: isFullscreen ? '0' : '0',
-    width: isFullscreen ? '100vw' : 'auto',
-    zIndex: isFullscreen ? '5' : '0',
+    width: isFullscreen ? '100vw' : 'auto', 
   }">
     <el-row>
       <div style="background-color: #f6f6f6; width: 100%; height: 24px" v-if="!isFullscreen"></div>
@@ -43,8 +42,8 @@
           </div>
         </el-col>
         <!-- loading -->
-        <el-col v-if="item.flagshowL" v-loading="true" element-loading-background="rgba(221, 221, 221, 0.5)" :style="{ height: isFullscreen ? '100vh' : '324px' }"
-          style="padding: 18px;"></el-col>
+        <el-col v-if="item.flagshowL" v-loading="true" element-loading-background="rgba(221, 221, 221, 0.5)"
+          :style="{ height: isFullscreen ? '100vh' : '324px' }" style="padding: 18px;"></el-col>
         <!-- node -->
         <el-col v-if="item.flagshowN">
           <el-tabs :tab-position="tabPosition" class="demo-tabs graphMenu"
@@ -86,7 +85,7 @@
                     min-height: 452px;
                     background-color: #ffffff;
                     box-shadow: 0 0 2px #ccc;
-                    z-index: 10;
+                    /* z-index: 1; */
                     position: relative;
                   " v-else>
                   <ArrowLeftBold color="#999999" style="
@@ -127,10 +126,15 @@
                     <el-col>
                       <el-row v-for="(value, key) in item.Properties.properties"
                         style="border-bottom: 1px #efefef solid;margin-top:10px;display: flex">
-                        <el-col :span="10" style="padding-left: 10px ;font-weight: 500 ">{{ key }}</el-col>
+                        <el-col :span="10" style="padding-left: 10px ;font-weight: 500">{{ key  }}
+                          <el-image v-if="item.unstructured && value.info"
+                            style="width: 24px;height: 24px;position: relative; top: 8px;" src="./look.png"
+                            :zoom-rate="1.2" :max-scale="7" :min-scale="0.2" :preview-src-list="imgList" 
+                            :initial-index="0" fit="cover" :z-index="500" />
+                        </el-col>
                         <el-col :span="11"
                           style="height: 30px;text-overflow: ellipsis;white-space: nowrap;overflow: hidden; "
-                          :title="value">{{ value }}</el-col>
+                          :title="value">{{ item.unstructured && value.info ? value.info : value }}</el-col>
                         <el-col :span="3" style="padding-left: 10px">
                           <CopyDocument style="width: 14px;" @click="copyClick(key, value)" />
                         </el-col>
@@ -268,7 +272,7 @@
                       {{ node.text }}</div>
                   </template>
                   <!-- nodemenu -->
-                  <template #graph-plug>
+                  <!-- <template #graph-plug>
                     <div v-show="item.showNodeMenu" class="c-surround-menu-panel"
                       style="display: flex;align-items: center;justify-content: center;place-items: center;" :style="{
                         width: nodeMenuPanel.width + 'px',
@@ -318,15 +322,14 @@
                       </div>
                     </div>
                     <div class="c-operate-panels">
-                      <!--- Node info card -->
+                      - Node info card
                       <div v-if="item.showNodeInfoCard" class="c-node-info-card"
                         style="background-color: #ffffff;height: 200px;border: 1px #ccc solid;">
                         <h3> Node info card</h3>
                       </div>
                     </div>
-                  </template>
+                  </template> -->
                 </RelationGraph>
-
               </div>
             </el-tab-pane>
             <el-tab-pane label="table">
@@ -505,7 +508,7 @@
                     overflow: auto;
                     background-color: #ffffff;
                     box-shadow: 0 0 2px #ccc;
-                    z-index: 10;
+                    /* z-index: 10; */
                     position: relative;
                   " v-else>
                   <!-- overview展开 -->
@@ -1243,6 +1246,7 @@ import {
   VerticalAlignBottomOutlined,
   ShrinkOutlined,
   UpOutlined,
+  EyeOutlined
 } from "@ant-design/icons-vue";
 import { ArrowLeftBold, CopyDocument, Unlock, Hide, Warning } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -1270,29 +1274,35 @@ const tagName = ref("");
 const nodeMenuPanel = ref({ x: 0, y: 0, width: 120, height: 120 });
 const currentNode = ref<RGNode | null>(null);
 const queryIdList = ref([])
+const imgList = ref([
+  // 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
+  // 'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
+  // 'https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg',
+  // 'https://fuss10.elemecdn.com/9/bb/e27858e973f5d7d3904835f46abbdjpeg.jpeg',
+])
 const getRefDom = (val: any, item: any) => {
   item.graphRef = val;
 };
 // 节点展开
-const clickNodeMenu = (menutip: string, event: RGUserEvent, item: any) => {
-  item.showNodeMenu = true;
-  if (menutip === 'lock') {
-    console.log('lock')
-  } else if (menutip === 'nodehide') {
-    const graphInstance = item.graphRef!.getInstance();//拿到图形实例
-    const _all_nodes = graphInstance.getNodes();//所有dom集合
-    _all_nodes.forEach(item2 => {
-      if (item2.id === item.Properties.id) {
-        item2.opacity = 0;
-      }
-      item.showNodeMenu = false
-    })
-  } else if (menutip === 'card') {
-    item.showNodeInfoCard = !item.showNodeInfoCard;
-  } else if (menutip === 'graph') {
-    console.log('graph')
-  }
-}
+// const clickNodeMenu = (menutip: string, event: RGUserEvent, item: any) => {
+//   item.showNodeMenu = true;
+//   if (menutip === 'lock') {
+//     console.log('lock')
+//   } else if (menutip === 'nodehide') {
+//     const graphInstance = item.graphRef!.getInstance();//拿到图形实例
+//     const _all_nodes = graphInstance.getNodes();//所有dom集合
+//     _all_nodes.forEach(item2 => {
+//       if (item2.id === item.Properties.id) {
+//         item2.opacity = 0;
+//       }
+//       item.showNodeMenu = false
+//     })
+//   } else if (menutip === 'card') {
+//     item.showNodeInfoCard = !item.showNodeInfoCard;
+//   } else if (menutip === 'graph') {
+//     console.log('graph')
+//   }
+// }
 const updateNodeMenuPosition = (item) => {
   if (!currentNode.value) return;
   const graphInstance = item.graphRef?.getInstance();
@@ -1325,6 +1335,7 @@ const NodeClick = (event, item) => {
     }
   })
   currentNode.value = event;
+  addImg(item.bytes)
   updateNodeMenuPosition(record);
   record.showNodeMenu = true;
 };
@@ -1466,7 +1477,7 @@ const generateRandomId = () => {
 mitts.on("revamp", (data) => {
   const result = data.result;
   const index = data.index;
-  result.id = data.id || generateRandomId();
+  result.id = data.queryId;
   result.labelList = {};
   result.relationList = [];
   result.flagshowN = undefined;
@@ -1480,6 +1491,7 @@ mitts.on("revamp", (data) => {
   result.Properties = {};
   result.showNodeMenu = false;
   result.showNodeInfoCard = false
+  result.unstructured = false
   list.value[index] = result;
   let textName = "";
   let textTitle = "";
@@ -1855,7 +1867,19 @@ mitts.on("revamp", (data) => {
       result.graphRef.value.setJsonData(result.graphData);
     });
   }
-});
+  if (result.records) { // 判断没有不走，第一次没有，不走，就不报错
+    result.records.forEach(item => {
+      item._fields.forEach(item2 => {
+        for (let key in item2.properties) {
+          if (item2.properties[key] && item2.properties[key].info && item2.properties[key].bytes) {
+            result.unstructured = true
+            result.bytes = item2.properties[key].bytes
+          }
+        }
+      })
+    })
+  }
+})
 
 //复制
 const tableCopy = (item4: any) => {
@@ -2075,6 +2099,7 @@ mitts.on("params", (result: any) => {
   result.Properties = {};
   result.showNodeMenu = false;
   result.showNodeInfoCard = false
+  result.unstructured = false
   if (queryIdList.value.indexOf(result.queryId) === -1) {//为第一次预渲染loading
     queryIdList.value.unshift(result.queryId)
     list.value.unshift(result);//渲染占位
@@ -2460,10 +2485,28 @@ mitts.on("params", (result: any) => {
       result.graphRef.value.setJsonData(result.graphData);
     });
   }
+  if (result.records) { // 判断没有不走，第一次没有，不走，就不报错
+    result.records.forEach(item => {
+      item._fields.forEach(item2 => {
+        for (let key in item2.properties) {
+          if (item2.properties[key] && item2.properties[key].info && item2.properties[key].bytes) {
+            result.unstructured = true
+            result.bytes = item2.properties[key].bytes
+          }
+        }
+      })
+    })
+  }
 });
+const addImg = (bytes) => {
+  imgList.value = [`data:image/png;base64,${bytes}`]
+}
 </script>
 
 <style scoped>
+.el-image-viewer__wrapper {  
+  z-index: 9999 !important; /* 使用足够高的z-index，并使用!important确保优先级 */  
+}
 .c-node-info-card {
   text-align: left;
   padding: 10px;

@@ -1,5 +1,5 @@
 <template>
-  <div class="content" style="width: 100%; min-width: 50%;">
+  <div class="content" style="width: 100%; min-width: 50%; position: relative; z-index: 2;">
     <a-row>
       <!-- <search></search> -->
       <search />

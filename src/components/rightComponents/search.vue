@@ -258,7 +258,6 @@ const queryId = generateRandomId()
       .then((response) => response.text())
       .then((data) => {
         const data2 = JSON.parse(data);
-        console.log(data2, '254')
         if (data2.error) {
           const result = {};
           result.summary = {};
@@ -269,6 +268,7 @@ const queryId = generateRandomId()
             window.localStorage.getItem("address");
           result.summary.server.agent = "PandaDB";
           result.error = data2.error;
+          result.queryId = data2.queryId
           mitts.emit("params", result);
           store.commit("ScrollChange", result);
         } else {

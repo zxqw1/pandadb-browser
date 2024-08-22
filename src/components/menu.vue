@@ -3,7 +3,7 @@
     v-model="tabsName"
     @tab-click="tabsClick"
     :tab-position="tabPosition"
-    style="height: 960px;overflow: initial;"
+    style="height: 960px;overflow: initial;z-index: 1;"
     class="demo-tabs Leftmenu"
   >
     <el-tab-pane name="首页" :disabled="loginelse">
@@ -34,6 +34,20 @@
       <div v-if="tabsName" class="content">
         <favorate />
         <!-- 首页 -->
+      </div>
+    </el-tab-pane>
+    <el-tab-pane name="文件" :disabled="loginelse">
+      <template #label>
+        <span
+          class="custom-tabs-label"
+          style="display: flex; flex-direction: column"
+        >
+          <FolderOpenOutlined />
+          <span>文件</span>
+        </span>
+      </template>
+      <div v-if="tabsName" class="content">
+        <File />
       </div>
     </el-tab-pane>
     <el-tab-pane name="教程" :disabled="loginelse">
@@ -106,6 +120,7 @@ import {
   InfoCircleOutlined,
   ToolOutlined,
   CustomerServiceFilled,
+  FolderOpenOutlined 
 } from "@ant-design/icons-vue";
 import mitts from "../utils/bus.js";
 import home from "./menuComponents/home.vue";
@@ -114,6 +129,7 @@ import help from "./menuComponents/help.vue";
 import about from "./menuComponents/about.vue";
 import setter from "./menuComponents/setter.vue";
 import favorate from "./menuComponents/Favorate.vue";
+import File from "./menuComponents/file.vue";
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 import getJsonDataInfo from "../utils/request.js"
 // 左导航
