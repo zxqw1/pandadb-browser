@@ -156,6 +156,7 @@ const generateRandomId = () => {
 };
 //喜好渲染
 mitts.on("favo", (cypher) => {
+  const queryId = generateRandomId()
   const queryobj = {
     'query': cypher,
     'queryId': queryId
@@ -204,6 +205,7 @@ mitts.on("favo", (cypher) => {
             result.records[index]._fields.push(value[key]);
           }
         });
+        result.queryId = data2.queryId
         result.summary.query.text = data2.query;
         result.summary.server.address = window.localStorage.getItem("address");
         result.summary.server.agent = "PandaDB";

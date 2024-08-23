@@ -1337,7 +1337,7 @@ const NodeClick = (event, item) => {
     }
   })
   currentNode.value = event;
-  addImg(item.fileInfo)
+  addImg(item .fileInfo)
   updateNodeMenuPosition(record);
   record.showNodeMenu = true;
 };
@@ -2507,7 +2507,7 @@ mitts.on("params", (result: any) => {
 const addImg = (fileInfo) => {
   let mimeType = fileInfo.info.split("=")[fileInfo.info.split("=").length - 1]
   let mimeType2 = mimeType.slice(0, mimeType.length - 1)
-  console.log(mimeType2, '2511')
+  // console.log(mimeType2, '2511')
   imgList.value = [`data:${mimeType2};base64,${fileInfo.bytes}`]
 }
 const downLoadClick = async (fileInfo, scoped) => {

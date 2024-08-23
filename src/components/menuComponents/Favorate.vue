@@ -247,7 +247,6 @@ mitts.on("recommand", (contentValue: any) => {
 });
 //渲染
 const favoriteClick = (label) => {
-  // // console.log(label,'246')
   mitts.emit("favo", label);
 };
 </script>
