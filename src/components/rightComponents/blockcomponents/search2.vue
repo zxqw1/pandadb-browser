@@ -89,6 +89,8 @@ const keywords = ref([
   ["RETURN", "match"],
   ["LIMIT", "match"],
   ["CREATE", "match"],
+  ["DELETE",'match'],
+  ["delete",'match'],
   ["match", "match"],
   ["return", "match"],
   ["limit", "match"],

@@ -15,15 +15,6 @@
           right: 10px;
           top: 4px;
         " @click="funClick" />
-      <!-- v-if="!loadingFlag" -->
-      <!-- <div v-else style="
-          width: 14px;
-          height: 14px;
-          background-color: red;
-          position: absolute;
-          right: 16px;
-          top: 10px;
-        " @click="breakClick"></div> -->
     </el-col>
     <el-col :span="2" style="display: flex">
       <el-col :span="12" style="text-align: center;padding-top: 8px;">
@@ -69,6 +60,8 @@ const keywords = ref([
   ["RETURN", "match"],
   ["LIMIT", "match"],
   ["CREATE", "match"],
+  ["DELETE",'match'],
+  ["delete",'match'],
   ["match", "match"],
   ["return", "match"],
   ["limit", "match"],
@@ -100,7 +93,7 @@ const opt = ref({
   foldGutter: true, // 启用折叠效果
   hintOptions: {
     // 代码提示
-    completeSingle: false, // 当匹配只有一项的时候是否自动补全
+    completeSingle: true, // 当匹配只有一项的时候是否自动补全
     // hint: this.bingShowHint, // 自定义提示
   },
   gutters: [
@@ -304,17 +297,6 @@ const queryId = generateRandomId()
     deleteClick();
   }
 };
-//停止
-// const breakClick = () => {
-//   fetch(closeurl, {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'text/plain',
-//     },
-//     body: `${queryId}`
-//   })
-//   // loadingFlag.value = !loadingFlag.value;
-// };
 // 全屏
 const toggleFullScreen = () => {
   isFullscreen.value = !isFullscreen.value;
