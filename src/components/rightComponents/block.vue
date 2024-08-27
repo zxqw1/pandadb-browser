@@ -1227,7 +1227,7 @@
           background-color: #ffffff;
           line-height: 24px;
           padding-left: 16px;
-        " v-if="item.flagshowER === false && item.flagshowL === false">
+        " v-if="item.records && item.resTime">
         Transmit {{ item.records.length }} records within {{ item.resTime }}.
       </div>
     </el-row>
