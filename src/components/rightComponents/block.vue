@@ -1906,6 +1906,7 @@ const removeModule = (index: Number) => {
 };
 //overview修改颜色
 const colorClick = (e) => {
+  let idList = [] 
   if (e.target.className === "li") {
     window.localStorage.setItem(
       tagName.value + "color",
@@ -1915,18 +1916,24 @@ const colorClick = (e) => {
       item.graphData.nodes.forEach((item2) => {
         item2.label.forEach((item3) => {
           if (item3 === tagName.value) {
+            idList.push(item.id)
             item2.color = window.localStorage.getItem(tagName.value + "color");
           }
         });
       });
-      nextTick(() => {
-        item.graphRef.setJsonData(item.graphData);
-      });
+    });
+    list.value.forEach((item, index) => {
+      if(idList.indexOf(item.id) !== -1){
+        nextTick(() => {
+          item.graphRef.setJsonData(item.graphData);
+        });
+      }
     });
   }
 };
 //lines修改颜色
 const colorRelaClick = (e) => {
+  let idList = [] 
   if (e.target.className === "li") {
     window.localStorage.setItem(
       tagName.value + "linecolor",
@@ -1935,38 +1942,50 @@ const colorRelaClick = (e) => {
     list.value.forEach((item, index) => {
       item.graphData.lines.forEach((item2) => {
         if (item2.text === tagName.value) {
+          idList.push(item.id)
           item2.color = window.localStorage.getItem(
             tagName.value + "linecolor"
           );
         }
       });
-      nextTick(() => {
-        item.graphRef.setJsonData(item.graphData);
-      });
+    });
+    list.value.forEach((item, index) => {
+      if(idList.indexOf(item.id) !== -1){
+        nextTick(() => {
+          item.graphRef.setJsonData(item.graphData);
+        });
+      }
     });
   }
 };
 //修改大小
 const sizeClick = (e) => {
+  let idList = [] 
   if (e.target.className === "sizeLi") {
     window.localStorage.setItem(tagName.value + "size", e.target.dataset.size);
     list.value.forEach((item, index) => {
       item.graphData.nodes.forEach((item2) => {
         item2.label.forEach((item3) => {
           if (item3 === tagName.value) {
+            idList.push(item.id)
             item2.width = window.localStorage.getItem(tagName.value + "size");
             item2.height = window.localStorage.getItem(tagName.value + "size");
           }
         });
       });
-      nextTick(() => {
-        item.graphRef.setJsonData(item.graphData);
-      });
+    });
+    list.value.forEach((item, index) => {
+      if(idList.indexOf(item.id) !== -1){
+        nextTick(() => {
+          item.graphRef.setJsonData(item.graphData);
+        });
+      }
     });
   }
 };
 //lines修改大小
 const sizeRelaClick = (e) => {
+  let idList = [] 
   if (e.target.className === "sizeLi") {
     window.localStorage.setItem(
       tagName.value + "linesize",
@@ -1975,19 +1994,25 @@ const sizeRelaClick = (e) => {
     list.value.forEach((item, index) => {
       item.graphData.lines.forEach((item2) => {
         if (item2.text === tagName.value) {
+          idList.push(item.id)
           item2.lineWidth = window.localStorage.getItem(
             tagName.value + "linesize"
           );
         }
       });
-      nextTick(() => {
-        item.graphRef.setJsonData(item.graphData);
-      });
+    });
+    list.value.forEach((item, index) => {
+      if(idList.indexOf(item.id) !== -1){
+        nextTick(() => {
+          item.graphRef.setJsonData(item.graphData);
+        });
+      }
     });
   }
 };
 //修改字段 id
 const idClick = (e) => {
+  let idList = []
   window.localStorage.setItem(tagName.value, "id");
   list.value.forEach((item, index) => {
     item.graphData.nodes.forEach((item2) => {
@@ -2001,8 +2026,10 @@ const idClick = (e) => {
                 !item5.end &&
                 item5.labels
               ) {
+                idList.push(item.id)
                 item2.text = item2.id;
               } else if (item5 !== null && item5.segments) {
+                idList.push(item.id)
                 item2.text = item2.id;
               }
             });
@@ -2010,13 +2037,18 @@ const idClick = (e) => {
         }
       });
     });
-    nextTick(() => {
-      item.graphRef.setJsonData(item.graphData);
-    });
   });
+  list.value.forEach((item, index) => {
+      if(idList.indexOf(item.id) !== -1){
+        nextTick(() => {
+          item.graphRef.setJsonData(item.graphData);
+        });
+      }
+    });
 };
 //修改字段properties
 const fileClick = (e) => {
+  let idList = [] 
   window.localStorage.setItem(tagName.value, e.target.innerText);
   list.value.forEach((item, index) => {
     item.graphData.nodes.forEach((item2) => {
@@ -2030,8 +2062,10 @@ const fileClick = (e) => {
                 !item5.end &&
                 item5.labels
               ) {
+                idList.push(item.id)
                 item2.text = item2.properties[e.target.innerText];
               } else if (item5 !== null && item5.segments) {
+                idList.push(item.id)
                 item2.text = item2.properties[e.target.innerText];
               }
             });
@@ -2039,52 +2073,74 @@ const fileClick = (e) => {
         }
       });
     });
-    nextTick(() => {
-      item.graphRef.setJsonData(item.graphData);
-    });
   });
+  list.value.forEach((item, index) => {
+      if(idList.indexOf(item.id) !== -1){
+        nextTick(() => {
+          item.graphRef.setJsonData(item.graphData);
+        });
+      }
+    });
 };
 //修改line字段 id
 const lineIdClick = (e) => {
+  let idList = [] 
   window.localStorage.setItem(tagName.value, "id");
   list.value.forEach((item, index) => {
     item.graphData.lines.forEach((item2) => {
       if (item2.type === tagName.value) {
+        idList.push(item.id)
         item2.text = item2.id;
       }
     });
-    nextTick(() => {
-      item.graphRef.setJsonData(item.graphData);
-    });
   });
+  list.value.forEach((item, index) => {
+      if(idList.indexOf(item.id) !== -1){
+        nextTick(() => {
+          item.graphRef.setJsonData(item.graphData);
+        });
+      }
+    });
 };
 //修改字段line type
 const lineTypeClick = (e) => {
+  let idList = []
   window.localStorage.setItem(tagName.value, "type");
   list.value.forEach((item, index) => {
     item.graphData.lines.forEach((item2) => {
       if (item2.type === tagName.value) {
+        idList.push(item.id)
         item2.text = item2.type;
       }
     });
-    nextTick(() => {
-      item.graphRef.setJsonData(item.graphData);
-    });
   });
+  list.value.forEach((item, index) => {
+      if(idList.indexOf(item.id) !== -1){
+        nextTick(() => {
+          item.graphRef.setJsonData(item.graphData);
+        });
+      }
+    });
 };
 //修改字段 line properties
 const lineFileClick = (e) => {
+  let idList = []
   window.localStorage.setItem(tagName.value, e.target.innerText);
   list.value.forEach((item, index) => {
     item.graphData.lines.forEach((item2) => {
       if (item2.type === tagName.value) {
+        idList.push(item.id)
         item2.text = item2.properties[e.target.innerText];
       }
     });
-    nextTick(() => {
-      item.graphRef.setJsonData(item.graphData);
-    });
   });
+  list.value.forEach((item, index) => {
+      if(idList.indexOf(item.id) !== -1){
+        nextTick(() => {
+          item.graphRef.setJsonData(item.graphData);
+        });
+      }
+    });
 };
 //下载图片
 mitts.on("download", (item) => {
