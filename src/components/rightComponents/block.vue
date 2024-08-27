@@ -1227,7 +1227,7 @@
           background-color: #ffffff;
           line-height: 24px;
           padding-left: 16px;
-        " v-if="!(item.flagshowER || item.flagshowL)">
+        " v-if="item.flagshowER === false && item.flagshowL === false">
         Transmit {{ item.records.length }} records within {{ item.resTime }}.
       </div>
     </el-row>
@@ -1337,7 +1337,7 @@ const NodeClick = (event, item) => {
     }
   })
   currentNode.value = event;
-  addImg(item .fileInfo)
+  addImg(item.fileInfo)
   updateNodeMenuPosition(record);
   record.showNodeMenu = true;
 };
@@ -1477,9 +1477,10 @@ const generateRandomId = () => {
 };
 //修改
 mitts.on("revamp", (data) => {
-  const result = data.result;
-  const index = data.index;
-  result.id = data.queryId;
+  mitts.emit("stopdata", true)
+  const result = data.result ? data.result : data;
+  // const index = data.index;
+  result.id = data.queryId ? data.queryId : data.id;
   result.labelList = {};
   result.relationList = [];
   result.flagshowN = undefined;
@@ -1487,14 +1488,15 @@ mitts.on("revamp", (data) => {
   result.flagshowR = undefined;
   result.flagshowE = undefined;
   result.overview = false;
-  result.graphRef = ref(null);
+  result.graphRef = ref(data.item ? data.item.graphRef : null);
   result.graph = false;
   result.propertiesFlag = false;
   result.Properties = {};
   result.showNodeMenu = false;
   result.showNodeInfoCard = false
   result.unstructured = false
-  list.value[index] = result;
+  const uniquequeryIdList = [...new Set(queryIdList.value)];
+  list.value[uniquequeryIdList.lastIndexOf(result.id)] = result;
   let textName = "";
   let textTitle = "";
   let lineText = "";
@@ -1505,34 +1507,36 @@ mitts.on("revamp", (data) => {
   };
   if (result.error) {
     result.flagshowER = true;
-  } else if (result.records.length === 0) {
+  } else if (result.records && result.records.length === 0) {
     result.flagshowE = true;
   } else {
-    result.records.forEach((item: any, index: Number) => {
-      for (let i = 0; i < item._fields.length; i++) {
-        if (
-          item._fields[i] !== null &&
-          !item._fields[i].start &&
-          !item._fields[i].end &&
-          item._fields[i].labels &&
-          item._fields[i].properties
-        ) {
-          result.flagshowN = true;
-        } else if (item._fields[i] !== null && item._fields[i].segments) {
-          result.flagshowP = true;
-        } else if (
-          item._fields[i] !== null &&
-          item._fields[i].endNodeElementId &&
-          item._fields[i].startNodeElementId &&
-          !item._fields[i].labels &&
-          !item._fields[i].segments
-        ) {
-          result.flagshowR = true;
-        } else {
-          result.flagshowE = true;
+    if (result.records) {
+      result.records.forEach((item: any, index: Number) => {
+        for (let i = 0; i < item._fields.length; i++) {
+          if (
+            item._fields[i] !== null &&
+            !item._fields[i].start &&
+            !item._fields[i].end &&
+            item._fields[i].labels &&
+            item._fields[i].properties
+          ) {
+            result.flagshowN = true;
+          } else if (item._fields[i] !== null && item._fields[i].segments) {
+            result.flagshowP = true;
+          } else if (
+            item._fields[i] !== null &&
+            item._fields[i].endNodeElementId &&
+            item._fields[i].startNodeElementId &&
+            !item._fields[i].labels &&
+            !item._fields[i].segments
+          ) {
+            result.flagshowR = true;
+          } else {
+            result.flagshowE = true;
+          }
         }
-      }
-    });
+      });
+    }
   }
   //path
   if (result.flagshowP) {
@@ -1866,7 +1870,9 @@ mitts.on("revamp", (data) => {
   //渲染图形
   if (result.graphData.nodes.length !== 0) {
     nextTick(() => {
-      result.graphRef.value.setJsonData(result.graphData);
+      if (result.records && result.records.length !== 0) {
+        result.graphRef.value.setJsonData(result.graphData);
+      }
     });
   }
   if (result.records) { // 判断没有不走，第一次没有，不走，就不报错
@@ -2084,8 +2090,21 @@ const lineFileClick = (e) => {
 mitts.on("download", (item) => {
   item.graphRef.getInstance().downloadAsImage("png", "graph");
 });
+mitts.on("blank", (queryId: any) => {
+  list.value.forEach(item => {
+    if (item.id === queryId) {
+      item.flagshowN = false,
+        item.flagshowP = false,
+        item.flagshowR = false,
+        item.flagshowE = false,
+        item.flagshowL = false
+    }
+  })
+})
 //数据
 mitts.on("params", (result: any) => {
+  mitts.emit("stopdata", true)
+  result.show = false;
   result.id = result.queryId;
   result.labelList = {};
   result.relationList = [];

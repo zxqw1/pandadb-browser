@@ -1,56 +1,38 @@
 <template>
-  <el-row
-    class="search"
-    :style="{
-      height: isFullscreen ? '100vh' : 'auto',
-      padding: isFullscreen ? '20px' : 'auto',
-    }"
-  >
+  <el-row class="search" :style="{
+    height: isFullscreen ? '100vh' : 'auto',
+    padding: isFullscreen ? '20px' : 'auto',
+  }">
     <el-col :span="22" style="position: relative">
-      <div
-        class="bing-code-editor"
-        :style="{ height: isFullscreen ? '97vh' : 'auto' }"
-      >
-        <textarea
-          ref="textarea"
-          v-model="contentValue"
-          style="width: 70%; background-color: rgb(246, 246, 246)"
-        >
+      <div class="bing-code-editor" :style="{ height: isFullscreen ? '97vh' : 'auto' }">
+        <textarea ref="textarea" v-model="contentValue" style="width: 70%; background-color: rgb(246, 246, 246)">
         </textarea>
       </div>
-      <CaretRightOutlined
-        style="
+      <CaretRightOutlined style="
           color: #6a8322;
           font-size: 28px;
           position: absolute;
           right: 10px;
           top: 4px;
-        "
-        @click="funClick"
-         v-if="!loadingFlag"
-      />
-      <div v-else style="width: 14px; height: 14px; background-color: red;position: absolute;right: 16px; top: 10px;" @click="breakClick"></div>
+        " @click="funClick" v-if="loadingFlag" />
+      <div v-else style="width: 14px; height: 14px; background-color: red;position: absolute;right: 16px; top: 10px;"
+        @click="breakClick"></div>
     </el-col>
-    <el-col
-      :span="2"
-      style="
+    <el-col :span="2" style="
         padding: 0 10px;
         display: flex;
         align-items: center;
         justify-content: space-around;
         position: relative;
-      "
-    >
-    <el-col :span="12" style="text-align: center;padding-top: 8px;">
-      <StarOutlined style="font-size: 20px;position: absolute;right: 26px; top: 10px;"  @click="collectClick"/>
-    </el-col>
+      ">
       <el-col :span="12" style="text-align: center;padding-top: 8px;">
-        <VerticalAlignBottomOutlined
-        style="font-size: 20px;position: absolute;right: 66px; top: 10px;"
-        @click="imgClick"
-      />
+        <StarOutlined style="font-size: 20px;position: absolute;right: 26px; top: 10px;" @click="collectClick" />
       </el-col>
-      
+      <el-col :span="12" style="text-align: center;padding-top: 8px;">
+        <VerticalAlignBottomOutlined style="font-size: 20px;position: absolute;right: 66px; top: 10px;"
+          @click="imgClick" />
+      </el-col>
+
     </el-col>
   </el-row>
 </template>
@@ -76,7 +58,7 @@ import "codemirror/theme/idea.css";
 import { useStore } from "vuex";
 const loadingFlag = ref(false)
 const store = useStore();
-const props = defineProps(["command","index",'item']);
+const props = defineProps(["command", "index", 'item']);
 const mode = "javascript"; // 编译语言
 const height = ref(150);
 const theme = "idea"; // 主题语言
@@ -89,8 +71,8 @@ const keywords = ref([
   ["RETURN", "match"],
   ["LIMIT", "match"],
   ["CREATE", "match"],
-  ["DELETE",'match'],
-  ["delete",'match'],
+  ["DELETE", 'match'],
+  ["delete", 'match'],
   ["match", "match"],
   ["return", "match"],
   ["limit", "match"],
@@ -132,41 +114,39 @@ const opt = ref({
   ],
 });
 let abortController: AbortController | null = null;
-let url:string|null = window.localStorage.getItem("address")//地址
-const closeurl = url.replace('/query', '/close')
 //获取数据
 const funClick = async () => {
-  await nextTick();
-const queryId = props.item.queryId
+  await nextTick()
+  loadingFlag.value = !loadingFlag.value
+  const queryId = props.item.queryId
   if (contentValue.value === "") {
   } else {
-    mitts.emit("params", {
-      "queryId":queryId,
-      'summary':{
-        'query':{
-          'text':contentValue.value
+    mitts.emit("revamp", {
+      "queryId": queryId,
+      'summary': {
+        'query': {
+          'text': contentValue.value
         }
-      }
+      },
+      flagshowL: true
     });
     const queryobj = {
       'query': contentValue.value,
       'queryId': queryId
     }
-    loadingFlag.value = !loadingFlag.value
     const startTime = performance.now();
     // 创建新的 AbortController 实例  
     abortController = new AbortController();
-  fetch(window.localStorage.getItem('address'), {
-    method: "POST",
-    headers: {
-      "Content-Type": "text/plain",
-    },
-    body: JSON.stringify(queryobj),
-    signal: abortController.signal,
-  })
-    .then((response) => response.text())
-    .then((data) => {
-      loadingFlag.value = !loadingFlag.value
+    fetch(window.localStorage.getItem('address'), {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain",
+      },
+      body: JSON.stringify(queryobj),
+      signal: abortController.signal,
+    })
+      .then((response) => response.text())
+      .then((data) => {
         const data2 = JSON.parse(data);
         if (data2.error) {
           const result = {};
@@ -178,9 +158,9 @@ const queryId = props.item.queryId
           result.summary.server.agent = "PandaDB";
           result.error = data2.error;
           result.queryId = data2.queryId
-          mitts.emit("revamp", {result:result,index:props.index,id:props.item.id,item:props.item});
+          mitts.emit("revamp", { result: result, index: props.index, id: props.item.id, item: props.item });
           store.commit("ScrollChange", result);
-        }else{
+        } else {
           const endTime = performance.now();
           const result = {};
           result.records = [];
@@ -191,37 +171,45 @@ const queryId = props.item.queryId
           result.resTime = Math.round(responseTime) + "ms";
           data2.response.forEach((value, index) => {
             const keys = Object.keys(value);
-          result.records.push({ keys: keys, _fields: [] });
+            result.records.push({ keys: keys, _fields: [] });
             for (let key in value) {
-          result.records[index]._fields.push(value[key]);
+              result.records[index]._fields.push(value[key]);
             }
           });
           result.queryId = data2.queryId
           result.summary.query.text = data2.query;
           result.summary.server.address = window.localStorage.getItem('address');
           result.summary.server.agent = "PandaDB";
-          mitts.emit("revamp", {result:result,index:props.index,id:props.item.id,item:props.item});
-          store.commit("ScrollChange", result);
+          setTimeout(() => {
+            mitts.emit("revamp", { result: result, index: props.index, id: props.item.id, item: props.item });
+            store.commit("ScrollChange", result);
+          }, 2000)
         }
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   }
 };
 //停止
+let url: string | null = window.localStorage.getItem("address")//地址
+const closeurl = url.replace('/query', '/close')
 const breakClick = () => {
+  loadingFlag.value = !loadingFlag.value;
+  mitts.emit("blank", props.item.queryId)
   fetch(closeurl, {
     method: 'POST',
     headers: {
       'Content-Type': 'text/plain',
     },
-    body: `${queryId}`
+    body: props.item.queryId
   })
-  loadingFlag.value = !loadingFlag.value;
 };
+mitts.on("stopdata", (flag) => {
+  loadingFlag.value = flag
+})
 //下载图片
-const imgClick = () =>{
+const imgClick = () => {
   mitts.emit("download", props.item)
 }
 //删除
@@ -229,9 +217,8 @@ const deleteClick = () => {
   editorInstance.setValue("");
 };
 //收藏
-const collectClick = ()=>{
-  // console.log(contentValue.value,'150')
-  mitts.emit('command',contentValue.value )
+const collectClick = () => {
+  mitts.emit('command', contentValue.value)
 }
 onMounted(() => {
   CodeMirror.defineMode("javascript", function () {
@@ -277,6 +264,7 @@ computed((_height) => {
   background-color: #ffffff;
   padding: 14px 16px;
 }
+
 .bing-code-editor {
   font-size: 14px;
   border: 1px dashed #c0c0c0;
