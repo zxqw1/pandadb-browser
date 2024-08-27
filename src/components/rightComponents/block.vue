@@ -2172,7 +2172,6 @@ mitts.on("params", (result: any) => {
   }
   //path
   if (result.flagshowP) {
-    // result.graph = true;
     result.records.forEach((item: any, index: Number) => {
       for (let i = 0; i < item._fields.length; i++) {
         if (item._fields[i] !== null && item._fields[i].segments) {
@@ -2209,8 +2208,7 @@ mitts.on("params", (result: any) => {
                 } else {
                   for (const key in item._fields[i].segments[k].start
                     .properties) {
-                    textName =
-                      item._fields[i].segments[k].start.properties[key];
+                    textName = item._fields[i].segments[k].start.properties.name ? item._fields[i].segments[k].start.properties.name : item._fields[i].segments[k].start.properties[key]
                   }
                 }
                 if (
@@ -2235,7 +2233,7 @@ mitts.on("params", (result: any) => {
                 } else {
                   for (const key in item._fields[i].segments[k].end
                     .properties) {
-                    textTitle = item._fields[i].segments[k].end.properties[key];
+                    textTitle = item._fields[i].segments[k].end.properties.name ? item._fields[i].segments[k].end.properties.name : item._fields[i].segments[k].end.properties[key]
                   }
                 }
                 if (
@@ -2380,7 +2378,6 @@ mitts.on("params", (result: any) => {
     result.flagshowE = false;
   } else if (result.flagshowN) {
     //nodes
-    // result.graph = true;
     result.records.forEach((item: any, index: Number) => {
       for (let i = 0; i < item._fields.length; i++) {
         if (
@@ -2402,7 +2399,7 @@ mitts.on("params", (result: any) => {
             }
           } else {
             for (const key in item._fields[i].properties) {
-              textName = item._fields[i].properties[key];
+              textName = item._fields[i].properties.name ? item._fields[i].properties.name : item._fields[i].properties[key]
             }
           }
 
