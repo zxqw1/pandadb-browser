@@ -99,7 +99,7 @@
                     " @click="OverviewClick(item)" />
                   <!-- overview展开 -->
                   <!-- 节点详情 -->
-                  <el-row v-if="item.propertiesFlag" style="padding: 10px 0 0 10px; ">
+                  <el-row v-if="item.propertiesFlag" style="padding: 10px 0 0 10px; display: inline-block;height: 324px;overflow-y: auto;width: 100%">
                     <el-col style="font-weight: 500">
                       <el-row>
                         <div style="font-size: 16px; font-weight: 500;">{{ item.Properties.name }}</div>
@@ -516,7 +516,7 @@
                       z-index: 10;
                     " @click="OverviewClick(item)" />
                   <!-- 节点详情 -->
-                  <el-row v-if="item.propertiesFlag" style="padding: 10px 0 0 10px; ">
+                  <el-row v-if="item.propertiesFlag" style="padding: 10px 0 0 10px;display: inline-block;height: 324px;overflow-y: auto;width: 100% ">
                     <el-col style="font-weight: 500">
                       <el-row>
                         <div style="font-size: 16px; font-weight: 500;">{{ item.Properties.name }}</div>
@@ -1371,9 +1371,13 @@ const requestData = (label, id, item) => {
       const data2 = JSON.parse(data);
       data2.response.forEach(item2 => {
         if (item2.p.start && item2.p.end) {
+          let text = ""
+          for(let key in item2.p.start.properties){
+             text = item2.p.start.properties[key]
+          }
           item.graphData.nodes.push({
             id: item2.p.start.elementId,
-            text: item2.p.start.properties.name ? item2.p.start.properties.name : item.p.start.properties.id,
+            text: item2.p.start.properties.name ? item2.p.start.properties.name : text,
             color: window.localStorage.getItem(
               item2.p.start.labels[0] + "color"
             )
@@ -1400,7 +1404,7 @@ const requestData = (label, id, item) => {
           },
             {
               id: item2.p.end.elementId,
-              text: item2.p.end && item2.p.end.properties.name ? item2.p.end.properties.name : item2.p.end.properties.id,
+              text: item2.p.end && item2.p.end.properties.name ? item2.p.end.properties.name : text,
               color: window.localStorage.getItem(
                 item2.p.end.labels[0] + "color"
               )
