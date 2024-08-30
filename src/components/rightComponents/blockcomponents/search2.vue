@@ -117,7 +117,9 @@ let abortController: AbortController | null = null;
 //获取数据
 const funClick = async () => {
   await nextTick()
-  loadingFlag.value = !loadingFlag.value
+  setTimeout(()=>{
+    loadingFlag.value = !loadingFlag.value
+  },100)
   const queryId = props.item.queryId
   if (contentValue.value === "") {
   } else {
@@ -147,6 +149,9 @@ const funClick = async () => {
     })
       .then((response) => response.text())
       .then((data) => {
+        setTimeout(()=>{
+    loadingFlag.value = !loadingFlag.value
+  },100)
         const data2 = JSON.parse(data);
         if (data2.error) {
           const result = {};
@@ -180,10 +185,8 @@ const funClick = async () => {
           result.summary.query.text = data2.query;
           result.summary.server.address = window.localStorage.getItem('address');
           result.summary.server.agent = "PandaDB";
-          setTimeout(() => {
             mitts.emit("revamp", { result: result, index: props.index, id: props.item.id, item: props.item });
             store.commit("ScrollChange", result);
-          }, 2000)
         }
       })
       .catch((error) => {

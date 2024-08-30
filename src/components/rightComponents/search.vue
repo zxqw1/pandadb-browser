@@ -287,8 +287,8 @@ const queryId = generateRandomId()
           result.summary.server.address =
             window.localStorage.getItem("address");
           result.summary.server.agent = "PandaDB";
-          mitts.emit("params", result);
-          store.commit("ScrollChange", result);
+            mitts.emit("params", result);
+            store.commit("ScrollChange", result);
         }
       })
       .catch((error) => {

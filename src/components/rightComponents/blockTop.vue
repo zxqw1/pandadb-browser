@@ -17,7 +17,7 @@
           padding-top: 4px;
         ">
         <div class="topIcon">
-          <Pushpin-outlined style="margin-left: 16px;background-color: #cccccc" @click="topClick(index, item)" />
+          <Pushpin-outlined style="margin-left: 16px;background-color: #ccc" @click="topClick(index, item)" />
           <Down-outlined style="margin-left: 16px" v-if="item.show" @click="item.show = false" />
           <Up-outlined v-else style="margin-left: 16px" @click="item.show = true" />
           <ExpandAltOutlined style="margin-left: 16px" @click="toggleFullScreen" v-if="!isFullscreen" />
@@ -26,7 +26,7 @@
         </div>
       </el-col>
       <!-- 搜索 -->
-      <search2 :command="item.summary.query.text" :index="index" :item="item" />
+      <search3 :command="item.summary.query.text" :index="index" :item="item" />
       <!-- 展示 -->
       <el-col style="height: 348px; margin-top: 12px" v-show="!item.show" :style="{
         height: isFullscreen ? '100vh' : 'auto',
@@ -84,7 +84,7 @@
                     width: 328px;
                     min-height: 452px;
                     background-color: #ffffff;
-                    box-shadow: 0 0 2px #ccc;
+                    border: 1px solid rgb(231 231 231);
                     /* z-index: 1; */
                     position: relative;
                   " v-else>
@@ -274,7 +274,7 @@
                       {{ node.text }}</div>
                   </template>
                   <!-- nodemenu -->
-                  <!-- <template #graph-plug>
+                  <template #graph-plug>
                     <div v-show="item.showNodeMenu" class="c-surround-menu-panel"
                       style="display: flex;align-items: center;justify-content: center;place-items: center;" :style="{
                         width: nodeMenuPanel.width + 'px',
@@ -287,13 +287,13 @@
                           <g fill="#000000">
                             <path class="c-svg-button"
                               d="m9.99469,187.08997c0,-40.82082 27.52652,-97.86001 62.20722,-128.85359c32.50037,-29.06937 66.90853,-43.9133 114.603,-49.41106l7.15417,-0.82466l0,61.84972l0,61.91844l-4.49691,0c-23.5747,0 -58.05098,34.01735 -58.18725,57.3828l0,4.46692l-60.64011,0l-60.64011,0l0,-6.52858z"
-                              @click="clickNodeMenu('lock', $event)" />
+                              @click="clickNodeMenu('lock', $event, item)" />
                             <path class="c-svg-button"
                               d="m269.58887,188.4644c-4.36064,-26.73282 -34.27188,-56.69558 -56.68828,-56.69558l-3.95183,0l0,-61.781l0,-61.71228l7.83552,0.68722c91.98219,8.52152 166.11303,82.60374 174.22109,174.00389l0.95389,10.6519l-60.77638,0l-60.77638,0l-0.81762,-5.15414z"
                               @click="clickNodeMenu('nodehide', $event, item)" />
                             <path class="c-svg-button"
                               d="m176.92533,393.32443c-89.32493,-11.68273 -166.93065,-94.35519 -166.93065,-177.92103l0,-6.66603l60.43571,0l60.50384,0l0.68135,5.97881c2.52099,23.09056 29.02549,50.99166 52.12324,55.04625c11.3104,1.99294 10.22024,-4.87926 10.22024,63.43033l0,61.09378l-6.47282,-0.20617c-3.54302,-0.13744 -8.31246,-0.41233 -10.56092,-0.75594z"
-                              @click="clickNodeMenu('graph', $event)" />
+                              @click="clickNodeMenu('graph', $event, item)" />
                             <path class="c-svg-button"
                               d="m209.28944,332.98659l0.34067,-61.57483l7.49485,-1.64933c7.08604,-1.51188 11.51481,-3.22993 21.12184,-8.4528c6.06401,-3.22993 20.03168,-18.28003 23.43843,-25.22094c4.97385,-10.17084 7.22231,-15.94348 7.22231,-18.62364c0,-1.37444 0.40881,-3.91715 0.88575,-5.6352l0.81762,-3.09249l60.43571,0l60.50384,0l0,5.15414c-0.06813,86.31472 -81.62568,171.87351 -171.35942,179.77653l-11.24227,0.96211l0.34067,-61.64356z"
                               @click="clickNodeMenu('card', $event, item)" />
@@ -302,7 +302,6 @@
                       </svg>
                       <div
                         style="height:100%;width:100%;position: absolute;left: 0px;top:0px;user-select: none;pointer-events: none;color: #ffffff;font-size: 22px;">
-
                         <div style="position: absolute;left:20px;top:20px;">
                           <el-icon>
                             <Unlock />
@@ -323,14 +322,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="c-operate-panels">
-                      - Node info card
-                      <div v-if="item.showNodeInfoCard" class="c-node-info-card"
-                        style="background-color: #ffffff;height: 200px;border: 1px #ccc solid;">
-                        <h3> Node info card</h3>
-                      </div>
-                    </div>
-                  </template> -->
+                  </template>
                 </RelationGraph>
               </div>
             </el-tab-pane>
@@ -665,12 +657,15 @@
                                     v-for="(value4, key4) in pathTagItem.end.properties " :key="key4"
                                     @click="fileClick($event)">{{ key4 }}</el-tag>
                                 </div>
-                                <!-- <div v-if="pathTagItem.start.labels.indexOf(key2) !== -1">
+                              </div>
+                              <div v-if="pathTagItem.labels">
+                                <div v-if="pathTagItem.labels.indexOf(key2) !== -1">
                                   <el-tag type="info" size="small"
                                     style="margin-top: 10px; margin-left: 10px;cursor: pointer"
-                                    v-for="(value4, key4) in pathTagItem.start.properties " :key="key4"
-                                    @click="fileClick($event)">{{ key4 }}</el-tag>
-                                </div> -->
+                                    v-for="(value4, key4) in pathTagItem.properties " :key="key4"
+                                    @click="fileClick($event)">{{
+                                      key4 }}</el-tag>
+                                </div>
                               </div>
                             </div>
                           </el-col>
@@ -792,6 +787,18 @@
                                   </div>
                                 </div>
                               </div>
+                              <div v-if="pathTagItem.startId && pathTagItem.endId">
+                                <el-tag type="info" size="small"
+                                  style="margin-top: 10px;margin-left: 10px;cursor:pointer"
+                                  @click="lineIdClick($event)"> {{ "<id>" }}</el-tag>
+                                <el-tag type="info" size="small"
+                                  style="margin-top: 10px;margin-left: 10px;cursor:pointer"
+                                  @click="lineTypeClick($event)"> {{ "<type>" }}</el-tag>
+                                <el-tag v-for="(key5, value5) in pathTagItem.properties" :key="key5" type="info"
+                                  size="small" style="margin-top: 10px;margin-left: 10px;cursor:pointer"
+                                  @click="lineFileClick($event)">{{
+                                    value5 }}</el-tag>
+                              </div>
                             </div>
                           </el-col>
                         </el-row>
@@ -810,6 +817,56 @@
                     <div
                       style="overflow: hidden; text-overflow: ellipsis; white-space:nowrap ; text-align: center;vertical-align:middle">
                       {{ node.text }}</div>
+                  </template>
+                  <!-- nodemenu -->
+                  <template #graph-plug>
+                    <div v-show="item.showNodeMenu" class="c-surround-menu-panel"
+                      style="display: flex;align-items: center;justify-content: center;place-items: center;" :style="{
+                        width: nodeMenuPanel.width + 'px',
+                        height: nodeMenuPanel.height + 'px',
+                        left: nodeMenuPanel.x + 'px',
+                        top: nodeMenuPanel.y + 'px'
+                      }">
+                      <svg width="100%" height="100%" viewBox="0 0 400 400">
+                        <g>
+                          <g fill="#000000">
+                            <path class="c-svg-button"
+                              d="m9.99469,187.08997c0,-40.82082 27.52652,-97.86001 62.20722,-128.85359c32.50037,-29.06937 66.90853,-43.9133 114.603,-49.41106l7.15417,-0.82466l0,61.84972l0,61.91844l-4.49691,0c-23.5747,0 -58.05098,34.01735 -58.18725,57.3828l0,4.46692l-60.64011,0l-60.64011,0l0,-6.52858z"
+                              @click="clickNodeMenu('lock', $event, item)" />
+                            <path class="c-svg-button"
+                              d="m269.58887,188.4644c-4.36064,-26.73282 -34.27188,-56.69558 -56.68828,-56.69558l-3.95183,0l0,-61.781l0,-61.71228l7.83552,0.68722c91.98219,8.52152 166.11303,82.60374 174.22109,174.00389l0.95389,10.6519l-60.77638,0l-60.77638,0l-0.81762,-5.15414z"
+                              @click="clickNodeMenu('nodehide', $event, item)" />
+                            <path class="c-svg-button"
+                              d="m176.92533,393.32443c-89.32493,-11.68273 -166.93065,-94.35519 -166.93065,-177.92103l0,-6.66603l60.43571,0l60.50384,0l0.68135,5.97881c2.52099,23.09056 29.02549,50.99166 52.12324,55.04625c11.3104,1.99294 10.22024,-4.87926 10.22024,63.43033l0,61.09378l-6.47282,-0.20617c-3.54302,-0.13744 -8.31246,-0.41233 -10.56092,-0.75594z"
+                              @click="clickNodeMenu('graph', $event, item)" />
+                            <path class="c-svg-button"
+                              d="m209.28944,332.98659l0.34067,-61.57483l7.49485,-1.64933c7.08604,-1.51188 11.51481,-3.22993 21.12184,-8.4528c6.06401,-3.22993 20.03168,-18.28003 23.43843,-25.22094c4.97385,-10.17084 7.22231,-15.94348 7.22231,-18.62364c0,-1.37444 0.40881,-3.91715 0.88575,-5.6352l0.81762,-3.09249l60.43571,0l60.50384,0l0,5.15414c-0.06813,86.31472 -81.62568,171.87351 -171.35942,179.77653l-11.24227,0.96211l0.34067,-61.64356z"
+                              @click="clickNodeMenu('card', $event, item)" />
+                          </g>
+                        </g>
+                      </svg>
+                      <div
+                        style="height:100%;width:100%;position: absolute;left: 0px;top:0px;user-select: none;pointer-events: none;color: #ffffff;font-size: 22px;">
+                        <div style="position: absolute;left:20px;top:20px;">
+                          <el-icon>
+                            <Unlock />
+                          </el-icon>
+                        </div>
+                        <div style="position: absolute;right:20px;top:20px;">
+                          <el-icon>
+                            <Hide />
+                          </el-icon>
+                        </div>
+                        <div style="position: absolute;left:20px;top:75px;transform: rotate(180deg);">
+                          <img src="../../assets//img/atlas.png" alt="" style="width: 20px;height: 20px">
+                        </div>
+                        <div style="position: absolute;right:20px;top:75px;">
+                          <el-icon>
+                            <Warning />
+                          </el-icon>
+                        </div>
+                      </div>
+                    </div>
                   </template>
                 </RelationGraph>
               </div>
@@ -1219,6 +1276,9 @@
             style="height: 336px"
           ></RelationGraph> -->
         </el-col>
+        <el-col
+          v-if="!item.flagshowL && !item.flagshowN && !item.flagshowP && !item.flagshowR && !item.flagshowE && !item.flagshowER"
+          style="height: 348px"></el-col>
       </el-col>
       <div style="
           width: 100%;
@@ -1227,7 +1287,7 @@
           background-color: #ffffff;
           line-height: 24px;
           padding-left: 16px;
-        " v-if="!(item.flagshowER || item.flagshowL)">
+        " v-if="item.records && item.resTime">
         Transmit {{ item.records.length }} records within {{ item.resTime }}.
       </div>
     </el-row>
@@ -1235,7 +1295,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, watch } from "vue";
+import { ref, nextTick, watch, onMounted } from "vue";
 // import { useStore } from "vuex";
 import RelationGraph from "relation-graph/vue3";
 import {
@@ -1254,15 +1314,24 @@ import { ArrowLeftBold, CopyDocument, Unlock, Hide, Warning } from "@element-plu
 import { ElMessage, ElMessageBox } from "element-plus";
 import mitts from "../../utils/bus.js";
 //组件
-import search2 from "../rightComponents/blockcomponents/search2.vue";
+import search3 from "../rightComponents/blockcomponents/search3.vue"; 
 import mitt from "mitt";
 import type { RGUserEvent } from "relation-graph-vue3";
 import { anyType } from "ant-design-vue/es/_util/type.js";
 //变量
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 const options = ref({
-  disableNodeClickEffect: false,
-  disableZoom: false,
+  // zoomToFitWhenRefresh: true,
+  // useAnimationWhenRefresh:true,
+  'layouts': [
+    {
+      'label': 'Center',
+      'layoutName': 'center',
+      'layoutClassName': 'seeks-layout-center'
+    }
+  ],
+  // disableNodeClickEffect: false,l
+  // disableZoom: false,
 });
 const isFullscreen = ref(false);
 const isunfold = ref(false);
@@ -1277,34 +1346,148 @@ const nodeMenuPanel = ref({ x: 0, y: 0, width: 120, height: 120 });
 const currentNode = ref<RGNode | null>(null);
 const queryIdList = ref([])
 const imgList = ref([
-  // 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
-  // 'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
-  // 'https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg',
-  // 'https://fuss10.elemecdn.com/9/bb/e27858e973f5d7d3904835f46abbdjpeg.jpeg',
 ])
 const getRefDom = (val: any, item: any) => {
   item.graphRef = val;
 };
+//请求展开数据
+const requestData = (label, id, item) => {
+  const queryId = generateRandomId()
+  const cypher = `match p=(n:${label}{id:'${id}'})--(m) return p limit 10`
+  const queryobj = {
+    'query': cypher,
+    'queryId': queryId
+  }
+  const startTime = performance.now();
+  fetch(window.localStorage.getItem("address"), {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain",
+    },
+    body: JSON.stringify(queryobj),
+  })
+    .then((response) => response.text())
+    .then((data) => {
+      const data2 = JSON.parse(data);
+      data2.response.forEach(item2 => {
+        if (item2.p.start && item2.p.end) {
+          item.graphData.nodes.push({
+            id: item2.p.start.elementId,
+            text: item2.p.start.properties.name ? item2.p.start.properties.name : item.p.start.properties.id,
+            color: window.localStorage.getItem(
+              item2.p.start.labels[0] + "color"
+            )
+              ? window.localStorage.getItem(
+                item2.p.start.labels[0] + "color"
+              )
+              : "#21a1ff",
+            label: item2.p.start.labels,
+            properties: item2.p.start.properties,
+            width: window.localStorage.getItem(
+              item2.p.start.labels[0] + "size"
+            )
+              ? window.localStorage.getItem(
+                item2.p.start.labels[0] + "size"
+              )
+              : 80,
+            height: window.localStorage.getItem(
+              item2.p.start.labels[0] + "size"
+            )
+              ? window.localStorage.getItem(
+                item2.p.start.labels[0] + "size"
+              )
+              : 80
+          },
+            {
+              id: item2.p.end.elementId,
+              text: item2.p.end && item2.p.end.properties.name ? item2.p.end.properties.name : item2.p.end.properties.id,
+              color: window.localStorage.getItem(
+                item2.p.end.labels[0] + "color"
+              )
+                ? window.localStorage.getItem(
+                  item2.p.end.labels[0] + "color"
+                )
+                : "#21a1ff",
+              label: item2.p.end.labels,
+              properties: item2.p.start.properties,
+              width: window.localStorage.getItem(
+                item2.p.end.labels[0] + "size"
+              )
+                ? window.localStorage.getItem(
+                  item2.p.end.labels[0] + "size"
+                )
+                : 80,
+              height: window.localStorage.getItem(
+                item2.p.end.labels[0] + "size"
+              )
+                ? window.localStorage.getItem(
+                  item2.p.end.labels[0] + "size"
+                )
+                : 80
+            }
+          )
+          item.graphData.lines.push({
+            id: item2.p.segments[0].relation.elementId,
+            type: item2.p.segments[0].relation.types,
+            properties: item2.p.segments[0].relation.properties,
+            from: String(item2.p.segments[0].start.elementId),
+            to: String(item2.p.segments[0].end.elementId),
+            text: item2.p.segments[0].relation.types,
+            lineWidth: window.localStorage.getItem(
+              item2.p.segments[0].relation.types + "linesize"
+            )
+              ? window.localStorage.getItem(
+                item2.p.segments[0].relation.types + "linesize"
+              )
+              : 1,
+            color: window.localStorage.getItem(
+              item2.p.segments[0].relation.types + "linecolor"
+            )
+              ? window.localStorage.getItem(
+                item2.p.segments[0].relation.types + "linecolor"
+              )
+              : "#666666",
+          })
+        }
+      })
+      nextTick( async() => {
+          const graphInstance = item.graphRef .getInstance();
+          await graphInstance.setJsonData(item.graphData);
+          await graphInstance.moveToCenter();
+          await graphInstance.refresh()
+        });
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
 // 节点展开
-// const clickNodeMenu = (menutip: string, event: RGUserEvent, item: any) => {
-//   item.showNodeMenu = true;
-//   if (menutip === 'lock') {
-//     console.log('lock')
-//   } else if (menutip === 'nodehide') {
-//     const graphInstance = item.graphRef!.getInstance();//拿到图形实例
-//     const _all_nodes = graphInstance.getNodes();//所有dom集合
-//     _all_nodes.forEach(item2 => {
-//       if (item2.id === item.Properties.id) {
-//         item2.opacity = 0;
-//       }
-//       item.showNodeMenu = false
-//     })
-//   } else if (menutip === 'card') {
-//     item.showNodeInfoCard = !item.showNodeInfoCard;
-//   } else if (menutip === 'graph') {
-//     console.log('graph')
-//   }
-// }
+const clickNodeMenu = (menutip: string, event: RGUserEvent, item: any) => { // 你这个是节点展开的点击事件啊
+  item.showNodeMenu = true;
+  if (menutip === 'lock') {
+    item.showNodeMenu = false
+  } else if (menutip === 'nodehide') {
+    const graphInstance = item.graphRef!.getInstance();//拿到图形实例
+    const _all_nodes = graphInstance.getNodes();//所有dom集合
+    _all_nodes.forEach(item2 => {
+      if (item2.id === item.Properties.id) {
+        item2.opacity = 0;
+      }
+      item.showNodeMenu = false
+    })
+  } else if (menutip === 'card') {
+    item.showNodeMenu = false
+  } else if (menutip === 'graph') {
+    const graphInstance = item.graphRef!.getInstance();//拿到图形实例
+    const _all_nodes = graphInstance.getNodes();//所有dom集合
+    _all_nodes.forEach(item2 => {
+      if (item2.id === item.Properties.id) {
+        requestData(item.Properties.label[0], item.Properties.properties.id, item)
+      }
+      item.showNodeMenu = false
+    })
+  }
+}
 const updateNodeMenuPosition = (item) => {
   if (!currentNode.value) return;
   const graphInstance = item.graphRef?.getInstance();
@@ -1337,7 +1520,7 @@ const NodeClick = (event, item) => {
     }
   })
   currentNode.value = event;
-  addImg(item.fileInfo)
+  // addImg(item.fileInfo)
   updateNodeMenuPosition(record);
   record.showNodeMenu = true;
 };
@@ -1412,7 +1595,7 @@ const copyClick2 = (id, propertiesData) => {
     plain: true,
   });
 };
-//控制list条数
+//控制toplist条数
 if (
   toplist.value.length > window.localStorage.getItem("item")
     ? window.localStorage.getItem("item")
@@ -1457,9 +1640,12 @@ mitts.on("topData", (item: any) => {
   if (item.graphData.nodes.length !== 0) {
     item.graphRef.value = undefined
     toplist.value.unshift(item);
-    nextTick(() => {
-      item.graphRef.setJsonData(item.graphData);
-    });
+    nextTick( async() => {
+          const graphInstance = item.graphRef .getInstance();
+          await graphInstance.setJsonData(item.graphData);
+          await graphInstance.moveToCenter();
+          await graphInstance.refresh()
+        });
   } else {
     toplist.value.unshift(item);
   }
@@ -1477,9 +1663,10 @@ const generateRandomId = () => {
 };
 //修改
 mitts.on("revamp2", (data) => {
-  const result = data.result;
-  const index = data.index;
-  result.id = data.queryId;
+  mitts.emit("stopdata", true)
+  const result = data.result ? data.result : data;
+  // const index = data.index;
+  result.id = data.queryId ? data.queryId : data.id;
   result.labelList = {};
   result.relationList = [];
   result.flagshowN = undefined;
@@ -1487,15 +1674,15 @@ mitts.on("revamp2", (data) => {
   result.flagshowR = undefined;
   result.flagshowE = undefined;
   result.overview = false;
-  result.graphRef = ref(null);
+  result.graphRef = ref(data.item ? data.item.graphRef : null);
   result.graph = false;
   result.propertiesFlag = false;
   result.Properties = {};
   result.showNodeMenu = false;
-  result.showNodeInfoCard = false;
-  result.unstructured = false;
-  result.downloadFlag = false;
-  toplist.value[index] = result;
+  result.showNodeInfoCard = false
+  result.unstructured = false
+  const uniquequeryIdList = [...new Set(queryIdList.value)];
+  toplist.value[uniquequeryIdList.lastIndexOf(result.id)] = result;
   let textName = "";
   let textTitle = "";
   let lineText = "";
@@ -1506,12 +1693,26 @@ mitts.on("revamp2", (data) => {
   };
   if (result.error) {
     result.flagshowER = true;
+  } else if (!result.records && !result.error) {
+    result.flagshowL = true
   } else if (result.records.length === 0) {
     result.flagshowE = true;
   } else {
     result.records.forEach((item: any, index: Number) => {
       for (let i = 0; i < item._fields.length; i++) {
-        if (
+        let flagN = false
+        let flagR = false
+        item._fields.forEach((item2) => {
+          if (item2 !== null && !item2.start && !item2.end && item2.labels && item2.properties) {
+            flagN = true
+          }
+          if (item2 !== null && item2.endId && item2.startId) {
+            flagR = true
+          }
+        })
+        if ((item._fields[i] !== null && item._fields[i].segments) || (flagN && flagR)) {
+          result.flagshowP = true;
+        } else if (
           item._fields[i] !== null &&
           !item._fields[i].start &&
           !item._fields[i].end &&
@@ -1519,8 +1720,6 @@ mitts.on("revamp2", (data) => {
           item._fields[i].properties
         ) {
           result.flagshowN = true;
-        } else if (item._fields[i] !== null && item._fields[i].segments) {
-          result.flagshowP = true;
         } else if (
           item._fields[i] !== null &&
           item._fields[i].endNodeElementId &&
@@ -1709,7 +1908,72 @@ mitts.on("revamp2", (data) => {
               }
             }
           }
-          break;
+        } else {
+          for (let t = 0; t < item._fields.length; t++) {
+            if (item._fields[i] !== null && !item._fields[i].start && !item._fields[i].end && item._fields[i].labels && item._fields[i].properties) {
+              if (window.localStorage.getItem(item._fields[i].labels[0])) {
+                if (
+                  window.localStorage.getItem(item._fields[i].labels[0]) === "id"
+                ) {
+                  textName = item._fields[i].elementId;
+                } else {
+                  textName =
+                    item._fields[i].properties[window.localStorage.getItem(item._fields[i].labels[0])];
+                }
+              } else {
+                for (const key in item._fields[i].properties) {
+                  textName = item._fields[i].properties.name ? item._fields[i].properties.name : item._fields[i].properties[key]
+                }
+              }
+              result.graphData.nodes.push({
+                id: item._fields[i].elementId,
+                text: textName,
+                label: item._fields[i].labels,
+                properties: item._fields[i].properties,
+                color: window.localStorage.getItem(
+                  item._fields[i].labels[0] + "color"
+                )
+                  ? window.localStorage.getItem(item._fields[i].labels[0] + "color")
+                  : "#21a1ff",
+                width: window.localStorage.getItem(
+                  item._fields[i].labels[0] + "size"
+                )
+                  ? window.localStorage.getItem(item._fields[i].labels[0] + "size")
+                  : "80",
+                height: window.localStorage.getItem(
+                  item._fields[i].labels[0] + "size"
+                )
+                  ? window.localStorage.getItem(item._fields[i].labels[0] + "size")
+                  : "80",
+              });
+            }
+            if (item._fields[t] !== null && item._fields[t].endId && item._fields[t].startId) {
+              2
+              lineText = item._fields[t].types
+              result.graphData.lines.push({
+                id: item._fields[t].elementId,
+                type: item._fields[t].types,
+                properties: item._fields[t].properties,
+                from: String(item._fields[t].startId),
+                to: String(item._fields[t].endId),
+                text: lineText,
+                lineWidth: window.localStorage.getItem(
+                  item._fields[t].types + "linesize"
+                )
+                  ? window.localStorage.getItem(
+                    item._fields[t].types + "linesize"
+                  )
+                  : 1,
+                color: window.localStorage.getItem(
+                  item._fields[t].types + "linecolor"
+                )
+                  ? window.localStorage.getItem(
+                    item._fields[t].types + "linecolor"
+                  )
+                  : "#666666",
+              });
+            }
+          }
         }
       }
     });
@@ -1866,8 +2130,13 @@ mitts.on("revamp2", (data) => {
   }, {});
   //渲染图形
   if (result.graphData.nodes.length !== 0) {
-    nextTick(() => {
-      result.graphRef.value.setJsonData(result.graphData);
+    nextTick(async () => {
+      if (result.records && result.records.length !== 0) {
+        const graphInstance = result.graphRef.value.getInstance();
+        await graphInstance.setJsonData(result.graphData);
+        await graphInstance.moveToCenter();
+        await graphInstance.refresh()
+      }
     });
   }
   if (result.records) { // 判断没有不走，第一次没有，不走，就不报错
@@ -1877,9 +2146,6 @@ mitts.on("revamp2", (data) => {
           if (item2.properties[key] && item2.properties[key].info && item2.properties[key].bytes) {
             result.unstructured = true
             result.fileInfo = item2.properties[key]
-            result.downloadFlag = true
-          } else if (item2.properties[key] && item2.properties[key].bytes) {
-            result.downloadFlag = true
           }
         }
       })
@@ -1904,6 +2170,7 @@ const removeModule = (index: Number) => {
 };
 //overview修改颜色
 const colorClick = (e) => {
+  let idList = []
   if (e.target.className === "li") {
     window.localStorage.setItem(
       tagName.value + "color",
@@ -1913,18 +2180,27 @@ const colorClick = (e) => {
       item.graphData.nodes.forEach((item2) => {
         item2.label.forEach((item3) => {
           if (item3 === tagName.value) {
+            idList.push(item.id)
             item2.color = window.localStorage.getItem(tagName.value + "color");
           }
         });
       });
-      nextTick(() => {
-        item.graphRef.setJsonData(item.graphData);
-      });
+    });
+    toplist.value.forEach((item, index) => {
+      if (idList.indexOf(item.id) !== -1) {
+        nextTick(async () => {
+          const graphInstance = item.graphRef .getInstance();
+          await graphInstance.setJsonData(item.graphData);
+          await graphInstance.moveToCenter();
+          await graphInstance.refresh()
+        });
+      }
     });
   }
 };
 //lines修改颜色
 const colorRelaClick = (e) => {
+  let idList = []
   if (e.target.className === "li") {
     window.localStorage.setItem(
       tagName.value + "linecolor",
@@ -1933,38 +2209,56 @@ const colorRelaClick = (e) => {
     toplist.value.forEach((item, index) => {
       item.graphData.lines.forEach((item2) => {
         if (item2.text === tagName.value) {
+          idList.push(item.id)
           item2.color = window.localStorage.getItem(
             tagName.value + "linecolor"
           );
         }
       });
-      nextTick(() => {
-        item.graphRef.setJsonData(item.graphData);
-      });
+    });
+    toplist.value.forEach((item, index) => {
+      if (idList.indexOf(item.id) !== -1) {
+        nextTick( async() => {
+          const graphInstance = item.graphRef .getInstance();
+          await graphInstance.setJsonData(item.graphData);
+          await graphInstance.moveToCenter();
+          await graphInstance.refresh()
+        });
+      }
     });
   }
 };
 //修改大小
 const sizeClick = (e) => {
+  let idList = []
   if (e.target.className === "sizeLi") {
     window.localStorage.setItem(tagName.value + "size", e.target.dataset.size);
     toplist.value.forEach((item, index) => {
       item.graphData.nodes.forEach((item2) => {
         item2.label.forEach((item3) => {
           if (item3 === tagName.value) {
+            idList.push(item.id)
             item2.width = window.localStorage.getItem(tagName.value + "size");
             item2.height = window.localStorage.getItem(tagName.value + "size");
           }
         });
       });
-      nextTick(() => {
-        item.graphRef.setJsonData(item.graphData);
-      });
+    });
+    toplist.value.forEach((item, index) => {
+      if (idList.indexOf(item.id) !== -1) {
+        nextTick( async() => {
+          const graphInstance = item.graphRef .getInstance();
+          await graphInstance.setJsonData(item.graphData);
+          await graphInstance.moveToCenter();
+          await graphInstance.refresh()
+        });
+      }
     });
   }
 };
 //lines修改大小
 const sizeRelaClick = (e) => {
+  let idList = []
   if (e.target.className === "sizeLi") {
     window.localStorage.setItem(
       tagName.value + "linesize",
@@ -1973,19 +2267,28 @@ const sizeRelaClick = (e) => {
     toplist.value.forEach((item, index) => {
       item.graphData.lines.forEach((item2) => {
         if (item2.text === tagName.value) {
+          idList.push(item.id)
           item2.lineWidth = window.localStorage.getItem(
             tagName.value + "linesize"
           );
         }
       });
-      nextTick(() => {
-        item.graphRef.setJsonData(item.graphData);
-      });
+    });
+    toplist.value.forEach((item, index) => {
+      if (idList.indexOf(item.id) !== -1) {
+        nextTick( async() => {
+          const graphInstance = item.graphRef .getInstance();
+          await graphInstance.setJsonData(item.graphData);
+          await graphInstance.moveToCenter();
+          await graphInstance.refresh()
+        });
+      }
     });
   }
 };
 //修改字段 id
 const idClick = (e) => {
+  let idList = []
   window.localStorage.setItem(tagName.value, "id");
   toplist.value.forEach((item, index) => {
     item.graphData.nodes.forEach((item2) => {
@@ -1999,8 +2302,10 @@ const idClick = (e) => {
                 !item5.end &&
                 item5.labels
               ) {
+                idList.push(item.id)
                 item2.text = item2.id;
               } else if (item5 !== null && item5.segments) {
+                idList.push(item.id)
                 item2.text = item2.id;
               }
             });
@@ -2008,13 +2313,21 @@ const idClick = (e) => {
         }
       });
     });
-    nextTick(() => {
-      item.graphRef.setJsonData(item.graphData);
-    });
+  });
+  toplist.value.forEach((item, index) => {
+    if (idList.indexOf(item.id) !== -1) {
+      nextTick( async() => {
+          const graphInstance = item.graphRef .getInstance();
+          await graphInstance.setJsonData(item.graphData);
+          await graphInstance.moveToCenter();
+          await graphInstance.refresh()
+        });
+    }
   });
 };
 //修改字段properties
 const fileClick = (e) => {
+  let idList = []
   window.localStorage.setItem(tagName.value, e.target.innerText);
   toplist.value.forEach((item, index) => {
     item.graphData.nodes.forEach((item2) => {
@@ -2028,8 +2341,10 @@ const fileClick = (e) => {
                 !item5.end &&
                 item5.labels
               ) {
+                idList.push(item.id)
                 item2.text = item2.properties[e.target.innerText];
               } else if (item5 !== null && item5.segments) {
+                idList.push(item.id)
                 item2.text = item2.properties[e.target.innerText];
               }
             });
@@ -2037,63 +2352,102 @@ const fileClick = (e) => {
         }
       });
     });
-    nextTick(() => {
-      item.graphRef.setJsonData(item.graphData);
-    });
+  });
+  toplist.value.forEach((item, index) => {
+    if (idList.indexOf(item.id) !== -1) {
+      nextTick( async() => {
+          const graphInstance = item.graphRef .getInstance();
+          await graphInstance.setJsonData(item.graphData);
+          await graphInstance.moveToCenter();
+          await graphInstance.refresh()
+        });
+    }
   });
 };
 //修改line字段 id
 const lineIdClick = (e) => {
+  let idList = []
   window.localStorage.setItem(tagName.value, "id");
   toplist.value.forEach((item, index) => {
     item.graphData.lines.forEach((item2) => {
       if (item2.type === tagName.value) {
+        idList.push(item.id)
         item2.text = item2.id;
       }
     });
-    nextTick(() => {
-      item.graphRef.setJsonData(item.graphData);
-    });
+  });
+  toplist.value.forEach((item, index) => {
+    if (idList.indexOf(item.id) !== -1) {
+      nextTick( async() => {
+          const graphInstance = item.graphRef .getInstance();
+          await graphInstance.setJsonData(item.graphData);
+          await graphInstance.moveToCenter();
+          await graphInstance.refresh()
+        });
+    }
   });
 };
 //修改字段line type
 const lineTypeClick = (e) => {
+  let idList = []
   window.localStorage.setItem(tagName.value, "type");
   toplist.value.forEach((item, index) => {
     item.graphData.lines.forEach((item2) => {
       if (item2.type === tagName.value) {
+        idList.push(item.id)
         item2.text = item2.type;
       }
     });
-    nextTick(() => {
-      item.graphRef.setJsonData(item.graphData);
-    });
+  });
+  toplist.value.forEach((item, index) => {
+    if (idList.indexOf(item.id) !== -1) {
+      nextTick( async() => {
+          const graphInstance = item.graphRef .getInstance();
+          await graphInstance.setJsonData(item.graphData);
+          await graphInstance.moveToCenter();
+          await graphInstance.refresh()
+        });
+    }
   });
 };
 //修改字段 line properties
 const lineFileClick = (e) => {
+  let idList = []
   window.localStorage.setItem(tagName.value, e.target.innerText);
   toplist.value.forEach((item, index) => {
     item.graphData.lines.forEach((item2) => {
       if (item2.type === tagName.value) {
+        idList.push(item.id)
         item2.text = item2.properties[e.target.innerText];
       }
     });
-    nextTick(() => {
-      item.graphRef.setJsonData(item.graphData);
-    });
+  });
+  toplist.value.forEach((item, index) => {
+    if (idList.indexOf(item.id) !== -1) {
+      nextTick( async() => {
+          const graphInstance = item.graphRef .getInstance();
+          await graphInstance.setJsonData(item.graphData);
+          await graphInstance.moveToCenter();
+          await graphInstance.refresh()
+        });
+    }
   });
 };
 //下载图片
 mitts.on("download", (item) => {
   item.graphRef.getInstance().downloadAsImage("png", "graph");
+});
+mitts.on("blank", (queryId: any) => {
+  toplist.value.forEach(item => {
+    if (item.id === queryId) {
+      item.flagshowN = false,
+        item.flagshowP = false,
+        item.flagshowR = false,
+        item.flagshowE = false,
+        item.flagshowL = false
+    }
+  })
 })
-const addImg = (fileInfo) => {
-  let mimeType = fileInfo.info.split("=")[fileInfo.info.split("=").length - 1]
-  let mimeType2 = mimeType.slice(0, mimeType.length - 1)
-  console.log(mimeType2, '2511')
-  imgList.value = [`data:${mimeType2};base64,${fileInfo.bytes}`]
-}
 const downLoadClick = async (fileInfo, scoped) => {
   if (fileInfo.info && fileInfo.info !== "") {
     let mimeType = fileInfo.info.split("=")[fileInfo.info.split("=").length - 1]
