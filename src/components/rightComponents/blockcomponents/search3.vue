@@ -14,7 +14,7 @@
           position: absolute;
           right: 10px;
           top: 4px;
-        " @click="funClick" v-if="loadingFlag" />
+        " @click="funClick" v-if="!flagshowL" />
       <div v-else style="width: 14px; height: 14px; background-color: red;position: absolute;right: 16px; top: 10px;"
         @click="breakClick"></div>
 
@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, markRaw, nextTick, onMounted, ref, reactive } from "vue";
+import { computed, markRaw, nextTick, onMounted, ref, reactive, watch } from "vue";
 import mitts from "../../../utils/bus.js";
 import {
   CaretRightOutlined,
@@ -57,9 +57,10 @@ import "codemirror/theme/darcula.css";
 //主题
 import "codemirror/theme/idea.css";
 import { useStore } from "vuex";
-const loadingFlag = ref(true)
+// const loadingFlag = ref(true)
 const store = useStore();
-const props = defineProps(["command", "index", 'item']);
+const props = defineProps(["command", "index", 'item', 'flagshowL']);
+const flagshowL = ref(props.flagshowL);
 const mode = "javascript"; // 编译语言
 const height = ref(150);
 const theme = "idea"; // 主题语言
@@ -115,12 +116,18 @@ const opt = ref({
   ],
 });
 let abortController: AbortController | null = null;
+// 使用watch来监听message prop的变化  
+watch(() => props.flagshowL, (newValue, oldValue) => {
+  console.log(`Message changed from '${oldValue}' to '${newValue}'`);
+  flagshowL.value = newValue
+  // 在这里执行你需要的操作  
+});
 //获取数据
 const funClick = async () => {
   await nextTick()
-  setTimeout(()=>{
-    loadingFlag.value = !loadingFlag.value
-  },100)
+  // setTimeout(()=>{
+  //   loadingFlag.value = !loadingFlag.value
+  // },100)
   const queryId = props.item.queryId
   if (contentValue.value === "") {
   } else {
@@ -150,9 +157,9 @@ const funClick = async () => {
     })
       .then((response) => response.text())
       .then((data) => {
-        setTimeout(()=>{
-    loadingFlag.value = !loadingFlag.value
-  },100)
+  //       setTimeout(()=>{
+  //   loadingFlag.value = !loadingFlag.value
+  // },100)
         const data2 = JSON.parse(data);
         if (data2.error) {
           const result = {};
@@ -199,7 +206,7 @@ const funClick = async () => {
 let url: string | null = window.localStorage.getItem("address")//地址
 const closeurl = url.replace('/query', '/close')
 const breakClick = () => {
-  loadingFlag.value = !loadingFlag.value;
+  // loadingFlag.value = !loadingFlag.value;
   mitts.emit("blank", props.item.queryId)
   fetch(closeurl, {
     method: 'POST',
@@ -209,9 +216,9 @@ const breakClick = () => {
     body: props.item.queryId
   })
 };
-mitts.on("stopdata", (flag) => {
-  loadingFlag.value = flag
-})
+// mitts.on("stopdata", (flag) => {
+//   loadingFlag.value = flag
+// })
 //下载图片
 const imgClick = () => {
   mitts.emit("download", props.item)

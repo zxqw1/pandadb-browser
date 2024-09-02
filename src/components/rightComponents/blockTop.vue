@@ -26,7 +26,7 @@
         </div>
       </el-col>
       <!-- 搜索 -->
-      <search3 :command="item.summary.query.text" :index="index" :item="item" />
+      <search3 :command="item.summary.query.text" :flagshowL="item.flagshowL" :index="index" :item="item" />
       <!-- 展示 -->
       <el-col style="height: 348px; margin-top: 12px" v-show="!item.show" :style="{
         height: isFullscreen ? '100vh' : 'auto',
@@ -259,8 +259,141 @@
                         </el-row>
                       </el-popover>
                     </el-col>
+                    <el-col style="margin: 0 0 0 10px" v-if="item.graphData.lines.length !== 0">
+                      <div style="font-weight: bold;margin-top: 10px">Relationship types</div>
+                      <el-tag effect="dark" round style="margin-top: 10px;margin-right: 10px">*({{ relationList.length
+                        }})</el-tag>
+                      <el-popover placement="bottom" :width="260" trigger="click"
+                        v-for="(key, value) in item.relationList" :key="key">
+                        <template #reference>
+                          <el-tag @click="tagClick(value)" effect="dark"
+                            style="margin-right: 10px; cursor: pointer;margin-top: 10px;border: none"
+                            :color="getLineColor(value)">{{ value }}({{ key }})</el-tag>
+                        </template>
+                        <el-row>
+                          <el-col>
+                            <el-tag effect="dark" :color="getLineColor(value)" style="width: 100%;border: none">{{ value
+                              }}</el-tag>
+                          </el-col>
+                          <el-col style="display: flex; margin-top: 12px">
+                            <ul class="color" style="
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-around;
+                                width: 100%;
+                                padding-left: 0;
+                                list-style-type:none
+                              " @click="colorRelaClick($event)">
+                              <div>color:</div>
+                              <li style="background-color: rgb(96, 74, 14);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(201, 144, 192);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(247, 151, 103);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(87, 199, 227);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(241, 102, 103);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(217, 200, 174);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(141, 204, 147);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(236, 181, 201);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(76, 142, 218);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(255, 196, 84);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(218, 113, 148);cursor: pointer;" class="li"></li>
+                              <li style="background-color: rgb(86, 148, 128);cursor: pointer;" class="li"></li>
+                            </ul>
+                          </el-col>
+                          <el-col style="display: flex; margin-top: 12px">
+                            <ul class="size" style="
+                                display: flex;
+                                align-items: center;
+                                width: 100%;
+                                padding-left: 0;
+                                list-style-type:none
+                              " @click="sizeRelaClick($event)">
+                              <div>Line width:</div>
+                              <li class="sizeLi" style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 5px;
+                                  height: 12px;
+                                  cursor: pointer
+                                " data-size='1'></li>
+                              <li class="sizeLi" style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 8px;
+                                  height: 12px;
+                                  cursor: pointer
+                                " data-size='3'></li>
+                              <li class="sizeLi" style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 11px;
+                                  height: 12px;
+                                  cursor: pointer
+                                " data-size='5'></li>
+                              <li class="sizeLi" style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 14px;
+                                  height: 12px;
+                                  cursor: pointer
+                                " data-size='7'></li>
+                              <li class="sizeLi" style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 17px;
+                                  height: 12px;
+                                  cursor: pointer
+                                " data-size='8'></li>
+                              <li class="sizeLi" style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 20px;
+                                  height: 12px;
+                                  cursor: pointer
+                                " data-size='10'></li>
+                              <li class="sizeLi" style="
+                                  background-color: rgb(170, 170, 170);
+                                  width: 23px;
+                                  height: 12px;
+                                  cursor: pointer
+                                " data-size='12'></li>
+                            </ul>
+                          </el-col>
+                          <el-col style="
+                              display: flex;
+                              margin-top: 12px;
+                              align-items: center;
+                              flex-wrap: wrap;
+                            ">
+                            <div>Caption:</div>
+                            <div v-for="(pathTagItem, pathTagIndex) in item.records[0]._fields">
+                              <div>
+                                <el-tag type="info" size="small"
+                                  style="margin-top: 10px;margin-left: 10px;cursor:pointer"
+                                  @click="lineIdClick($event)"> {{ "<id>" }}</el-tag>
+                                <el-tag type="info" size="small"
+                                  style="margin-top: 10px;margin-left: 10px;cursor:pointer"
+                                  @click="lineTypeClick($event)"> {{ "<type>" }}</el-tag>
+                                <div v-for="items3 in pathTagItem.segments">
+                                  <div v-if="items3.relationship">
+                                    <el-tag v-for="(key5, value5) in items3.relationship.properties" :key="key5"
+                                      type="info" size="small" style="margin-top: 10px;margin-left: 10px;cursor:pointer"
+                                      @click="lineFileClick($event)">{{ value5 }}</el-tag>
+                                  </div>
+                                </div>
+                              </div>
+                              <div v-if="pathTagItem.startId && pathTagItem.endId">
+                                <el-tag type="info" size="small"
+                                  style="margin-top: 10px;margin-left: 10px;cursor:pointer"
+                                  @click="lineIdClick($event)"> {{ "<id>" }}</el-tag>
+                                <el-tag type="info" size="small"
+                                  style="margin-top: 10px;margin-left: 10px;cursor:pointer"
+                                  @click="lineTypeClick($event)"> {{ "<type>" }}</el-tag>
+                                <el-tag v-for="(key5, value5) in pathTagItem.properties" :key="key5" type="info"
+                                  size="small" style="margin-top: 10px;margin-left: 10px;cursor:pointer"
+                                  @click="lineFileClick($event)">{{
+                                    value5 }}</el-tag>
+                              </div>
+                            </div>
+                          </el-col>
+                        </el-row>
+                      </el-popover>
+                    </el-col>
                     <el-col style="margin: 10px 0 0 10px">
-                      Displaying {{ resultNodes.length }} nodes, 0
+                      Displaying {{ resultNodes.length }} nodes, {{ relationList.length }}
                       relationships.
                     </el-col>
                   </el-row>
@@ -454,7 +587,10 @@
                   </el-col>
                   <el-col :span="16" :style="{ height: isres ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden">
-                    {{ item.records }}
+                    <div v-if="!isres">{{ item.records }}</div>
+                    <pre v-else>
+                      {{ JSON.stringify(item.records, null, 2) }}
+                    </pre>
                   </el-col>
                 </el-row>
               </div>
@@ -999,7 +1135,10 @@
                   </el-col>
                   <el-col :span="16" :style="{ height: isres ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden">
-                    {{ item.records }}
+                    <div v-if="!isres">{{ item.records }}</div>
+                    <pre v-else>
+                      {{ JSON.stringify(item.records, null, 2) }}
+                    </pre>
                   </el-col>
                 </el-row>
               </div>
@@ -1136,7 +1275,10 @@
                   </el-col>
                   <el-col :span="16" :style="{ height: isres ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden">
-                    {{ item.records }}
+                    <div v-if="!isres">{{ item.records }}</div>
+                    <pre v-else>
+                      {{ JSON.stringify(item.records, null, 2) }}
+                    </pre>
                   </el-col>
                 </el-row>
               </div>
@@ -1264,7 +1406,10 @@
                   </el-col>
                   <el-col :span="16" :style="{ height: isres ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden">
-                    {{ item.records }}
+                    <div v-if="!isres">{{ item.records }}</div>
+                    <pre v-else>
+                      {{ JSON.stringify(item.records, null, 2) }}
+                    </pre>
                   </el-col>
                 </el-row>
               </div>
@@ -1453,6 +1598,65 @@ const requestData = (label, id, item) => {
               : "#666666",
           })
         }
+      })
+      //overview nodes
+      resultNodes.value = [];
+        resultNodes.value = item.graphData.nodes.reduce(
+          (acc: any, current: any) => {
+            // 检查累加器（acc）中是否已存在具有相同id的对象
+            const existing = acc.find((item2) => item2.id === current.id);
+            // 如果不存在，则将其添加到累加器中
+            if (!existing) {
+              acc.push(current);
+            }
+            // 否则，不执行任何操作（即不添加重复项）
+            return acc;
+          },
+          []
+        ); // 初始累加器是一个空数组
+        labelList.value = [];
+        resultNodes.value.forEach((item3) => {
+          labelList.value.push(...item3.label);
+        });
+        item.labelList = labelList.value.reduce((acc2, curr2) => {
+          // 如果当前元素已经在累加器中，则增加其计数
+          if (acc2[curr2]) {
+            acc2[curr2]++;
+          }
+          // 否则，将其添加到累加器中，并设置计数为1
+          else {
+            acc2[curr2] = 1;
+          }
+          return acc2;
+        }, {});
+
+        //overview Relationship
+        resultRelation.value = [];
+        resultRelation.value = item.graphData.lines.reduce(
+          (acc: any, current: any) => {
+            const existing = acc.find((item) => item.id === current.id);
+            if (!existing) {
+              acc.push(current);
+            }
+            return acc;
+          },
+          []
+        );
+        relationList.value = []; //关系
+        resultRelation.value.forEach((item4) => {
+          relationList.value.push(item4.type);
+        });
+        item.relationList = relationList.value.reduce((acc2, curr2) => {
+          // 如果当前元素已经在累加器中，则增加其计数
+          if (acc2[curr2]) {
+            acc2[curr2]++;
+          }
+          // 否则，将其添加到累加器中，并设置计数为1
+          else {
+            acc2[curr2] = 1;
+          }
+          return acc2;
+        }, {});
       })
       nextTick( async() => {
           const graphInstance = item.graphRef .getInstance();
