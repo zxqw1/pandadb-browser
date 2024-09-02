@@ -1498,7 +1498,7 @@ const getRefDom = (val: any, item: any) => {
 //请求展开数据
 const requestData = (label, id, item) => {
   const queryId = generateRandomId()
-  const cypher = `match p=(n:${label}{id:'${id}'})--(m) return p limit 10`
+  const cypher = `match p=(n:${label}--(m) where id(n)=${id} return p limit 10`
   const queryobj = {
     'query': cypher,
     'queryId': queryId

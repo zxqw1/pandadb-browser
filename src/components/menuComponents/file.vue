@@ -134,7 +134,6 @@ const UploadClick = (scoped) => {
     let labels = ""
     let currentLabel = scoped.node.label
     parentNodes.reverse().forEach((item, index) => {
-        console.log(item)
         if (!Array.isArray(item)) {
             labels += item.label + "/"
         }

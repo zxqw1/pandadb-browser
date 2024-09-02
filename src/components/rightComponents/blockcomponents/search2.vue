@@ -117,7 +117,7 @@ const opt = ref({
 let abortController: AbortController | null = null;
 // 使用watch来监听message prop的变化  
 watch(() => props.flagshowL, (newValue, oldValue) => {
-  console.log(`Message changed from '${oldValue}' to '${newValue}'`);
+  // console.log(`Message changed from '${oldValue}' to '${newValue}'`);
   flagshowL.value = newValue
   // 在这里执行你需要的操作  
 });
