@@ -1517,8 +1517,8 @@ const requestData = (label, id, item) => {
       data2.response.forEach(item2 => {
         if (item2.p.start && item2.p.end) {
           let text = ""
-          for(let key in item2.p.start.properties){
-             text = item2.p.start.properties[key]
+          for (let key in item2.p.start.properties) {
+            text = item2.p.start.properties[key]
           }
           item.graphData.nodes.push({
             id: item2.p.start.elementId,
@@ -1598,9 +1598,8 @@ const requestData = (label, id, item) => {
               : "#666666",
           })
         }
-      })
-      //overview nodes
-      resultNodes.value = [];
+        //overview nodes
+        resultNodes.value = [];
         resultNodes.value = item.graphData.nodes.reduce(
           (acc: any, current: any) => {
             // 检查累加器（acc）中是否已存在具有相同id的对象
@@ -1658,12 +1657,12 @@ const requestData = (label, id, item) => {
           return acc2;
         }, {});
       })
-      nextTick( async() => {
-          const graphInstance = item.graphRef .getInstance();
-          await graphInstance.setJsonData(item.graphData);
-          await graphInstance.moveToCenter();
-          await graphInstance.refresh()
-        });
+      nextTick(async () => {
+        const graphInstance = item.graphRef.getInstance();
+        await graphInstance.setJsonData(item.graphData);
+        await graphInstance.moveToCenter();
+        await graphInstance.refresh()
+      });
     })
     .catch((error) => {
       console.error("Error:", error);

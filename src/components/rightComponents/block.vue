@@ -1408,10 +1408,7 @@
                   </el-col>
                   <el-col :span="16" :style="{ height: isres ? '100%' : '30px' }"
                     style="font-size: 16px; color: #666666; overflow: hidden">
-                    <div v-if="!isres">{{ item.records }}</div>
-                    <pre v-else>
-                      {{ JSON.stringify(item.records, null, 2) }}
-                    </pre>
+                    {{ item.records }}
                   </el-col>
                 </el-row>
               </div>
@@ -1734,6 +1731,7 @@ const NodeClick = (event, item) => {
 };
 //单个line信息
 const lineClick = (event, item) => {
+  console.log(123)
   let record = {}
   list.value.forEach((item2) => {
     if (item2.id === item.id) {
