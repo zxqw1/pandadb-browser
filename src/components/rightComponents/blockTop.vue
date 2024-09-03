@@ -1498,7 +1498,7 @@ const getRefDom = (val: any, item: any) => {
 //请求展开数据
 const requestData = (label, id, item) => {
   const queryId = generateRandomId()
-  const cypher = `match p=(n:${label}--(m) where id(n)=${id} return p limit 10`
+  const cypher = `match p=(n:${label})--(m) where id(n)=${id} return p limit 10`
   const queryobj = {
     'query': cypher,
     'queryId': queryId
@@ -1689,7 +1689,7 @@ const clickNodeMenu = (menutip: string, event: RGUserEvent, item: any) => { // �
     const _all_nodes = graphInstance.getNodes();//所有dom集合
     _all_nodes.forEach(item2 => {
       if (item2.id === item.Properties.id) {
-        requestData(item.Properties.label[0], item.Properties.properties.id, item)
+        requestData(item.Properties.label[0], item.Properties.id, item)
       }
       item.showNodeMenu = false
     })
