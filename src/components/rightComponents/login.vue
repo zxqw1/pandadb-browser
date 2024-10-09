@@ -65,7 +65,7 @@
             </template>
           </el-input>
         </div>
-        <!-- <div>
+        <div>
           <div style="font-size: 14px; font-weight: 500; margin-bottom: 4px">
             UserName
           </div>
@@ -81,7 +81,7 @@
             placeholder="请输入密码"
             show-password
           />
-        </div> -->
+        </div>
         <div>
           <el-button type="primary" @click="loginClick">登录</el-button>
         </div>

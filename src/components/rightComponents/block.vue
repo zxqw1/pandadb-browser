@@ -414,7 +414,8 @@
                         width: nodeMenuPanel.width + 'px',
                         height: nodeMenuPanel.height + 'px',
                         left: nodeMenuPanel.x + 'px',
-                        top: nodeMenuPanel.y + 'px'
+                        top: nodeMenuPanel.y + 'px',
+                        zIndex:10
                       }">
                       <svg width="100%" height="100%" viewBox="0 0 400 400">
                         <g>
@@ -1726,12 +1727,15 @@ const NodeClick = (event, item) => {
     }
   })
   currentNode.value = event;
+  if(item.fileInfo){
+    addImg(item.fileInfo)
+
+  }
   updateNodeMenuPosition(record);
   record.showNodeMenu = true;
-};
+};  
 //单个line信息
 const lineClick = (event, item) => {
-  console.log(123)
   let record = {}
   list.value.forEach((item2) => {
     if (item2.id === item.id) {
@@ -1869,9 +1873,7 @@ const generateRandomId = () => {
 };
 //修改
 mitts.on("revamp", (data) => {
-  // mitts.emit("stopdata", true)
   const result = data.result ? data.result : data;
-  // const index = data.index;
   result.id = data.queryId ? data.queryId : data.id;
   result.labelList = {};
   result.relationList = [];
@@ -3151,7 +3153,14 @@ mitts.on("params", (result: any) => {
     })
   }
 });
+const addImg = (fileInfo) => {
+  let mimeType = fileInfo.info.split("=")[fileInfo.info.split("=").length - 1]
+  let mimeType2 = mimeType.slice(0, mimeType.length - 1)
+  // console.log(mimeType2, '2511')
+  imgList.value = [`data:${mimeType2};base64,${fileInfo.bytes}`]
+}
 const downLoadClick = async (fileInfo, scoped) => {
+  console.log(fileInfo,'3153')
   if (fileInfo.info && fileInfo.info !== "") {
     let mimeType = fileInfo.info.split("=")[fileInfo.info.split("=").length - 1]
     let mimeType2 = mimeType.slice(0, mimeType.length - 1)

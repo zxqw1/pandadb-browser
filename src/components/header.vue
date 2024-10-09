@@ -1,6 +1,6 @@
 <template>
-  <a-row>
-    <a-col>
+  <a-row style="background-color: #fff;">
+    <a-col :span="24">
       <img src="../assets/img/logo.png" alt="">
       <div class="title">PandaDB Studio</div>
     </a-col>
@@ -27,6 +27,5 @@
   display: flex;
   align-items: center;
   background-color: rgb(255, 255, 255);
-
 }
 </style>

@@ -78,6 +78,20 @@
         <help />
       </div>
     </el-tab-pane>
+    <el-tab-pane name="管理" :disabled="loginelse">
+      <template #label>
+        <span
+          class="custom-tabs-label"
+          style="display: flex; flex-direction: column"
+        >
+          <SettingOutlined />
+          <span>管理</span>
+        </span>
+      </template>
+      <div v-if="tabsName" class="content">
+        <Manage />
+      </div>
+    </el-tab-pane>
     <el-tab-pane name="设置" :disabled="loginelse">
       <template #label>
         <span
@@ -106,6 +120,19 @@
         <about />
       </div>
     </el-tab-pane>
+    <el-tab-pane name="插件市场" :disabled="loginelse">
+      <template #label>
+        <span
+          class="custom-tabs-label"
+          style="display: flex; flex-direction: column"
+        >
+        <el-icon><Compass /></el-icon>
+          <span>插件市场</span>
+        </span>
+      </template>
+      <div v-if="tabsName" class="content">
+      </div>
+    </el-tab-pane>
   </el-tabs>
 </template>
 
@@ -120,8 +147,10 @@ import {
   InfoCircleOutlined,
   ToolOutlined,
   CustomerServiceFilled,
-  FolderOpenOutlined 
+  FolderOpenOutlined,
+  SettingOutlined
 } from "@ant-design/icons-vue";
+import { Compass} from '@element-plus/icons-vue'
 import mitts from "../utils/bus.js";
 import home from "./menuComponents/home.vue";
 import guides from "./menuComponents/guides.vue";
@@ -130,15 +159,19 @@ import about from "./menuComponents/about.vue";
 import setter from "./menuComponents/setter.vue";
 import favorate from "./menuComponents/Favorate.vue";
 import File from "./menuComponents/file.vue";
+import Manage from "./menuComponents/manage.vue";
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 import getJsonDataInfo from "../utils/request.js"
 // 左导航
 let tabsName = ref<string | undefined>(undefined);
 const tabsClick = (value: any, value2: any) => {
-  if (tabsName.value === value2.target.innerText) {
+  if (tabsName.value === value.paneName) {
     tabsName.value = undefined;
   } else {
-    tabsName.value = value2.target.innerText;
+    tabsName.value = value.paneName;
+  }
+  if(value.paneName !== "管理"){
+    mitts.emit("menuEmit", "home")
   }
 };
 mitts.on("command", (contentValue: any) => {

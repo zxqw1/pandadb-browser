@@ -60,8 +60,8 @@ const keywords = ref([
   ["RETURN", "match"],
   ["LIMIT", "match"],
   ["CREATE", "match"],
-  ["DELETE",'match'],
-  ["delete",'match'],
+  ["DELETE", 'match'],
+  ["delete", 'match'],
   ["match", "match"],
   ["return", "match"],
   ["limit", "match"],
@@ -213,14 +213,14 @@ mitts.on("favo", (cypher) => {
 //获取数据
 const funClick = async () => {
   await nextTick();
-const queryId = generateRandomId()
+  const queryId = generateRandomId()
   if (contentValue.value === "") {
   } else {
     mitts.emit("params", {
-      "queryId":queryId,
-      'summary':{
-        'query':{
-          'text':contentValue.value
+      "queryId": queryId,
+      'summary': {
+        'query': {
+          'text': contentValue.value
         }
       }
     });
@@ -266,7 +266,7 @@ const queryId = generateRandomId()
           result.queryId = data2.queryId
           mitts.emit("params", result);
           store.commit("ScrollChange", result);
-        } else {
+        } else if (data2.response) {
           const endTime = performance.now();
           const responseTime = endTime - startTime;
           const result = {};
@@ -287,8 +287,21 @@ const queryId = generateRandomId()
           result.summary.server.address =
             window.localStorage.getItem("address");
           result.summary.server.agent = "PandaDB";
-            mitts.emit("params", result);
-            store.commit("ScrollChange", result);
+          mitts.emit("params", result);
+          store.commit("ScrollChange", result);
+        } else {
+          const result = {};                         
+          result.summary = {};
+          result.summary.query = {};
+          result.summary.server = {};
+          result.summary.query.text = data2.query;
+          result.summary.server.address =
+            window.localStorage.getItem("address");
+          result.summary.server.agent = "PandaDB";
+          result.error = "error:null";
+          result.queryId = data2.queryId
+          mitts.emit("params", result);
+          store.commit("ScrollChange", result);
         }
       })
       .catch((error) => {
@@ -297,7 +310,7 @@ const queryId = generateRandomId()
     deleteClick();
   }
 };
-// 全屏
+// 全屏 
 const toggleFullScreen = () => {
   isFullscreen.value = !isFullscreen.value;
   if (isFullscreen.value === true) {
