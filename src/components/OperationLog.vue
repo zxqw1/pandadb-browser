@@ -115,7 +115,7 @@ onMounted(async () => {
     "pageSize": 10,
     "currentPage": 1  
   }
-   const data = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/operationLog","POST",JSON.stringify(querytext))
+   const data = await getManageInfo(OperationLogUrl,"POST",JSON.stringify(querytext))
   tableData.value = data.response
   // console.log(tableData.value,'119')
   tableData.value.forEach(item => {
@@ -134,7 +134,7 @@ const siftclick = async ()=>{
     "pageSize": 10,
     "currentPage": 1  
   }
-  const data = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/operationLog","POST",JSON.stringify(querytext))
+  const data = await getManageInfo(OperationLogUrl,"POST",JSON.stringify(querytext))
   tableData.value = data.response
   tableData.value.forEach(item => {
     item.operationTime = timeConversion(Number(item.operationTime))
