@@ -37,7 +37,7 @@
             <el-col style="margin-top: 20px; position: relative;">
                 <el-select v-model="timeValue" placeholder="最近一小时" size="large" style="width: 240px"
                     @change="timeChange">
-                    <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+                    <el-option v-for="item in options" :key="item.value" :label="item.description" :value="item.value" />
                 </el-select>
                 <el-row style="margin-top: 10px;">
                     <el-col :span="12">
@@ -72,39 +72,42 @@ const databaseNodeValue = ref('')
 const databaseoption = ref([])
 const nodeStatus = ref("")
 const runTime = ref("")
-const options = [
-    {
-        value: 'OneHour',
-        label: '最近一小时',
-    },
-    {
-        value: 'ThreeDays',
-        label: '最近三天',
-    },
-    {
-        value: 'OneWeek',
-        label: '最近一周',
+const options = ref([])
+let url = window.localStorage.getItem("address")//地址
+function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
+    // 检查IP地址中是否包含'/'（除了最后一个字符可能是':'的情况）  
+    // 这里假设IP地址格式正确，并且':'只出现在端口号之前  
+    const hasPath = ipWithMaybePath.includes('/') && !ipWithMaybePath.endsWith(':');
+    if (hasPath) {
+        // 如果包含路径，则替换最后一个'/'及其后面的所有内容  
+        return ipWithMaybePath.replace(/\/[^\/]*$/, `${newPath}`);
+    } else {
+        // 如果没有路径，则直接添加新路径  
+        return `${ipWithMaybePath}/${newPath}`;
     }
-]
-let url: string | null = window.localStorage.getItem("address")//地址
-
+}
 const generateRandomId = () => {
     const timestamp = new Date().getTime(); // 获取当前时间戳
     const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
     return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
 };
-onMounted(async () => { // 初始化 图表
-    //数据库状态枚举
-    const queryId = generateRandomId()
-    const databaseNodeData = await getManageInfo(`https://apifoxmock.com/m1/5219875-4886398-default/databaseStatusTypeList?${queryId}`, "GET")
-    console.log(databaseNodeData,'100')
+onMounted(async () => { // 初始化图表
+    //数据库节点状态枚举
+    const databaseUrl = replaceOrAddUrlPath(url,'/databaseStatusTypeList')
+    const databasequery = {
+        "queryId":generateRandomId()
+    }
+    const databaseNodeData = await getManageInfo(databaseUrl, "GET",JSON.stringify(databasequery))
     databaseoption.value = databaseNodeData.response
+    //图表时间段枚举
+    const databaseperiodUrl = replaceOrAddUrlPath(url,'/database/period')
+    options.value = await getManageInfo(databaseperiodUrl,'GET')
     // 数据库节点运行情况
     const databaseRunquery = {
-        "nodeIp": "192.168.0.1",
-        "period": 'OneHour'
+        "nodeIp": url.slice(url.indexOf('//')+2, url.lastIndexOf(':')),
+        "period": options.value[0]
     }
-    const databaseRunData = await getManageInfo(`https://apifoxmock.com/m1/5219875-4886398-default/database/detail?${JSON.stringify(databaseRunquery)}`, "GET")
+    const databaseRunData = await getManageInfo(databaseperiodUrl, "GET",JSON.stringify(databaseRunquery))
     console.log(databaseRunData, '106')
     nodeStatus.value = databaseRunData.response.nodeStatus
     runTime.value = databaseRunData.response.runTime
@@ -163,12 +166,12 @@ onMounted(async () => { // 初始化 图表
 })
 //节点
 const nodeChange = async() => {
-    // const databaseDetailUrl = url.replace('/query', '/database/detail')
+    const databaseDetailUrl = replaceOrAddUrlPath(url, '/database/detail')
     const databaseRunquery = {
-        "nodeIp": "192.168.0.1",
-        "period": timeValue.value === "" ? 'OneHour' : timeValue.value
+        "nodeIp": url.slice(url.indexOf('//')+2, url.lastIndexOf(':')),
+        "period": options.value[0]
     }
-    const databaseRunData = await getManageInfo(`https://apifoxmock.com/m1/5219875-4886398-default/database/detail?${JSON.stringify(databaseRunquery)}`, "GET")
+    const databaseRunData = await getManageInfo(databaseDetailUrl, "GET",JSON.stringify(databaseRunquery))
     console.log(databaseRunData, '106')
     nodeStatus.value = databaseRunData.response.nodeStatus
     runTime.value = databaseRunData.response.runTime
@@ -227,11 +230,12 @@ const nodeChange = async() => {
 }
 // 时间
 const timeChange = async () => {
+    const databaseDetailUrl = replaceOrAddUrlPath(url, '/database/detail')
     const databaseRunquery = {
-        "nodeIp": "192.168.0.1",
+        "nodeIp": url.slice(url.indexOf('//')+2, url.lastIndexOf(':')),
         "period": timeValue.value
     }
-    const databaseRunData = await getManageInfo(`https://apifoxmock.com/m1/5219875-4886398-default/database/detail?${JSON.stringify(databaseRunquery)}`, "GET")
+    const databaseRunData = await getManageInfo(databaseDetailUrl, "GET",JSON.stringify(databaseRunquery))
     console.log(databaseRunData, '106')
     nodeStatus.value = databaseRunData.response.nodeStatus
     runTime.value = databaseRunData.response.runTime

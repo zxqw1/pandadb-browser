@@ -17,7 +17,7 @@
               <div>
                 <span class="demonstration">操作时间：</span>
                 <el-date-picker v-model="value1" type="datetimerange" start-placeholder="开始时间" end-placeholder="结束时间"
-                  format="YYYY-MM-DD HH:mm:ss" date-format="YYYY/MM/DD ddd" time-format="A hh:mm:ss" />
+                  format="YYYY-MM-DD HH:mm:ss" date-format="YYYY/MM/DD ddd" time-format="A hh:mm:ss" style="width: 80%" />
               </div>
             </div>
           </el-col>
@@ -25,12 +25,12 @@
             <div style="margin-top: 10px;">
               <div>
                 <span class="demonstration">操作类型：</span>
-                <el-select v-model="value" placeholder="请选择" style="width: 240px">
-                  <el-option label="查询" value="query" />
-                  <el-option label="插入" value="insert" />
-                  <el-option label="更新" value="update" />
-                  <el-option label="删除" value="del" />
-                  <el-option label="其他" value="other" />
+                <el-select v-model="value" placeholder="请选择" style="width: 70%" clearable>
+                  <el-option label="查询 - query" value="query" />
+                  <el-option label="插入 - insert" value="insert" />
+                  <el-option label="更新 - update" value="update" />
+                  <el-option label="删除 - del" value="del" />
+                  <el-option label="其他 - other" value="other" />
                 </el-select>
               </div>
             </div>
@@ -46,15 +46,19 @@
             style="width: 13px;height: 13px;display: inline-block; background-color: rgb(108, 125, 46); border-radius: 50%;margin-right: 10px;"></span>
           <span style="font-size: 15px; font-weight: bold;">日志</span>
         </div>
-        <el-table :data="tableData" style="width: 100%;">
-          <el-table-column fixed prop="key" label="操作时间" />
+        <el-table :data="tableData" style="width: 100%;" max-height="630">
+          <el-table-column fixed prop="operationTime" label="操作时间" />
           <el-table-column prop="userName" label="用户名" />
-          <el-table-column prop="operationType" label="操作类型" />
+          <el-table-column prop="operationType" label="操作类型" >
+            <template #default="scope">
+              <el-tag type="primary"    color="rgb(236 255 165)" style="border: none; color: #6c7d2e;">{{scope.row.operationType }}</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column prop="operationContent" label="操作内容" />
         </el-table>
       </el-col>
       <el-col style="margin-top: 20px; display: flex; flex-direction: row-reverse;">
-        <el-pagination background layout="prev, pager, next" :total="1000" @current-change="handleCurrentChange" />
+        <el-pagination background layout="prev, pager, next" :total="page.totalRow" @current-change="handleCurrentChange" />
       </el-col>
     </el-row>
   </div>
@@ -68,6 +72,7 @@ import getManageInfo from "../utils/manageRequest"
 const value1 = ref('')
 const value = ref('')
 const tableData = ref([])
+const page = ref({})
 let url = window.localStorage.getItem("address")//地址
 function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
     // 检查IP地址中是否包含'/'（除了最后一个字符可能是':'的情况）  
@@ -86,11 +91,22 @@ const generateRandomId = () => {
   const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
   return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
 };
-
+//时间戳转化
+const timeConversion = (timestamp) => {
+  const date = new Date(timestamp)
+  // 提取年、月、日、时、分、秒  
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始，需加1，并补零  
+  const day = String(date.getDate()).padStart(2, '0'); // 补零  
+  const hours = String(date.getHours()).padStart(2, '0'); // 补零  
+  const minutes = String(date.getMinutes()).padStart(2, '0'); // 补零  
+  const seconds = String(date.getSeconds()).padStart(2, '0'); // 补零
+  const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  return formattedDate
+}
 onMounted(async () => {
   const queryId = generateRandomId()
   const OperationLogUrl = replaceOrAddUrlPath(url,"/operationLog")
-  console.log(OperationLogUrl,'93')
   const querytext = {
     "startTime": "",
     "endTime": "",
@@ -99,29 +115,38 @@ onMounted(async () => {
     "pageSize": 10,
     "currentPage": 1  
   }
-   const data = await getManageInfo(OperationLogUrl,"POST",JSON.stringify(querytext))
+   const data = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/operationLog","POST",JSON.stringify(querytext))
   tableData.value = data.response
+  // console.log(tableData.value,'119')
+  tableData.value.forEach(item => {
+    item.operationTime = timeConversion(Number(item.operationTime))
+  })
+  page.value = data.page
 })
 // 筛选
 const siftclick = async ()=>{
   const OperationLogUrl = replaceOrAddUrlPath(url,"/operationLog")
   const querytext = {
-    "startTime": value1.value[0] ? value1.value[0]: "",
-    "endTime": value1.value[1] ? value1.value[1] : "",
-    "operationType": value.value ? value.value : "",
+    "startTime": value1.value !== "" ? value1.value === null ? "": new Date(value1.value[0]).getTime(): "",
+    "endTime": value1.value !=="" ? value1.value === null ? "": new Date(value1.value[1]).getTime() : "",
+    "operationType": value.value !=="" ? value.value === undefined ? "" : value.value : "",
     "queryId":generateRandomId(),
     "pageSize": 10,
     "currentPage": 1  
   }
-  const data = await getManageInfo(OperationLogUrl,"POST",JSON.stringify(querytext))
+  const data = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/operationLog","POST",JSON.stringify(querytext))
   tableData.value = data.response
+  tableData.value.forEach(item => {
+    item.operationTime = timeConversion(Number(item.operationTime))
+  })
+  page.value = data.page
 }
 //分页
 const handleCurrentChange = async (val: number)=>{
   const OperationLogUrl = replaceOrAddUrlPath(url,"/operationLog")
   const querytext = {
-    "startTime": value1.value[0] ? value1.value[0] :"" ,
-    "endTime": value1.value[1] ? value1.value[0] : "",
+    "startTime": value1.value[0] ? new Date(value1.value[0]).getTime() :"" ,
+    "endTime": value1.value[1] ? new Date(value1.value[1]).getTime() : "",
     "operationType": value.value ? value.value : "",
     "queryId":generateRandomId(),
     "pageSize": 10,
@@ -129,6 +154,10 @@ const handleCurrentChange = async (val: number)=>{
   }
   const data = await getManageInfo(OperationLogUrl,"POST",JSON.stringify(querytext))
   tableData.value = data.response
+  tableData.value.forEach(item => {
+    item.operationTime = timeConversion(Number(item.operationTime))
+  })
+  page.value = data.page
 }
 </script>
 

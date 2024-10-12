@@ -11,21 +11,29 @@
                         style="width: 13px;height: 13px;display: inline-block; background-color: rgb(108, 125, 46); border-radius: 50%;margin-right: 10px;"></span>
                     <span style="font-size: 15px; font-weight: bold;">日志</span>
                 </div>
-                <el-table :data="tableData" border style="width: 100%"  max-height="750">
-                    <el-table-column prop="level" label="等级" />
-                    <el-table-column prop="clazz" label="线程" />
-                    <el-table-column prop="timestamp" label="时间" />
-                    <el-table-column prop="content" label="内容" />
-                </el-table>
+                <div >
+                    <div style="display: flex;flex-direction: row-reverse;margin-bottom: 10px;">
+                        <el-button style="margin-left: 10px;" color="#6c7d2e" @click="newClick">查询最新</el-button>
+                        <el-button color="#6c7d2e" @click="previouspageClick">查询上一页</el-button>
+                    </div>
+                    <el-table :data="tableData" border style="width: 100%" max-height="630">
+                        <el-table-column prop="level" label="等级" />
+                        <el-table-column prop="clazz" label="线程" />
+                        <el-table-column prop="timestamp" label="时间" />
+                        <el-table-column prop="content" label="内容" />
+                    </el-table>
+                </div>
             </el-col>
-        </el-row>
+        </el-row>   
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref,onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import getManageInfo from "../utils/manageRequest"
 const tableData = ref([])
+const currentPage = ref(1)
+const page = ref({})
 let url = window.localStorage.getItem("address")//地址
 function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
     // 检查IP地址中是否包含'/'（除了最后一个字符可能是':'的情况）
@@ -44,11 +52,37 @@ const generateRandomId = () => {
     const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
     return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
 };
-onMounted(async()=>{
+onMounted(async () => {
     const runLogqueryUrl = replaceOrAddUrlPath(url, '/runLog')
-    const runLogData = await getManageInfo(runLogqueryUrl, "GET")
+    const runLogquery = {
+        'pageSize':10,
+        'currentPage':1
+    }
+    const runLogData = await getManageInfo(runLogqueryUrl, "POST",JSON.stringify(runLogquery))
     tableData.value = runLogData.response
 })
+//查询最新
+const newClick = async()=>{
+    currentPage.value =  1
+    const runLogqueryUrl = replaceOrAddUrlPath(url, '/runLog')
+    const runLogquery = {
+        'pageSize':10,
+        'currentPage':1
+    }
+    const runLogData = await getManageInfo(runLogqueryUrl, "POST",JSON.stringify(runLogquery))
+    tableData.value = runLogData.response
+}
+//查询上一页
+const previouspageClick = async()=>{
+   currentPage.value =  currentPage.value + 1
+    const runLogqueryUrl = replaceOrAddUrlPath(url, '/runLog')
+    const runLogquery = {
+        'pageSize':10,
+        'currentPage':currentPage.value 
+    }
+    const runLogData = await getManageInfo(runLogqueryUrl, "POST",JSON.stringify(runLogquery))
+    tableData.value = runLogData.response
+}
 </script>
 
 <style scoped>
@@ -70,9 +104,10 @@ onMounted(async()=>{
 ::v-deep .el-pager .is-active {
     background: #6C7D2E !important;
 }
+
 .demonstration {
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 20px;
 }
 </style>

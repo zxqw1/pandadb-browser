@@ -117,8 +117,8 @@ const Backupquery = {
     "pageSize":10,
     "currentPage":1
 }
-const BackupqueryText = BackupqueryUrl + "?" + JSON.stringify(Backupquery)
-const BackupqueryData = await getManageInfo(BackupqueryText , "GET")
+// const BackupqueryText = BackupqueryUrl + "?" + JSON.stringify(Backupquery)
+const BackupqueryData = await getManageInfo(BackupqueryUrl , "GET",JSON.stringify(Backupquery))
 tableData.value = BackupqueryData.response
 })
 //分页查询数据备份
@@ -129,8 +129,8 @@ const Backupquery = {
     "pageSize":10,
     "currentPage":val
 }
-const BackupqueryText = BackupqueryUrl + "?" + JSON.stringify(Backupquery)
-const BackupqueryData = await getManageInfo(BackupqueryText , "GET")
+// const BackupqueryText = BackupqueryUrl + "?" + JSON.stringify(Backupquery)
+const BackupqueryData = await getManageInfo(BackupqueryUrl , "GET",JSON.stringify(Backupquery))
 tableData.value = BackupqueryData.response  
 }
 //新增数据备份

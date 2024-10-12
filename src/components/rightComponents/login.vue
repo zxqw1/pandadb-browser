@@ -98,7 +98,7 @@ const select = ref("http://");
 const input3 = ref("");
 const input = ref("");
 const input2 = ref("");
-const username = window.localStorage.getItem("username");
+// const username = window.localStorage.getItem("username");
 const href = window.localStorage.getItem("address");
 const ipPortRegex = /^(\d{1,3}\.){3}\d{1,3}:\d{1,5}(\/[^\s]*)?$/;
 //拿到输入内容
@@ -115,7 +115,7 @@ const loginClick = () => {
       });
     } else {
       window.localStorage.setItem("address", select.value + input3.value);
-      // window.localStorage.setItem("username",input.value)
+      window.localStorage.setItem("username",input.value)
       // window.localStorage.setItem("password",input2.value)
       open.value = true;
       window.location.reload();

@@ -97,13 +97,13 @@ onMounted(async () => {
     const warnLogquery = {
         "startTime": "",
         "endTime": "",
-        "warnLevel": alarmleveloption[0],
+        "warnLevel": alarmleveloption.value[0],
         "queryId": generateRandomId(),
         "pageSize": 10,
         "currentPage": 1
     }
-    const warnLogqueryText = warnLogqueryUrl + "?" + JSON.stringify(warnLogquery)
-    const warnLogData = await getManageInfo(warnLogqueryText, "GET")
+    // const warnLogqueryText = warnLogqueryUrl + "?" + JSON.stringify(warnLogquery)
+    const warnLogData = await getManageInfo(warnLogqueryUrl, "GET",JSON.stringify(warnLogquery))
     tableData.value = warnLogData.response
 })
 //筛选
@@ -112,13 +112,13 @@ const siftclick = async ()=>{
     const warnLogquery = {
         "startTime": timeValue.value === "" ? "" : timeValue.value[0],
         "endTime": timeValue.value === "" ? "" : timeValue.value[1],
-        "warnLevel": alarmleveValue.value === "" ? alarmleveloption[0] : alarmleveValue.value ,
+        "warnLevel": alarmleveValue.value === "" ? alarmleveloption.value[0] : alarmleveValue.value ,
         "queryId": generateRandomId(),
         "pageSize": 10,
         "currentPage": 1
     }
-    const warnLogqueryText = warnLogqueryUrl + "?" + JSON.stringify(warnLogquery)
-    const warnLogData = await getManageInfo(warnLogqueryText, "GET")
+    // const warnLogqueryText = warnLogqueryUrl + "?" + JSON.stringify(warnLogquery)
+    const warnLogData = await getManageInfo(warnLogqueryUrl, "GET",JSON.stringify(warnLogquery))
     tableData.value = warnLogData.response
 }
 // 分页
@@ -132,8 +132,8 @@ const handleCurrentChange = async(val: number)=>{
         "pageSize": 10,
         "currentPage": val 
     }
-    const warnLogqueryText = warnLogqueryUrl + "?" + JSON.stringify(warnLogquery)
-    const warnLogData = await getManageInfo(warnLogqueryText, "GET")
+    // const warnLogqueryText = warnLogqueryUrl + "?" + JSON.stringify(warnLogquery)
+    const warnLogData = await getManageInfo(warnLogqueryUrl, "GET",JSON.stringify(warnLogquery))
     tableData.value = warnLogData.response
 }
 </script>
