@@ -96,11 +96,6 @@ function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
         return `${ipWithMaybePath}/${newPath}`;
     }
 }
-const generateRandomId = () => {
-    const timestamp = new Date().getTime(); // 获取当前时间戳
-    const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
-    return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
-};
 onMounted(async () => {
     //获取系统节点列表
     const systemnodequeryUrl = replaceOrAddUrlPath(url, '/system/nodeList')
@@ -135,12 +130,12 @@ onMounted(async () => {
                 },
                 detail: {
                     valueAnimation: true,
-                    formatter: systemRunData.response.diskUsage.used
+                    formatter: systemRunData.response.diskUsage.total
                 },
                 data: [
                     {
                         value: Number(systemRunData.response.diskUsage.used) / (Number(systemRunData.response.diskUsage.total) / 100),
-                        name: 'diskUsage'
+                        name: systemRunData.response.diskUsage.used
                     }
                 ]
             }
@@ -250,12 +245,12 @@ const nodeChange = async () => {
                 },
                 detail: {
                     valueAnimation: true,
-                    formatter: systemRunData.response.diskUsage.used
+                    formatter: systemRunData.response.diskUsage.total
                 },
                 data: [
                     {
                         value: Number(systemRunData.response.diskUsage.used) / (Number(systemRunData.response.diskUsage.total) / 100),
-                        name: 'diskUsage'
+                        name: systemRunData.response.diskUsage.used
                     }
                 ]
             }
@@ -351,12 +346,12 @@ const timeChange = async () => {
                 },
                 detail: {
                     valueAnimation: true,
-                    formatter: systemRunData.response.diskUsage.used
+                    formatter: systemRunData.response.diskUsage.total
                 },
                 data: [
                     {
                         value: Number(systemRunData.response.diskUsage.used) / (Number(systemRunData.response.diskUsage.total) / 100),
-                        name: 'diskUsage'
+                        name: systemRunData.response.diskUsage.used
                     }
                 ]
             }
