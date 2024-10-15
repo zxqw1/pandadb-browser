@@ -16,8 +16,8 @@
                         <el-button style="margin-left: 10px;" @click="addBackup(0)">全量备份</el-button>
                         <el-button @click="addBackup(1)" >增量备份</el-button>
                     </el-col>
-                    <el-dialog v-model="backupsDialog" title="备份" width="800">
-                        <el-form :model="form" label-width="auto" style="max-width: 600px">
+                    <el-dialog v-model="backupsDialog" :title="backupsTitle" width="800">
+                        <el-form :rules="rules" :model="form" label-width="auto" style="max-width: 600px">
                             <el-form-item label="任务名称" required>
                                 <el-input v-model="form.taskName" />
                             </el-form-item>
@@ -69,8 +69,9 @@
                         </el-dialog>
                     </el-col>
                     <el-col style="margin-top: 20px; display: flex; flex-direction: row-reverse;">
-                        <el-pagination background layout="prev, pager, next" :total="1000" @current-change="handleCurrentChange"/>
-                    </el-col>
+                <el-pagination background layout="prev, pager, next" :total="page.totalRow"
+                    @current-change="handleCurrentChange" />
+            </el-col>
                 </el-row>
             </el-col>
         </el-row>
@@ -83,6 +84,7 @@ import { ElTable } from 'element-plus'
 import getManageInfo from "../utils/manageRequest"
 const BackupProcess = ref(false)
 const backupsDialog = ref(false)
+const page = ref({})
 const form = ref({
     taskName: '',
     remark: '',
@@ -91,35 +93,57 @@ const form = ref({
 })
 const tableData = ref([])
 const type = ref(0)
+const backupsTitle = ref("")
+const rules = ref({
+    "warnOption": [{ required: true, message: '请输入告警项' }],
+    "threshold": [{ required: true, message: '请输入阈值' }],
+    "warnPath": [{ required: true, message: '请输入告警地址' }],
+    "sendType": [{ required: true, message: '请选择发送方式' }],
+    "warnLevel": [{ required: true, message: '请选择告警级别' }],
+    "status": [{ required: true, message: '请选择状态' }],
+    "rate": [{ required: true, message: '请输入频率' }],
+    "content": [{ required: true, message: '请输入告警内容' }],
+    "remark": [{ required: true, message: '请输入备注' }]
+})
 let url = window.localStorage.getItem("address")//地址
 function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
-    // 检查IP地址中是否包含'/'（除了最后一个字符可能是':'的情况）  
-    // 这里假设IP地址格式正确，并且':'只出现在端口号之前  
     const hasPath = ipWithMaybePath.includes('/') && !ipWithMaybePath.endsWith(':');
     if (hasPath) {
-        // 如果包含路径，则替换最后一个'/'及其后面的所有内容  
         return ipWithMaybePath.replace(/\/[^\/]*$/, `${newPath}`);
     } else {
-        // 如果没有路径，则直接添加新路径  
         return `${ipWithMaybePath}/${newPath}`;
     }
 }
 const generateRandomId = () => {
-    const timestamp = new Date().getTime(); // 获取当前时间戳
-    const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
-    return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
+    const timestamp = new Date().getTime(); 
+    const randomNum = Math.floor(Math.random() * 1000); 
+    return `id_${timestamp}_${randomNum}`; 
 };
-onMounted( async()=>{
+const timeConversion = (timestamp) => {
+  const date = new Date(timestamp)
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); 
+  const day = String(date.getDate()).padStart(2, '0'); 
+  const hours = String(date.getHours()).padStart(2, '0'); 
+  const minutes = String(date.getMinutes()).padStart(2, '0'); 
+  const seconds = String(date.getSeconds()).padStart(2, '0'); 
+  const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  return formattedDate
+}
+onMounted(async()=>{
 // 查询数据备份列表
-const BackupqueryUrl = replaceOrAddUrlPath(url,"/dataBackup")
+const BackupqueryUrl = replaceOrAddUrlPath(url,"/dataBackup/page")
 const Backupquery = {
     "queryId":generateRandomId(),
     "pageSize":10,
     "currentPage":1
 }
-// const BackupqueryText = BackupqueryUrl + "?" + JSON.stringify(Backupquery)
-const BackupqueryData = await getManageInfo(BackupqueryUrl , "GET",JSON.stringify(Backupquery))
+const BackupqueryData = await getManageInfo(BackupqueryUrl , "POST",JSON.stringify(Backupquery))
 tableData.value = BackupqueryData.response
+tableData.value.forEach(item => {
+    item.createTime = timeConversion(Number(item.createTime))
+  })
+  page.value = BackupqueryData.page
 })
 //分页查询数据备份
 const handleCurrentChange = async(val:number)=>{
@@ -129,12 +153,20 @@ const Backupquery = {
     "pageSize":10,
     "currentPage":val
 }
-// const BackupqueryText = BackupqueryUrl + "?" + JSON.stringify(Backupquery)
-const BackupqueryData = await getManageInfo(BackupqueryUrl , "GET",JSON.stringify(Backupquery))
+const BackupqueryData = await getManageInfo(BackupqueryUrl , "POST",JSON.stringify(Backupquery))
 tableData.value = BackupqueryData.response  
+tableData.value.forEach(item => {
+    item.createTime = timeConversion(Number(item.createTime))
+  })
+  page.value = BackupqueryData.page
 }
 //新增数据备份
 const addBackup = (backuptype:number)=>{
+    if(backuptype === 0){
+        backupsTitle.value = "全量备份"
+    }else{
+        backupsTitle.value = "增量备份"
+    }
 backupsDialog.value = true
 type.value = backuptype
 }
@@ -149,12 +181,8 @@ const dataBackupQuery = {
 'remark':form.value.remark,
 'executeImmediately':form.value.executeImmediately
 }
-const dataBackupData = await getManageInfo(dataBackupqueryUrl,"POST",JSON.stringify(dataBackupQuery))
-if(dataBackupData.success=== true){
-    dataBackupData.response =  tableData.value
+await getManageInfo(dataBackupqueryUrl,"POST",JSON.stringify(dataBackupQuery))
 }
-}
-// 分页
 
 </script>
 
@@ -163,5 +191,17 @@ if(dataBackupData.success=== true){
     margin: 24px;
     background-color: #ffffff;
     width: 100%;
+}
+.el-pager.is-active {
+    background-color: rgb(108, 125, 46);
+}
+
+::v-deep .is-checked .el-checkbox__inner {
+    background: #6C7D2E !important;
+    border: 1px solid #6C7D2E !important;
+}
+
+::v-deep .el-pager .is-active {
+    background: #6C7D2E !important;
 }
 </style>

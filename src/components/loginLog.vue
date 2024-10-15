@@ -94,7 +94,7 @@ onMounted(async () => {
     'pageSize': 10,
     'currentPage': 1
   }
-  const loginLogData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/loginLog", "POST", JSON.stringify(loginLogquery))
+  const loginLogData = await getManageInfo(loginLogUrl, "POST", JSON.stringify(loginLogquery))
   tableData.value = loginLogData.response
   // console.log(loginLogData, '94')
   tableData.value.forEach(item => {

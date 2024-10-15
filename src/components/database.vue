@@ -19,7 +19,7 @@
             <el-col style="display:flex;align-items: center;border-bottom: 1px dashed #999;padding-bottom: 10px;">
                 <div style="width: 6px; height: 18px; background-color: rgb(108, 125, 46);"></div>
                 <div style="font-size: 16px;color: #333;font-weight:bold;margin-left: 12px;">总览</div>
-                <el-tag style="margin-left: 10px;" effect="dark" :type="'danger'">2条告警</el-tag>
+                <!-- <el-tag style="margin-left: 10px;" effect="dark" :type="'danger'">2条告警</el-tag> -->
             </el-col>
             <el-col style="margin-top: 24px; width: 100%;">
                 <el-descriptions :column="2">
