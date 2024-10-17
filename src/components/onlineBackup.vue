@@ -337,7 +337,10 @@ const handleDelete = (row) => {
         type: 'warning',
     }).then(() => {
         const deldataBuckupUrl = replaceOrAddUrlPath(url, '/dataBuckup')
-        getManageInfo(deldataBuckupUrl, "DELETE", JSON.stringify(row.key))
+        const delquery = {
+            "key":row.key
+        }
+        getManageInfo(deldataBuckupUrl, "DELETE", JSON.stringify(delquery))
         BackupList()
         ElMessage({
             type: 'success',
