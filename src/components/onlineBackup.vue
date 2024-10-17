@@ -290,7 +290,7 @@ const addBackup = async (backuptype: number) => {
     backupsDialog.value = true
     type.value = backuptype
     //下拉获取nodeip
-    const nodeIpUrl = replaceOrAddUrlPath(url, "/dataBase/NodeList")
+    const nodeIpUrl = replaceOrAddUrlPath(url, "/database/nodeList")
     const nodeIpData = await getManageInfo(nodeIpUrl, "GET")
     nodeIpoption.value = nodeIpData.response
 

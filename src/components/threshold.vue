@@ -201,7 +201,7 @@ const generateRandomId = () => {
 onMounted(async () => {
     //获取添加告警阈值时相关的下拉选择框列表
     const warnParamselectUrl = replaceOrAddUrlPath(url, '/warnParam/select')
-    const warnParamselectData = await getManageInfo(warnParamselectUrl, "GET")
+    const warnParamselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/select", "GET")
     warnOption.value = warnParamselectData.response.warnOption
     warnParamStatus.value = warnParamselectData.response.warnParamStatus
     //分页查询告警阈值
@@ -212,8 +212,9 @@ onMounted(async () => {
         "pageSize": 10,
         "currentPage": 1
     }
-    const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
+    const warnParampageData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
     tableData.value = warnParampageData.response
+    console.log(tableData.value,'217')
     tableData.value.forEach(item => {
         warnOption.value.forEach(item2 => {
             if (item.warnOption === item2.value) {
@@ -221,6 +222,8 @@ onMounted(async () => {
             }
         })
         item.status === "on" ? item.status = "启用" : item.status = "禁用"
+        item.sendType === "email" ? item.sendType = "邮箱" : item.sendType = "手机"
+        item.warnLevel === "normal" ? item.warnLevel = "一般" : item.warnLevel = "严重"
     })
     page.value = warnParampageData.page
 })
