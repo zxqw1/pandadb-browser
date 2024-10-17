@@ -167,11 +167,6 @@ const handleCurrentChange = async (val: number)=>{
   background-color: #ffffff;
   width: 100%;
 }
-
-.el-pager.is-active {
-  background-color: rgb(108, 125, 46);
-}
-
 ::v-deep .is-checked .el-checkbox__inner {
   background: #6C7D2E !important;
   border: 1px solid #6C7D2E !important;

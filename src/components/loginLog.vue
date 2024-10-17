@@ -96,18 +96,16 @@ onMounted(async () => {
   }
   const loginLogData = await getManageInfo(loginLogUrl, "POST", JSON.stringify(loginLogquery))
   tableData.value = loginLogData.response
-  // console.log(loginLogData, '94')
   tableData.value.forEach(item => {
     item.time = timeConversion(Number(item.time))
   })
   page.value = loginLogData.page
-  // console.log(page.value.totalPage,'99')
 })
 //分页
 const handleCurrentChange = async (val: number) => {
   const loginLogUrl = replaceOrAddUrlPath(url, '/loginLog')
   const loginLogquery = {
-    'userName': window.localStorage.getItem("username") ? window.localStorage.getItem("username") : "",
+    'userName': userName.value === "" ? window.localStorage.getItem("username") ? window.localStorage.getItem("username") : "" : userName.value,
     "queryId": generateRandomId(),
     'pageSize': 10,
     'currentPage': val
