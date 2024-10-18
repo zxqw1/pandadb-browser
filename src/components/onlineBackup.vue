@@ -23,8 +23,8 @@
                             </el-form-item>
                             <el-form-item label="节点Ip" required prop="nodeIp">
                                 <el-select v-model="form.nodeIp" placeholder="请选择" style="width:80%" clearable>
-                                    <el-option v-for="(item, index) in typeOption" :key="index"
-                                        :label="item.description" :value="item.value" />
+                                    <el-option v-for="(item, index) in nodeIpoption" :key="index"
+                                    :label="item.description" :value="item.value" />
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="是否立即执行">
@@ -101,7 +101,7 @@
                                 </el-form-item>
                                 <el-form-item label="节点Ip" required prop="nodeIp">
                                     <el-select v-model="reform.nodeIp" placeholder="请选择" style="width: 240px">
-                                        <el-option v-for="(item, index) in nodeIpoption" :key="index"
+                                        <el-option v-for="(item, index) in renodeIpoption" :key="index"
                                             :label="item.description" :value="item.value" />
                                     </el-select>
                                 </el-form-item>
@@ -144,6 +144,7 @@ const backupsDialog = ref(false)
 const rebackups = ref(false)
 const buttondisabled = ref(false)
 const nodeIpoption = ref([])
+const renodeIpoption = ref([])
 const page = ref({})
 const form = ref({
     taskName: '',
@@ -213,7 +214,7 @@ const BackupList = async () => {
         "pageSize": 10,
         "currentPage": 1
     }
-    const BackupqueryData = await getManageInfo(BackupqueryUrl, "POST", JSON.stringify(Backupquery))
+    const BackupqueryData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/page", "POST", JSON.stringify(Backupquery))
     tableData.value = BackupqueryData.response
     const BackupselectUrl = replaceOrAddUrlPath(url, "/dataBackup/select")
     const BackupselectData = await getManageInfo(BackupselectUrl, "GET")
@@ -351,8 +352,13 @@ const handleDelete = (row) => {
 
 //修改
 const handleEdit = async (row) => {
+    console.log(row,'355')
     rebackups.value = true
     backupsTitle.value = "修改备份"
+     //下拉获取nodeip
+     const nodeIpUrl = replaceOrAddUrlPath(url, "/database/nodeList")
+    const renodeIpData = await getManageInfo(nodeIpUrl, "GET")
+    renodeIpoption.value = renodeIpData.response
     const BackupselectUrl = replaceOrAddUrlPath(url, "/dataBackup/select")
     const BackupselectData = await getManageInfo(BackupselectUrl, "GET")
     typeOption.value = BackupselectData.response.type
@@ -366,6 +372,7 @@ const handleEdit = async (row) => {
         taskName: row.taskName,
         remark: row.remark,
         planRuntime: row.planRunTime,
+        nodeIp: row.nodeIp,
         executeImmediately: row.executeImmediately,
         type
     }
