@@ -25,16 +25,12 @@
         <Threshold v-show="menuKey === 'threshold'"></Threshold>
          <!-- 统计信息 -->
           <Statistics v-show="menuKey === 'statistics'"></Statistics>
-          <!-- 在线备份 -->
+          <!-- 作业管理 -->
           <onlineBackup v-show="menuKey === 'onlineBackup'"></onlineBackup>
-          <!-- 数据恢复 -->
-           <Restore v-show="menuKey === 'restore'"></Restore>
            <!-- 登录日志 -->
           <loginLog v-show="menuKey === 'loginLog'"></loginLog>
           <!-- 操作记录 -->
           <OperationRecord v-show="menuKey === 'OperationRecord'"></OperationRecord>
-          <!-- 作业管理 -->
-          <Management v-show="menuKey === 'management'"></Management>
       </a-col>
     </a-col>
   </a-row>
@@ -54,11 +50,9 @@ import OperatingSystem from "@/components/OperatingSystem.vue";
 import Alarm from "@/components/alarm.vue"
 import Statistics from "@/components/statistics.vue";
 import onlineBackup from "@/components/onlineBackup.vue";
-import Restore from "@/components/restore.vue";
 import loginLog from "@/components/loginLog.vue";
 import OperationRecord from "@/components/OperationRecord.vue";
 import Threshold from "@/components/threshold.vue";
-import Management from "@/components/Management .vue";
 import { onMounted, ref } from "vue";
 import mitts from "../utils/bus";
 let menuKey = ref("home")

@@ -44,21 +44,11 @@
         <span>统计数据</span>  
         </el-menu-item>
       </el-sub-menu>
-      <el-menu-item index="management">
-          <el-icon><Management /></el-icon>
-        <span>作业管理</span>  
-        </el-menu-item>
       <el-menu-item index="onlineBackup">
         <el-icon>
           <CopyDocument />
         </el-icon>
-        <span>在线备份</span>
-      </el-menu-item>
-      <el-menu-item index="restore">
-        <el-icon>
-          <SetUp />
-        </el-icon>
-        <span>数据恢复</span>
+        <span>作业管理</span>
       </el-menu-item>
       <el-sub-menu index="audit">
         <template #title>
