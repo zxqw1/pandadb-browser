@@ -64,7 +64,7 @@
                                         <template #footer>
                                             <div class="dialog-footer">
                                                 <el-button @click="BackupProcess = false">取消</el-button>
-                                                <el-button type="primary" @click="stopbackup(scope.row)" color="red">
+                                                <el-button type="primary" @click="stopbackup(scope.row)"  :disabled = stopFlag>
                                                     停止备份
                                                 </el-button>
                                             </div>
@@ -146,6 +146,7 @@ const buttondisabled = ref(false)
 const nodeIpoption = ref([])
 const renodeIpoption = ref([])
 const page = ref({})
+const stopFlag = ref(false)
 const form = ref({
     taskName: '',
     remark: '',
@@ -328,6 +329,11 @@ const confirmBackup = async (formRef) => {
 //备份进度
 const Backup = (record) => {
     BackupProcess.value = true
+    if(record.status === "finish"){
+        stopFlag.value = true
+    }else{
+        stopFlag.value = false
+    }
     progress.value = record.progress
 }
 //删除

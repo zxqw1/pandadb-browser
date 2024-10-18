@@ -213,8 +213,7 @@ onMounted(async () => {
         "currentPage": 1
     }
     const warnParampageData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
-    tableData.value = warnParampageData.response
-    console.log(tableData.value,'217')
+    tableData.value = warnParampageData.respons
     tableData.value.forEach(item => {
         warnOption.value.forEach(item2 => {
             if (item.warnOption === item2.value) {
