@@ -106,7 +106,6 @@ onMounted(async () => {
     const systemperiodData = await getManageInfo(systemperiodUrl, "GET")
     options.value = systemperiodData.response
     // 获取系统节点运行情况
-    // console.log(systemoption.value[0],113)
     const systemRunquery = {
         "nodeIp": systemoption.value[0].value,
         "period": options.value[0].value
@@ -114,28 +113,29 @@ onMounted(async () => {
     const systemRunUrl = replaceOrAddUrlPath(url, '/system/detail')
     // const systemRunqueryText = systemRunUrl +"?" + JSON.stringify(systemRunquery)
     const systemRunData = await getManageInfo(systemRunUrl, "POST", JSON.stringify(systemRunquery))
-    // systemState.value = systemRunData.response.nodeStatus
+    systemState.value = systemRunData.response.nodeStatus === "online" ? "在线" : "离线"
+    console.log(systemRunData,'117')
     runTime.value = systemRunData.response.runTime
     const diskUsage = echarts.init(window.document.getElementById("diskUsage"));
     let diskUsageoption = {
         tooltip: {
-            formatter: '{a} <br/>{b} : {c}%'
+            formatter: `{a}  : ${(Number(systemRunData.response.diskUsage.used) / (Number(systemRunData.response.diskUsage.total) / 100)).toFixed(2)}%`
         },
         series: [
             {
-                name: 'Pressure',
+                name: 'diskUsage',
                 type: 'gauge',
                 progress: {
                     show: true
                 },
                 detail: {
                     valueAnimation: true,
-                    formatter: systemRunData.response.diskUsage.total
+                    formatter: systemRunData.response.diskUsage.total + "G"
                 },
                 data: [
                     {
                         value: Number(systemRunData.response.diskUsage.used) / (Number(systemRunData.response.diskUsage.total) / 100),
-                        name: systemRunData.response.diskUsage.used
+                        name: systemRunData.response.diskUsage.used + "G"
                     }
                 ]
             }
@@ -145,20 +145,30 @@ onMounted(async () => {
     const memoryUsageData = echarts.init(window.document.getElementById("memoryUsageData"));
     let dataX = []
     let dataY = []
+    let tooltip = []
     systemRunData.response.memoryUsageData.forEach((item: any) => {
-        let date = new Date(Number(item.x)).toLocaleString()
+        let date = new Date(Number(item.x)).toLocaleString().split(" ")[1] // 这块呢，我把时间 年-月-日 空格 时：分：秒 我用空格截取的，取的是 时分秒 用来显示 X轴的时分秒
+        let tooltipS = new Date(Number(item.x)).toLocaleString() // 这块呢，我没截取，就是 年月日时分秒 用来显示完整的时间
+        tooltip.push(tooltipS)
         dataX.push(date)
         dataY.push(item.y)
     })
 
     const memoryUsageoption = {
+        tooltip: { // 鼠标移入的 title 相关的对象
+            trigger: 'axis',
+            formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
+                let tooltipContent = ` memoryUsageData: ${Number(params[0].value).toFixed(2)}<br/>${tooltip[params[0].dataIndex]}` // 拼接数据
+                return tooltipContent // return 数据回去显示
+            }
+        },
         xAxis: {
             type: 'category',
             data: dataX,
             axisLabel: {
                 fontSize: 8,
                 interval: 0,
-                rotate: 40// 旋转角度
+                rotate: 30// 旋转角度
             },
         },
         yAxis: {
@@ -168,7 +178,8 @@ onMounted(async () => {
             {
                 data: dataY,
                 type: 'line',
-                smooth: true
+                showSymbol: false, //是否显示 线上面的 节点
+                smooth: true //线是否圆润，就是圆角线
             }
         ]
     }
@@ -176,12 +187,22 @@ onMounted(async () => {
     const cupUsageData = echarts.init(window.document.getElementById("cupUsageData"));
     let cupUsagedataX = []
     let cupUsagedataY = []
+    let cputooltip = []
     systemRunData.response.cupUsageData.forEach((item: any) => {
-        let date = new Date(Number(item.x)).toLocaleString()
+        let date = new Date(Number(item.x)).toLocaleString().split(" ")[1]
+        let cputooltipS = new Date(Number(item.x)).toLocaleString()
+        cputooltip.push(cputooltipS)
         cupUsagedataX.push(date)
         cupUsagedataY.push(item.y)
     })
     const cupUsageoption = {
+        tooltip: { // 鼠标移入的 title 相关的对象
+            trigger: 'axis',
+            formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
+                let tooltipContent = ` cupUsageData: ${Number(params[0].value).toFixed(2)}<br/>${tooltip[params[0].dataIndex]}` // 拼接数据
+                return tooltipContent // return 数据回去显示
+            }
+        },
         xAxis: {
             type: 'category',
             data: cupUsagedataX,
@@ -199,6 +220,7 @@ onMounted(async () => {
             {
                 data: cupUsagedataY,
                 type: 'line',
+                showSymbol: false, //是否显示 线上面的 节点
                 smooth: true
             }
         ]

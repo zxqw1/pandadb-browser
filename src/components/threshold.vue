@@ -57,7 +57,8 @@
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="阈值：" prop="threshold">
-                                    <el-input v-model.number="addWarnItem.threshold" placeholder="请输入" style="width:80%" />
+                                    <el-input v-model.number="addWarnItem.threshold" placeholder="请输入"
+                                        style="width:80%" />
                                 </el-form-item>
                                 <el-form-item label="告警地址：" prop="warnPath">
                                     <el-input v-model="addWarnItem.warnPath" placeholder="请输入" style="width:80%" />
@@ -159,21 +160,21 @@ const addWarnItem = ref({
     "content": "",
     "remark": ""
 })
-const validateNumberRange = (rule: any, value: any, callback: any) => {  
-      if (value < 0 || value > 100) {  
-        callback(new Error('阈值的范围是0-100'));  
-      } else {  
-        callback();  
-      }  
-    }; 
+const validateNumberRange = (rule: any, value: any, callback: any) => {
+    if (value < 0 || value > 100) {
+        callback(new Error('阈值的范围是0-100'));
+    } else {
+        callback();
+    }
+};
 const rules = ref({
     "warnOption": [{ required: true, message: '请输入告警项' }],
-    "threshold": [{ required: true, message: '请输入阈值' },{ validator: validateNumberRange, trigger: 'change' },{ type: 'number', message: '请输入数字', trigger: 'change' }],
+    "threshold": [{ required: true, message: '请输入阈值' }, { validator: validateNumberRange, trigger: 'change' }, { type: 'number', message: '请输入数字', trigger: 'change' }],
     "warnPath": [{ required: true, message: '请输入告警地址' }],
     "sendType": [{ required: true, message: '请选择发送方式' }],
     "warnLevel": [{ required: true, message: '请选择告警级别' }],
     "status": [{ required: true, message: '请选择状态' }],
-    "rate": [{ required: true, message: '请输入频率' },{ type: 'number', message: '请输入数字', trigger: 'change' }],
+    "rate": [{ required: true, message: '请输入频率' }, { type: 'number', message: '请输入数字', trigger: 'change' }],
     "content": [{ required: true, message: '请输入告警内容' }],
     "remark": [{ required: true, message: '请输入备注' }]
 })
@@ -193,11 +194,6 @@ function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
         return `${ipWithMaybePath}/${newPath}`;
     }
 }
-const generateRandomId = () => {
-    const timestamp = new Date().getTime(); // 获取当前时间戳
-    const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
-    return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
-};
 onMounted(async () => {
     //获取添加告警阈值时相关的下拉选择框列表
     const warnParamselectUrl = replaceOrAddUrlPath(url, '/warnParam/select')
@@ -213,7 +209,7 @@ onMounted(async () => {
         "currentPage": 1
     }
     const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
-    tableData.value = warnParampageData.respons
+    tableData.value = warnParampageData.response
     tableData.value.forEach(item => {
         warnOption.value.forEach(item2 => {
             if (item.warnOption === item2.value) {
@@ -291,7 +287,6 @@ const addconfirmClick = async (formRef) => {
         if (valid) {
             if (dialogTitle.value === "新增") {
                 const addwarnParamUrl = replaceOrAddUrlPath(url, '/warnParam')
-                // console.log(addWarnItem.value,'274')
                 await getManageInfo(addwarnParamUrl, "POST", JSON.stringify(addWarnItem.value))
                 const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
                 const warnParampagequery = {
@@ -314,8 +309,11 @@ const addconfirmClick = async (formRef) => {
 
                 warnParamFlag.value = false
             } else if (dialogTitle.value === "修改") {
+                addWarnItem.value.status === "启用" ? addWarnItem.value.status = "on" : addWarnItem.value.status = "off"
+                addWarnItem.value.warnOption === "系统磁盘" ? addWarnItem.value.warnOption = "2" : addWarnItem.value.warnOption === "系统内存" ? addWarnItem.value.warnOption = "1" : addWarnItem.value.warnOption = "0"
+                addWarnItem.value.threshold = Number(addWarnItem.value.threshold)
+                addWarnItem.value.sendType === "手机" ? addWarnItem.value.sendType = "phone" : addWarnItem.value.sendType = "email" 
                 const replacewarnParamUrl = replaceOrAddUrlPath(url, '/warnParam')
-                // console.log(addWarnItem.value,'297')
                 await getManageInfo(replacewarnParamUrl, "PUT", JSON.stringify(addWarnItem.value))
                 const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
                 const warnParampagequery = {
@@ -348,7 +346,10 @@ const handleDelete = (row) => {
         type: 'warning',
     }).then(() => {
         const delwarnParamUrl = replaceOrAddUrlPath(url, '/warnParam')
-        getManageInfo(delwarnParamUrl, "DELETE", JSON.stringify(row.key))
+        const delquery = {
+            "key": row.key
+        }
+        getManageInfo(delwarnParamUrl, "DELETE", JSON.stringify(delquery))
         const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
         const warnParampagequery = {
             "warnOption": warnValue.value !== "" ? warnValue.value === undefined ? "" : warnValue.value : "",
@@ -375,12 +376,10 @@ const handleDelete = (row) => {
 }
 //修改
 const handleEdit = (row) => {
-    // console.log(row,'357')
+    console.log(row)
     warnParamFlag.value = true
-    row.status === "启用" ? row.status = "on" : row.status = "off"
-    row.warnOption === "系统磁盘" ? row.warnOption  = "2" : row.warnOption === "系统内存" ? row.warnOption = "1" : row.warnOption = "0"
     row.threshold = Number(row.threshold)
-    addWarnItem.value = row
+    addWarnItem.value = JSON.parse(JSON.stringify(row)) // 利用 JSON 转换，深拷贝一下，防止数据污染
     dialogTitle.value = "修改"
 }
 

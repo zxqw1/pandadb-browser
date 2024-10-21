@@ -97,7 +97,7 @@
                                 </template>
                             </el-table-column>
                         </el-table>
-                        <el-dialog v-model="rebackups" title="修改备份" destroy-on-close width="800">
+                        <el-dialog v-model="rebackups" title="修改备份" destroy-on-close width="800" @close="close">
                             <el-form :rules="rerules" :model="reform" label-width="auto" ref="formRef2">
                                 <el-form-item label="任务名称" required prop="taskName">
                                     <el-input v-model="reform.taskName" />
@@ -117,7 +117,7 @@
                                 <el-form-item label="是否立即执行">
                                     <el-switch v-model="reform.executeImmediately" @change="reswitchChange" />
                                 </el-form-item>
-                                <el-form-item label="预计执行时间" prop="planRunTime" required>
+                                <el-form-item label="预计执行时间" prop="planRunTime" >
                                     <el-date-picker v-model="reform.planRunTime" type="datetime" :disabled="retimedisable"
                                         placeholder="请选择时间" />
                                 </el-form-item>
@@ -232,7 +232,7 @@ const BackupList = async () => {
     tableData.value.forEach(item => {
         item.createTime = timeConversion(Number(item.createTime))
         item.planRunTime = timeConversion(Number(item.planRunTime))
-        if(item.status !== "wait"){
+        if(item.status !== "wait" || item.status !== "stop"){
             buttondisabled.value = true
         }else{
             buttondisabled.value = false
@@ -255,7 +255,7 @@ onMounted( async() => {
 })
 //分页查询数据备份
 const handleCurrentChange = async (val: number) => {
-    const BackupqueryUrl = replaceOrAddUrlPath(url, "/dataBackup")
+    const BackupqueryUrl = replaceOrAddUrlPath(url, "/dataBackup/page")
     const Backupquery = {
         "queryId": generateRandomId(),
         "pageSize": 10,
@@ -338,8 +338,9 @@ const confirmBackup = async (formRef) => {
 }
 //备份进度
 const Backup = (record) => {
+    console.log(record,'341')
     BackupProcess.value = true
-    if(record.status === "finish"){
+    if(record.status === "已完成"){
         stopFlag.value = true
         restoreflag.value = true
     }else{
@@ -423,6 +424,16 @@ const confirm = async (formRef) => {
         }
     })
 
+}
+const close = ()=>{
+    reform.value = ref({
+        taskName: '',
+        remark: '',
+        planRunTime: undefined,
+        type: "",
+        executeImmediately: true,
+        nodeIp: ""
+    })
 }
 //停止备份
 const stopbackup = async (row) => {

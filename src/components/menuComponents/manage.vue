@@ -39,10 +39,6 @@
           <el-icon><Postcard /></el-icon>
           <span>阈值配置</span>
         </el-menu-item>
-        <el-menu-item index="statistics">
-          <el-icon><DataAnalysis /></el-icon>
-        <span>统计数据</span>  
-        </el-menu-item>
       </el-sub-menu>
       <el-menu-item index="onlineBackup">
         <el-icon>
@@ -50,22 +46,10 @@
         </el-icon>
         <span>作业管理</span>
       </el-menu-item>
-      <el-sub-menu index="audit">
-        <template #title>
-          <el-icon>
-            <CreditCard />
-          </el-icon>
-          <span class="monitor">操作审计</span>
-        </template>
         <el-menu-item index="loginLog">
           <el-icon><DocumentRemove /></el-icon>
           <span>登录日志</span>
         </el-menu-item>
-        <el-menu-item index="OperationRecord">
-          <el-icon><Reading /></el-icon>
-          <span>操作记录</span>
-        </el-menu-item>
-      </el-sub-menu>
     </el-menu>
   </div>
 </template>

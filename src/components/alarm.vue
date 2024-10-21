@@ -116,7 +116,6 @@ onMounted(async () => {
         "pageSize": 10,
         "currentPage": 1
     }
-    // const warnLogqueryText = warnLogqueryUrl + "?" + JSON.stringify(warnLogquery)
     const warnLogData = await getManageInfo(warnLogqueryUrl, "POST",JSON.stringify(warnLogquery))
     tableData.value = warnLogData.response
     tableData.value.forEach(item=>{

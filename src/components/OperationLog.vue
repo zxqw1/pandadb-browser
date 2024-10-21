@@ -46,7 +46,7 @@
             style="width: 13px;height: 13px;display: inline-block; background-color: rgb(108, 125, 46); border-radius: 50%;margin-right: 10px;"></span>
           <span style="font-size: 15px; font-weight: bold;">日志</span>
         </div>
-        <el-table :data="tableData" style="width: 100%;" max-height="630">
+        <el-table :data="tableData" style="width: 100%;" max-height="630" border>
           <el-table-column fixed prop="operationTime" label="操作时间" />
           <el-table-column prop="userName" label="用户名" />
           <el-table-column prop="operationType" label="操作类型" >
@@ -117,7 +117,6 @@ onMounted(async () => {
   }
    const data = await getManageInfo(OperationLogUrl,"POST",JSON.stringify(querytext))
   tableData.value = data.response
-  // console.log(tableData.value,'119')
   tableData.value.forEach(item => {
     item.operationTime = timeConversion(Number(item.operationTime))
   })

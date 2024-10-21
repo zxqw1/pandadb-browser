@@ -10,27 +10,27 @@
       <!-- 左面导航 -->
       <a-col :span="24" style="display: flex;justify-content: space-between;">
         <LeftMenu></LeftMenu>
-        <RightContent v-show="menuKey === 'home'"></RightContent>
+        <RightContent v-if="menuKey === 'home'"></RightContent>
         <!-- 操作日志 -->
-        <OperationLog v-show="menuKey === 'OperationLog'"></OperationLog>
+        <OperationLog v-if="menuKey === 'OperationLog'"></OperationLog>
         <!-- 运行日志 -->
-        <RunLog v-show="menuKey === 'RunLog'"></RunLog>
+        <RunLog v-if="menuKey === 'RunLog'"></RunLog>
          <!-- 数据库运行情况 -->
-        <Database v-show="menuKey === 'Database'"></Database>
+        <Database v-if="menuKey === 'Database'"></Database>
         <!-- 系统运行情况 -->
-         <OperatingSystem v-show="menuKey === 'OperatingSystem'"></OperatingSystem>
+         <OperatingSystem v-if="menuKey === 'OperatingSystem'"></OperatingSystem>
          <!--告警记录  -->
-         <Alarm v-show="menuKey === 'alarm'"></Alarm>
+         <Alarm v-if="menuKey === 'alarm'"></Alarm>
          <!-- 阈值配置 -->
-        <Threshold v-show="menuKey === 'threshold'"></Threshold>
+        <Threshold v-if="menuKey === 'threshold'"></Threshold>
          <!-- 统计信息 -->
-          <Statistics v-show="menuKey === 'statistics'"></Statistics>
+          <!-- <Statistics v-show="menuKey === 'statistics'"></Statistics> -->
           <!-- 作业管理 -->
-          <onlineBackup v-show="menuKey === 'onlineBackup'"></onlineBackup>
+          <onlineBackup v-if="menuKey === 'onlineBackup'"></onlineBackup>
            <!-- 登录日志 -->
-          <loginLog v-show="menuKey === 'loginLog'"></loginLog>
+          <loginLog v-if="menuKey === 'loginLog'"></loginLog>
           <!-- 操作记录 -->
-          <OperationRecord v-show="menuKey === 'OperationRecord'"></OperationRecord>
+          <!-- <OperationRecord v-show="menuKey === 'OperationRecord'"></OperationRecord> -->
       </a-col>
     </a-col>
   </a-row>
@@ -48,10 +48,10 @@ import RunLog from "@/components/RunLog.vue";
 import Database from "@/components/database.vue";
 import OperatingSystem from "@/components/OperatingSystem.vue";
 import Alarm from "@/components/alarm.vue"
-import Statistics from "@/components/statistics.vue";
+// import Statistics from "@/components/statistics.vue";
 import onlineBackup from "@/components/onlineBackup.vue";
 import loginLog from "@/components/loginLog.vue";
-import OperationRecord from "@/components/OperationRecord.vue";
+// import OperationRecord from "@/components/OperationRecord.vue";
 import Threshold from "@/components/threshold.vue";
 import { onMounted, ref } from "vue";
 import mitts from "../utils/bus";
