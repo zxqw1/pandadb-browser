@@ -84,7 +84,16 @@
                                             删除
                                         </el-button>
                                     </el-col>
-
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="恢复">
+                                <template #default="scope">
+                                    <el-col style="display: flex;">
+                                        <el-button @click="restore(scope.row)" text
+                                            style="color: #6a8322;text-decoration: underline" :disabled="restoreflag">
+                                            恢复
+                                        </el-button>
+                                    </el-col>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -147,6 +156,7 @@ const nodeIpoption = ref([])
 const renodeIpoption = ref([])
 const page = ref({})
 const stopFlag = ref(false)
+const restoreflag = ref (false)
 const form = ref({
     taskName: '',
     remark: '',
@@ -215,7 +225,7 @@ const BackupList = async () => {
         "pageSize": 10,
         "currentPage": 1
     }
-    const BackupqueryData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/page", "POST", JSON.stringify(Backupquery))
+    const BackupqueryData = await getManageInfo(BackupqueryUrl, "POST", JSON.stringify(Backupquery))
     tableData.value = BackupqueryData.response
     const BackupselectUrl = replaceOrAddUrlPath(url, "/dataBackup/select")
     const BackupselectData = await getManageInfo(BackupselectUrl, "GET")
@@ -331,8 +341,10 @@ const Backup = (record) => {
     BackupProcess.value = true
     if(record.status === "finish"){
         stopFlag.value = true
+        restoreflag.value = true
     }else{
         stopFlag.value = false
+        restoreflag.value = false
     }
     progress.value = record.progress
 }
@@ -422,7 +434,15 @@ const stopbackup = async (row) => {
     await BackupList()
     BackupProcess.value = false
 }
-
+//恢复
+ const restore = async(row)=>{
+    const restoreUrl = replaceOrAddUrlPath(url, "/dataBackup/restore")
+    const restorepquery = {
+        "key": row.key
+    }
+    await getManageInfo(restoreUrl, "POST", JSON.stringify(restorepquery))
+    await BackupList()
+ }
 </script>
 
 <style scoped>

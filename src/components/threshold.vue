@@ -201,7 +201,7 @@ const generateRandomId = () => {
 onMounted(async () => {
     //获取添加告警阈值时相关的下拉选择框列表
     const warnParamselectUrl = replaceOrAddUrlPath(url, '/warnParam/select')
-    const warnParamselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/select", "GET")
+    const warnParamselectData = await getManageInfo(warnParamselectUrl, "GET")
     warnOption.value = warnParamselectData.response.warnOption
     warnParamStatus.value = warnParamselectData.response.warnParamStatus
     //分页查询告警阈值
@@ -212,7 +212,7 @@ onMounted(async () => {
         "pageSize": 10,
         "currentPage": 1
     }
-    const warnParampageData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
+    const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
     tableData.value = warnParampageData.respons
     tableData.value.forEach(item => {
         warnOption.value.forEach(item2 => {

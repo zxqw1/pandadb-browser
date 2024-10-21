@@ -9,7 +9,6 @@ async function getManageInfo(url,queryMethod,querytext){
             })
             .then((response) => response.text())
             .then((data) =>{
-                // console.log(JSON.parse(data),'12')
                 if(JSON.parse(data).success === true){
                     return JSON.parse(data) // 你这return，应该是return到上一层了
                 }else{

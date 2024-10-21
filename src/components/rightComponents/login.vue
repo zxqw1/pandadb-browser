@@ -125,7 +125,6 @@ const loginClick = () => {
 
 //判段是否登录
 onMounted(() => {
-  // if (window.localStorage.getItem("username") && window.localStorage.getItem("password"))
   if (window.localStorage.getItem("address")) {
     open.value = true;
   } else {
