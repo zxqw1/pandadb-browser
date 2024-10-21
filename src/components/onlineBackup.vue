@@ -30,9 +30,9 @@
                             <el-form-item label="是否立即执行">
                                 <el-switch v-model="form.executeImmediately" @change="switchChange" />
                             </el-form-item>
-                            <el-form-item label="预计执行时间" prop="planRuntime" >
-                                <!-- <el-input v-model="form.planRuntime" /> -->
-                                <el-date-picker v-model="form.planRuntime" type="datetime" placeholder="请选择时间"
+                            <el-form-item label="预计执行时间" prop="planRunTime" >
+                                <!-- <el-input v-model="form.planRunTime" /> -->
+                                <el-date-picker v-model="form.planRunTime" type="datetime" placeholder="请选择时间"
                                     :disabled="timedisable" />
                             </el-form-item>
                             <el-form-item label="备注" prop="remark" required>
@@ -117,8 +117,8 @@
                                 <el-form-item label="是否立即执行">
                                     <el-switch v-model="reform.executeImmediately" @change="reswitchChange" />
                                 </el-form-item>
-                                <el-form-item label="预计执行时间" prop="planRuntime" required>
-                                    <el-date-picker v-model="reform.planRuntime" type="datetime" :disabled="retimedisable"
+                                <el-form-item label="预计执行时间" prop="planRunTime" required>
+                                    <el-date-picker v-model="reform.planRunTime" type="datetime" :disabled="retimedisable"
                                         placeholder="请选择时间" />
                                 </el-form-item>
                                 <el-form-item label="备注" prop="remark" required>
@@ -160,14 +160,14 @@ const restoreflag = ref (false)
 const form = ref({
     taskName: '',
     remark: '',
-    planRuntime: '',
+    planRunTime: '',
     executeImmediately: true,
     nodeIp: ""
 })
 const reform = ref({
     taskName: '',
     remark: '',
-    planRuntime: '',
+    planRunTime: '',
     type: "",
     executeImmediately: true,
     nodeIp: ""
@@ -291,7 +291,7 @@ const addBackup = async (backuptype: number) => {
     form.value = ({
         taskName: '',
         remark: '',
-        planRuntime: '',
+        planRunTime: '',
         executeImmediately: true
     })
     if (backuptype === 0) {
@@ -317,14 +317,14 @@ const confirmBackup = async (formRef) => {
         if (valid) {
             const dataBackupqueryUrl = replaceOrAddUrlPath(url, "/dataBackup")
             if (timedisable.value === true) {
-                form.value.planRuntime = JSON.stringify(Date.now())
+                form.value.planRunTime = JSON.stringify(Date.now())
             } else {
-                form.value.planRuntime = JSON.stringify(new Date(form.value.planRuntime).getTime())
+                form.value.planRunTime = JSON.stringify(new Date(form.value.planRunTime).getTime())
             }
             const dataBackupQuery = {
                 'taskName': form.value.taskName,
                 'type': type.value,
-                'planRuntime': form.value.planRuntime === "" ? JSON.stringify(Date.now()) :form.value.planRuntime,
+                'planRunTime': form.value.planRunTime === "" ? JSON.stringify(Date.now()) :form.value.planRunTime,
                 'remark': form.value.remark,
                 'executeImmediately': form.value.executeImmediately,
                 "nodeIp": form.value.nodeIp
@@ -389,7 +389,7 @@ const handleEdit = async (row) => {
     reform.value = {
         taskName: row.taskName,
         remark: row.remark,
-        planRuntime: row.planRunTime,
+        planRunTime: row.planRunTime,
         nodeIp: row.nodeIp,
         executeImmediately: row.executeImmediately,
         type
@@ -405,14 +405,14 @@ const confirm = async (formRef) => {
         if (valid) {
             const dataBackupqueryUrl = replaceOrAddUrlPath(url, "/dataBackup")
             if (timedisable.value === true) {
-                reform.value.planRuntime = JSON.stringify(Date.now())
+                reform.value.planRunTime = JSON.stringify(Date.now())
             } else {
-                reform.value.planRuntime = JSON.stringify(new Date(form.value.planRuntime).getTime())
+                reform.value.planRunTime = JSON.stringify(new Date(form.value.planRunTime).getTime())
             }
             const dataBackupQuery = {
                 'taskName': reform.value.taskName,
                 'type': reform.value.type,
-                'planRuntime': form.value.planRuntime === "" ? JSON.stringify(Date.now()) :form.value.planRuntime,
+                'planRunTime': form.value.planRunTime === "" ? JSON.stringify(Date.now()) :form.value.planRunTime,
                 'remark': reform.value.remark,
                 'executeImmediately': reform.value.executeImmediately,
                 "nodeIp": reform.value.remark
