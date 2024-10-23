@@ -35,7 +35,7 @@
                 <div style="font-size: 16px;color: #333;font-weight:bold;margin-left: 12px;">图表</div>
             </el-col>
             <el-col style="margin-top: 20px; position: relative;">
-                <el-select v-model="timeValue" placeholder="最近一小时" size="large" style="width: 240px"
+                <el-select v-model="timeValue" v-if="options[0]" :placeholder="options[0].description" size="large" style="width: 240px"
                     @change="timeChange">
                     <el-option v-for="item in options" :key="item.value" :label="item.description"
                         :value="item.value" />
@@ -99,11 +99,12 @@ function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
 onMounted(async () => {
     //获取系统节点列表
     const systemnodequeryUrl = replaceOrAddUrlPath(url, '/system/nodeList')
-    const systemNodeData = await getManageInfo(systemnodequeryUrl, "GET")
+    const systemNodeData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/system/nodeList", "GET")
     systemoption.value = systemNodeData.response
+    systemnodeValue.value = systemoption.value[0].description
     // 图表时间段枚举
     const systemperiodUrl = replaceOrAddUrlPath(url, '/system/period')
-    const systemperiodData = await getManageInfo(systemperiodUrl, "GET")
+    const systemperiodData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/system/period", "GET")
     options.value = systemperiodData.response
     // 获取系统节点运行情况
     const systemRunquery = {
@@ -111,15 +112,12 @@ onMounted(async () => {
         "period": options.value[0].value
     }
     const systemRunUrl = replaceOrAddUrlPath(url, '/system/detail')
-    // const systemRunqueryText = systemRunUrl +"?" + JSON.stringify(systemRunquery)
-    const systemRunData = await getManageInfo(systemRunUrl, "POST", JSON.stringify(systemRunquery))
-    systemState.value = systemRunData.response.nodeStatus === "online" ? "在线" : "离线"
-    console.log(systemRunData,'117')
+    const systemRunData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/system/detail", "POST", JSON.stringify(systemRunquery))
     runTime.value = systemRunData.response.runTime
     const diskUsage = echarts.init(window.document.getElementById("diskUsage"));
     let diskUsageoption = {
         tooltip: {
-            formatter: `{a}  : ${(Number(systemRunData.response.diskUsage.used) / (Number(systemRunData.response.diskUsage.total) / 100)).toFixed(2)}%`
+            formatter: `利用率  : ${(Number(systemRunData.response.diskUsage.used) / (Number(systemRunData.response.diskUsage.total) / 100)).toFixed(2)}%`
         },
         series: [
             {
@@ -158,7 +156,7 @@ onMounted(async () => {
         tooltip: { // 鼠标移入的 title 相关的对象
             trigger: 'axis',
             formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
-                let tooltipContent = ` memoryUsageData: ${Number(params[0].value).toFixed(2)}<br/>${tooltip[params[0].dataIndex]}` // 拼接数据
+                let tooltipContent = ` 利用率: ${Number(params[0].value).toFixed(2)} %<br/>${tooltip[params[0].dataIndex]} ` // 拼接数据
                 return tooltipContent // return 数据回去显示
             }
         },
@@ -199,7 +197,7 @@ onMounted(async () => {
         tooltip: { // 鼠标移入的 title 相关的对象
             trigger: 'axis',
             formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
-                let tooltipContent = ` cupUsageData: ${Number(params[0].value).toFixed(2)}<br/>${tooltip[params[0].dataIndex]}` // 拼接数据
+                let tooltipContent = ` 利用率: ${Number(params[0].value).toFixed(2)} %<br/>${tooltip[params[0].dataIndex]}` // 拼接数据
                 return tooltipContent // return 数据回去显示
             }
         },
@@ -226,10 +224,9 @@ onMounted(async () => {
         ]
     }
     cupUsageData.setOption(cupUsageoption);
-
     //获取系统节点状态枚举
     const systemStatusTypeListUrl = replaceOrAddUrlPath(url, '/systemStatusTypeList')
-    const systemStatusTypeListData = await getManageInfo(systemStatusTypeListUrl, "GET")
+    const systemStatusTypeListData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/systemStatusTypeList", "GET")
     systemStatusTypeListData.response.forEach(item => {
         if (systemRunData.response.nodeStatus === item.value) {
             systemState.value = item.description
@@ -238,7 +235,6 @@ onMounted(async () => {
 })
 //节点
 const nodeChange = async () => {
-    // console.log(systemnodeValue.value,'200')
     systemoption.value.forEach(item => {
         if (systemnodeValue.value === item.description) {
             systemnodeva.value = item.value
@@ -249,30 +245,29 @@ const nodeChange = async () => {
         "period": timeValue.value === "" ? options.value[0].value : timeValue.value
     }
     const systemRunUrl = replaceOrAddUrlPath(url, '/system/detail')
-    // const systemRunqueryText = systemRunUrl +"?" + JSON.stringify(systemRunquery)
-    const systemRunData = await getManageInfo(systemRunUrl, "POST", JSON.stringify(systemRunquery))
+    const systemRunData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/system/detail", "POST", JSON.stringify(systemRunquery))
     // systemState.value = systemRunData.response.nodeStatus
     runTime.value = systemRunData.response.runTime
     const diskUsage = echarts.init(window.document.getElementById("diskUsage"));
     let diskUsageoption = {
         tooltip: {
-            formatter: '{a} <br/>{b} : {c}%'
+            formatter: `利用率  : ${(Number(systemRunData.response.diskUsage.used) / (Number(systemRunData.response.diskUsage.total) / 100)).toFixed(2)}%`
         },
         series: [
             {
-                name: 'Pressure',
+                name: 'diskUsage',
                 type: 'gauge',
                 progress: {
                     show: true
                 },
                 detail: {
                     valueAnimation: true,
-                    formatter: systemRunData.response.diskUsage.total
+                    formatter: systemRunData.response.diskUsage.total + "G"
                 },
                 data: [
                     {
                         value: Number(systemRunData.response.diskUsage.used) / (Number(systemRunData.response.diskUsage.total) / 100),
-                        name: systemRunData.response.diskUsage.used
+                        name: systemRunData.response.diskUsage.used + "G"
                     }
                 ]
             }
@@ -282,18 +277,31 @@ const nodeChange = async () => {
     const memoryUsageData = echarts.init(window.document.getElementById("memoryUsageData"));
     let dataX = []
     let dataY = []
+    let tooltip = []
     systemRunData.response.memoryUsageData.forEach((item: any) => {
-        let date = new Date(Number(item.x)).toLocaleString()
+        let date = new Date(Number(item.x)).toLocaleString().split(" ")[1] // 这块呢，我把时间 年-月-日 空格 时：分：秒 我用空格截取的，取的是 时分秒 用来显示 X轴的时分秒
+        let tooltipS = new Date(Number(item.x)).toLocaleString() // 这块呢，我没截取，就是 年月日时分秒 用来显示完整的时间
+        tooltip.push(tooltipS)
         dataX.push(date)
         dataY.push(item.y)
     })
+
     const memoryUsageoption = {
+        tooltip: { // 鼠标移入的 title 相关的对象
+            trigger: 'axis',
+            formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
+                let tooltipContent = ` 利用率: ${Number(params[0].value).toFixed(2)} %<br/>${tooltip[params[0].dataIndex]}` // 拼接数据
+                return tooltipContent // return 数据回去显示
+            }
+        },
         xAxis: {
             type: 'category',
             data: dataX,
-            fontSize: 8,
-            interval: 0,
-            rotate: 40// 旋转角度
+            axisLabel: {
+                fontSize: 8,
+                interval: 0,
+                rotate: 30// 旋转角度
+            },
         },
         yAxis: {
             type: 'value',
@@ -302,7 +310,8 @@ const nodeChange = async () => {
             {
                 data: dataY,
                 type: 'line',
-                smooth: true
+                showSymbol: false, //是否显示 线上面的 节点
+                smooth: true //线是否圆润，就是圆角线
             }
         ]
     }
@@ -310,26 +319,40 @@ const nodeChange = async () => {
     const cupUsageData = echarts.init(window.document.getElementById("cupUsageData"));
     let cupUsagedataX = []
     let cupUsagedataY = []
+    let cputooltip = []
     systemRunData.response.cupUsageData.forEach((item: any) => {
-        let date = new Date(Number(item.x)).toLocaleString()
+        let date = new Date(Number(item.x)).toLocaleString().split(" ")[1]
+        let cputooltipS = new Date(Number(item.x)).toLocaleString()
+        cputooltip.push(cputooltipS)
         cupUsagedataX.push(date)
         cupUsagedataY.push(item.y)
     })
     const cupUsageoption = {
+        tooltip: { // 鼠标移入的 title 相关的对象
+            trigger: 'axis',
+            formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
+                let tooltipContent = ` 利用率: ${Number(params[0].value).toFixed(2)} %<br/>${tooltip[params[0].dataIndex]}` // 拼接数据
+                return tooltipContent // return 数据回去显示
+            }
+        },
         xAxis: {
             type: 'category',
             data: cupUsagedataX,
-            fontSize: 8,
-            interval: 0,
-            rotate: 40// 旋转角度
+            axisLabel: {
+                fontSize: 8,
+                interval: 0,
+                rotate: 40// 旋转角度
+            },
         },
         yAxis: {
             type: 'value'
+            // interval: 10
         },
         series: [
             {
                 data: cupUsagedataY,
                 type: 'line',
+                showSymbol: false, //是否显示 线上面的 节点
                 smooth: true
             }
         ]
@@ -337,7 +360,7 @@ const nodeChange = async () => {
     cupUsageData.setOption(cupUsageoption);
     //获取系统节点状态枚举
     const systemStatusTypeListUrl = replaceOrAddUrlPath(url, '/systemStatusTypeList')
-    const systemStatusTypeListData = await getManageInfo(systemStatusTypeListUrl, "GET")
+    const systemStatusTypeListData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/systemStatusTypeList", "GET")
     systemStatusTypeListData.response.forEach(item => {
         if (systemRunData.response.nodeStatus === item.value) {
             systemState.value = item.description
@@ -351,29 +374,29 @@ const timeChange = async () => {
         "period": timeValue.value
     }
     const systemRunUrl = replaceOrAddUrlPath(url, '/system/detail')
-    const systemRunData = await getManageInfo(systemRunUrl, "POST", JSON.stringify(systemRunquery))
+    const systemRunData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/system/detail", "POST", JSON.stringify(systemRunquery))
     // systemState.value = systemRunData.response.nodeStatus
     runTime.value = systemRunData.response.runTime
     const diskUsage = echarts.init(window.document.getElementById("diskUsage"));
     let diskUsageoption = {
         tooltip: {
-            formatter: '{a} <br/>{b} : {c}%'
+            formatter: `利用率  : ${(Number(systemRunData.response.diskUsage.used) / (Number(systemRunData.response.diskUsage.total) / 100)).toFixed(2)}%`
         },
         series: [
             {
-                name: 'Pressure',
+                name: 'diskUsage',
                 type: 'gauge',
                 progress: {
                     show: true
                 },
                 detail: {
                     valueAnimation: true,
-                    formatter: systemRunData.response.diskUsage.total
+                    formatter: systemRunData.response.diskUsage.total + "G"
                 },
                 data: [
                     {
                         value: Number(systemRunData.response.diskUsage.used) / (Number(systemRunData.response.diskUsage.total) / 100),
-                        name: systemRunData.response.diskUsage.used
+                        name: systemRunData.response.diskUsage.used + "G"
                     }
                 ]
             }
@@ -383,30 +406,41 @@ const timeChange = async () => {
     const memoryUsageData = echarts.init(window.document.getElementById("memoryUsageData"));
     let dataX = []
     let dataY = []
-    systemRunData.response.memoryUsageData.forEach((item:any) => {
-        let date = new Date(Number(item.x)).toLocaleString()
+    let tooltip = []
+    systemRunData.response.memoryUsageData.forEach((item: any) => {
+        let date = new Date(Number(item.x)).toLocaleString().split(" ")[1] // 这块呢，我把时间 年-月-日 空格 时：分：秒 我用空格截取的，取的是 时分秒 用来显示 X轴的时分秒
+        let tooltipS = new Date(Number(item.x)).toLocaleString() // 这块呢，我没截取，就是 年月日时分秒 用来显示完整的时间
+        tooltip.push(tooltipS)
         dataX.push(date)
         dataY.push(item.y)
     })
 
     const memoryUsageoption = {
+        tooltip: { // 鼠标移入的 title 相关的对象
+            trigger: 'axis',
+            formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
+                let tooltipContent = ` 利用率: ${Number(params[0].value).toFixed(2)} %<br/>${tooltip[params[0].dataIndex]}` // 拼接数据
+                return tooltipContent // return 数据回去显示
+            }
+        },
         xAxis: {
             type: 'category',
             data: dataX,
             axisLabel: {
                 fontSize: 8,
                 interval: 0,
-                rotate: 40// 旋转角度
+                rotate: 30// 旋转角度
             },
         },
         yAxis: {
-            type: 'value'
+            type: 'value',
         },
         series: [
             {
                 data: dataY,
                 type: 'line',
-                smooth: true
+                showSymbol: false, //是否显示 线上面的 节点
+                smooth: true //线是否圆润，就是圆角线
             }
         ]
     }
@@ -414,12 +448,22 @@ const timeChange = async () => {
     const cupUsageData = echarts.init(window.document.getElementById("cupUsageData"));
     let cupUsagedataX = []
     let cupUsagedataY = []
+    let cputooltip = []
     systemRunData.response.cupUsageData.forEach((item: any) => {
-        let date = new Date(Number(item.x)).toLocaleString()
+        let date = new Date(Number(item.x)).toLocaleString().split(" ")[1]
+        let cputooltipS = new Date(Number(item.x)).toLocaleString()
+        cputooltip.push(cputooltipS)
         cupUsagedataX.push(date)
         cupUsagedataY.push(item.y)
     })
     const cupUsageoption = {
+        tooltip: { // 鼠标移入的 title 相关的对象
+            trigger: 'axis',
+            formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
+                let tooltipContent = ` 利用率: ${Number(params[0].value).toFixed(2)} %<br/>${tooltip[params[0].dataIndex]}` // 拼接数据
+                return tooltipContent // return 数据回去显示
+            }
+        },
         xAxis: {
             type: 'category',
             data: cupUsagedataX,
@@ -428,15 +472,16 @@ const timeChange = async () => {
                 interval: 0,
                 rotate: 40// 旋转角度
             },
-
         },
         yAxis: {
-            type: 'value',
+            type: 'value'
+            // interval: 10
         },
         series: [
             {
                 data: cupUsagedataY,
                 type: 'line',
+                showSymbol: false, //是否显示 线上面的 节点
                 smooth: true
             }
         ]
@@ -444,7 +489,7 @@ const timeChange = async () => {
     cupUsageData.setOption(cupUsageoption);
     //获取系统节点状态枚举
     const systemStatusTypeListUrl = replaceOrAddUrlPath(url, '/systemStatusTypeList')
-    const systemStatusTypeListData = await getManageInfo(systemStatusTypeListUrl, "GET")
+    const systemStatusTypeListData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/test", "GET")
     systemStatusTypeListData.response.forEach(item => {
         if (systemRunData.response.nodeStatus === item.value) {
             systemState.value = item.description

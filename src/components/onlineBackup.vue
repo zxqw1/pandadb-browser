@@ -85,7 +85,7 @@
                                 </template>
                             </el-table-column>
                         </el-table>
-                        <el-dialog v-model="rebackups" title="修改备份"  width="800" @close="close">
+                        <el-dialog v-model="rebackups" title="修改备份" width="800" @close="close">
                             <el-form :rules="rerules" :model="reform" label-width="auto" ref="formRef2">
                                 <el-form-item label="任务名称" prop="taskName">
                                     <el-input v-model="reform.taskName" />
@@ -107,7 +107,8 @@
                                 </el-form-item>
                                 <el-form-item label="预计执行时间" prop="planRunTime">
                                     <el-date-picker v-model="reform.planRunTime" type="datetime"
-                                        :disabled="retimedisable" placeholder="请选择时间" value-format="YYYY-MM-DD HH:mm:ss" />
+                                        :disabled="retimedisable" placeholder="请选择时间"
+                                        value-format="YYYY-MM-DD HH:mm:ss" />
                                 </el-form-item>
                                 <el-form-item label="备注" prop="remark">
                                     <el-input v-model="reform.remark" />
@@ -166,7 +167,7 @@ const reform = ref({
     planRunTime: '',
     type: "",
     executeImmediately: true,
-    key:"",
+    key: "",
     nodeIp: ""
 })
 const timedisable = ref(true)
@@ -218,14 +219,15 @@ const timeConversion = (timestamp) => {
 //表格数据
 const BackupList = async () => {
     const BackupqueryUrl = replaceOrAddUrlPath(url, "/dataBackup/page")
+    // const  BackupqueryUrl = "https://65f1886m24.goho.co" + "/dataBackup/page"
     const Backupquery = {
         "queryId": generateRandomId(),
         "pageSize": 10,
         "currentPage": 1
     }
-    const BackupqueryData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/page", "POST", JSON.stringify(Backupquery))
+    const BackupqueryData = await getManageInfo(BackupqueryUrl, "POST", JSON.stringify(Backupquery))
     const BackupselectUrl = replaceOrAddUrlPath(url, "/dataBackup/select")
-    const BackupselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/select", "GET")
+    const BackupselectData = await getManageInfo(BackupselectUrl, "GET")
     BackupqueryData.response.forEach(item => {
         item.createTime = timeConversion(Number(item.createTime))
         item.planRunTime = timeConversion(Number(item.planRunTime))
@@ -255,10 +257,10 @@ const handleCurrentChange = async (val: number) => {
         "pageSize": 10,
         "currentPage": val
     }
-    const BackupqueryData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/page", "POST", JSON.stringify(Backupquery))
+    const BackupqueryData = await getManageInfo(BackupqueryUrl, "POST", JSON.stringify(Backupquery))
     tableData.value = BackupqueryData.response
     const BackupselectUrl = replaceOrAddUrlPath(url, "/dataBackup/select")
-    const BackupselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/select", "GET")
+    const BackupselectData = await getManageInfo(BackupselectUrl, "GET")
     tableData.value.forEach(item => {
         item.createTime = timeConversion(Number(item.createTime))
         item.planRunTime = timeConversion(Number(item.planRunTime))
@@ -292,7 +294,7 @@ const addBackup = async (backuptype: number) => {
     type.value = backuptype
     //下拉获取nodeip
     const nodeIpUrl = replaceOrAddUrlPath(url, "/database/nodeList")
-    const nodeIpData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/database/nodeList", "GET")
+    const nodeIpData = await getManageInfo(nodeIpUrl, "GET")
     nodeIpoption.value = nodeIpData.response
 
 }
@@ -305,22 +307,24 @@ const confirmBackup = async (formRef) => {
     await formRef.validate(async (valid, fields) => {
         if (valid) {
             const dataBackupqueryUrl = replaceOrAddUrlPath(url, "/dataBackup")
-            if (timedisable.value === true) {
-                form.value.planRunTime = JSON.stringify(Date.now())
-            } else {
-                form.value.planRunTime = JSON.stringify(new Date(form.value.planRunTime).getTime())
+            if (form.value.planRunTime !== null) {
+                if (timedisable.value === true) {
+                    form.value.planRunTime = JSON.stringify(Date.now())
+                } else {
+                    form.value.planRunTime = JSON.stringify(new Date(form.value.planRunTime).getTime())
+                }
             }
             const dataBackupQuery = {
                 'taskName': form.value.taskName,
                 'type': type.value,
-                'planRunTime': form.value.planRunTime === "" ? JSON.stringify(Date.now()) : form.value.planRunTime,
+                'planRunTime': (form.value.planRunTime === "null" || form.value.planRunTime === null) ? "" : form.value.planRunTime,
                 'remark': form.value.remark,
                 'executeImmediately': form.value.executeImmediately,
                 "nodeIp": form.value.nodeIp
             }
-            await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/test", "POST", JSON.stringify(dataBackupQuery))
+            await getManageInfo(dataBackupqueryUrl, "POST", JSON.stringify(dataBackupQuery))
             await BackupList()
-            backupsDialog.value = false 
+            backupsDialog.value = false
         }
     })
 
@@ -342,7 +346,7 @@ const handleDelete = (row) => {
         const delquery = {
             "key": row.key
         }
-        let info = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/test", "DELETE", JSON.stringify(delquery))
+        let info = await getManageInfo(deldataBuckupUrl, "DELETE", JSON.stringify(delquery))
         if (info) {
             await BackupList()
             ElMessage({
@@ -350,7 +354,7 @@ const handleDelete = (row) => {
                 message: "删除成功",
             })
         }
-        
+
     }).catch(() => { })
 }
 
@@ -360,10 +364,10 @@ const handleEdit = async (row) => {
     backupsTitle.value = "修改备份"
     //下拉获取nodeip
     const nodeIpUrl = replaceOrAddUrlPath(url, "/database/nodeList")
-    const renodeIpData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/database/nodeList", "GET")
+    const renodeIpData = await getManageInfo(nodeIpUrl, "GET")
     renodeIpoption.value = renodeIpData.response
     const BackupselectUrl = replaceOrAddUrlPath(url, "/dataBackup/select")
-    const BackupselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/select", "GET")
+    const BackupselectData = await getManageInfo(BackupselectUrl, "GET")
     typeOption.value = BackupselectData.response.type
     let type
     typeOption.value.forEach((item) => {
@@ -377,7 +381,7 @@ const handleEdit = async (row) => {
         planRunTime: row.planRunTime,
         nodeIp: row.nodeIp,
         executeImmediately: row.executeImmediately ? row.executeImmediately : true,
-        key:row.key,
+        key: row.key,
         type
     }
 }
@@ -389,22 +393,23 @@ const confirm = async (formRef) => {
     await formRef.validate(async (valid, fields) => {
         if (valid) {
             const dataBackupqueryUrl = replaceOrAddUrlPath(url, "/dataBackup")
-            if(reform.value.planRunTime!==null){
-            if (timedisable.value === true) {
-                reform.value.planRunTime = JSON.stringify(Date.now())
-            } else {
-                reform.value.planRunTime = JSON.stringify(new Date(form.value.planRunTime).getTime())
-            }}
+            if (reform.value.planRunTime !== null) {
+                if (timedisable.value === true) {
+                    reform.value.planRunTime = JSON.stringify(Date.now())
+                } else {
+                    reform.value.planRunTime = JSON.stringify(new Date(form.value.planRunTime).getTime())
+                }
+            }
             const dataBackupQuery = {
                 'taskName': reform.value.taskName,
                 'type': reform.value.type,
-                'planRunTime': reform.value.planRunTime ? reform.value.planRunTime : "",
+                'planRunTime': (form.value.planRunTime === "null" || form.value.planRunTime === null) ? "" : reform.value.planRunTime,
                 'remark': reform.value.remark,
                 'executeImmediately': reform.value.executeImmediately === undefined ? true : reform.value.executeImmediately,
-                "nodeIp": reform.value.remark,
-                "key":reform.value.key
+                "nodeIp": reform.value.nodeIp,
+                "key": reform.value.key
             }
-            await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/test", "PUT", JSON.stringify(dataBackupQuery))
+            await getManageInfo(dataBackupqueryUrl, "PUT", JSON.stringify(dataBackupQuery))
             await BackupList()
             rebackups.value = false
         }
@@ -418,7 +423,7 @@ const close = () => {
         planRunTime: undefined,
         type: "",
         executeImmediately: true,
-        key:"",
+        key: "",
         nodeIp: ""
     })
     retimedisable.value = true
@@ -429,7 +434,7 @@ const stopbackup = async (row) => {
     const stopquery = {
         "key": row.key
     }
-    await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/test", "POST", JSON.stringify(stopquery))
+    await getManageInfo(stopURL, "POST", JSON.stringify(stopquery))
     await BackupList()
     BackupProcess.value = false
 }
@@ -439,7 +444,7 @@ const restore = async (row) => {
     const restorepquery = {
         "key": row.key
     }
-    await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/test", "POST", JSON.stringify(restorepquery))
+    await getManageInfo(restoreUrl, "POST", JSON.stringify(restorepquery))
     await BackupList()
 }
 </script>

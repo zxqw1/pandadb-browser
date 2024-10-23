@@ -10,16 +10,16 @@ async function getManageInfo(url,queryMethod,querytext){
             })
             .then((response) => response.text())
             .then((data) =>{
-                if(JSON.parse(data).success === true){
-                    return JSON.parse(data)
-                }else if(JSON.parse(data).success === true && (JSON.parse(data).errorMessage || JSON.parse(data).errorMessage ==="") ){
+                if(JSON.parse(data).success === true && (JSON.parse(data).errorMessage || JSON.parse(data).errorMessage ==="")){
                     ElMessageBox.alert(JSON.parse(data).errorMessage, '提示', {
-                        confirmButtonText: 'OK'
-                      })
+                                confirmButtonText: 'OK'
+                              })
+                }else if(JSON.parse(data).success === true){
+                    return JSON.parse(data)
                 }else{
                     ElMessageBox.alert(JSON.parse(data).errorMessage, '提示', {
-                        confirmButtonText: 'OK'
-                      })
+                                confirmButtonText: 'OK'
+                              })
                 }
             })
 }
