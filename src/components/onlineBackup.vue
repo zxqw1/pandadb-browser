@@ -107,7 +107,7 @@
                                 </el-form-item>
                                 <el-form-item label="预计执行时间" prop="planRunTime">
                                     <el-date-picker v-model="reform.planRunTime" type="datetime"
-                                        :disabled="retimedisable" placeholder="请选择时间" />
+                                        :disabled="retimedisable" placeholder="请选择时间" value-format="YYYY-MM-DD HH:mm:ss" />
                                 </el-form-item>
                                 <el-form-item label="备注" prop="remark">
                                     <el-input v-model="reform.remark" />
@@ -356,7 +356,6 @@ const handleDelete = (row) => {
 
 //修改
 const handleEdit = async (row) => {
-    console.log(row, 'row')
     rebackups.value = true
     backupsTitle.value = "修改备份"
     //下拉获取nodeip
@@ -377,7 +376,7 @@ const handleEdit = async (row) => {
         remark: row.remark,
         planRunTime: row.planRunTime,
         nodeIp: row.nodeIp,
-        executeImmediately: row.executeImmediately,
+        executeImmediately: row.executeImmediately ? row.executeImmediately : true,
         key:row.key,
         type
     }
@@ -390,22 +389,21 @@ const confirm = async (formRef) => {
     await formRef.validate(async (valid, fields) => {
         if (valid) {
             const dataBackupqueryUrl = replaceOrAddUrlPath(url, "/dataBackup")
+            if(reform.value.planRunTime!==null){
             if (timedisable.value === true) {
                 reform.value.planRunTime = JSON.stringify(Date.now())
             } else {
                 reform.value.planRunTime = JSON.stringify(new Date(form.value.planRunTime).getTime())
-            }
-            console.log(reform.value,'reform')
+            }}
             const dataBackupQuery = {
                 'taskName': reform.value.taskName,
                 'type': reform.value.type,
-                'planRunTime': form.value.planRunTime === "" ? JSON.stringify(Date.now()) : form.value.planRunTime,
+                'planRunTime': reform.value.planRunTime ? reform.value.planRunTime : "",
                 'remark': reform.value.remark,
                 'executeImmediately': reform.value.executeImmediately === undefined ? true : reform.value.executeImmediately,
                 "nodeIp": reform.value.remark,
                 "key":reform.value.key
             }
-            console.log(dataBackupQuery,'query')
             await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/test", "PUT", JSON.stringify(dataBackupQuery))
             await BackupList()
             rebackups.value = false
@@ -423,10 +421,10 @@ const close = () => {
         key:"",
         nodeIp: ""
     })
+    retimedisable.value = true
 }
 //停止备份
 const stopbackup = async (row) => {
-    console.log(row,'444')
     const stopURL = replaceOrAddUrlPath(url, "/dataBackup/stop")
     const stopquery = {
         "key": row.key
