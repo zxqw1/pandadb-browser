@@ -24,13 +24,13 @@
                             <el-form-item label="节点Ip" required prop="nodeIp">
                                 <el-select v-model="form.nodeIp" placeholder="请选择" style="width:80%" clearable>
                                     <el-option v-for="(item, index) in nodeIpoption" :key="index"
-                                    :label="item.description" :value="item.value" />
+                                        :label="item.description" :value="item.value" />
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="是否立即执行">
                                 <el-switch v-model="form.executeImmediately" @change="switchChange" />
                             </el-form-item>
-                            <el-form-item label="预计执行时间" prop="planRunTime" >
+                            <el-form-item label="预计执行时间" prop="planRunTime">
                                 <!-- <el-input v-model="form.planRunTime" /> -->
                                 <el-date-picker v-model="form.planRunTime" type="datetime" placeholder="请选择时间"
                                     :disabled="timedisable" />
@@ -58,29 +58,17 @@
                                 <template #default="scope">
                                     <el-button link type="primary" size="small" @click="Backup(scope.row)">{{
                                         scope.row.status }}</el-button>
-                                    <el-dialog v-model="BackupProcess" title="备份流程" width="800">
-                                        <!-- {{ progress }} -->
-                                        <el-progress :percentage="progress" />
-                                        <template #footer>
-                                            <div class="dialog-footer">
-                                                <el-button @click="BackupProcess = false">取消</el-button>
-                                                <el-button type="primary" @click="stopbackup(scope.row)"  :disabled = stopFlag>
-                                                    停止备份
-                                                </el-button>
-                                            </div>
-                                        </template>
-                                    </el-dialog>
                                 </template>
                             </el-table-column>
                             <el-table-column label="操作">
                                 <template #default="scope">
                                     <el-col style="display: flex;">
                                         <el-button @click="handleEdit(scope.row)" text
-                                            style="color: #6a8322;text-decoration: underline" :disabled="buttondisabled">
+                                            style="color: #6a8322;text-decoration: underline">
                                             修改
                                         </el-button>
                                         <el-button @click="handleDelete(scope.row)" text
-                                            style="color: #6a8322;text-decoration: underline" :disabled="buttondisabled">
+                                            style="color: #6a8322;text-decoration: underline">
                                             删除
                                         </el-button>
                                     </el-col>
@@ -90,25 +78,25 @@
                                 <template #default="scope">
                                     <el-col style="display: flex;">
                                         <el-button @click="restore(scope.row)" text
-                                            style="color: #6a8322;text-decoration: underline" :disabled="restoreflag">
+                                            style="color: #6a8322;text-decoration: underline">
                                             恢复
                                         </el-button>
                                     </el-col>
                                 </template>
                             </el-table-column>
                         </el-table>
-                        <el-dialog v-model="rebackups" title="修改备份" destroy-on-close width="800" @close="close">
+                        <el-dialog v-model="rebackups" title="修改备份"  width="800" @close="close">
                             <el-form :rules="rerules" :model="reform" label-width="auto" ref="formRef2">
-                                <el-form-item label="任务名称" required prop="taskName">
+                                <el-form-item label="任务名称" prop="taskName">
                                     <el-input v-model="reform.taskName" />
                                 </el-form-item>
-                                <el-form-item label="备份类型" required prop="type">
+                                <el-form-item label="备份类型" prop="type">
                                     <el-select v-model="reform.type" placeholder="请选择" style="width:80%" clearable>
                                         <el-option v-for="(item, index) in typeOption" :key="index"
                                             :label="item.description" :value="item.value" />
                                     </el-select>
                                 </el-form-item>
-                                <el-form-item label="节点Ip" required prop="nodeIp">
+                                <el-form-item label="节点Ip" prop="nodeIp">
                                     <el-select v-model="reform.nodeIp" placeholder="请选择" style="width: 240px">
                                         <el-option v-for="(item, index) in renodeIpoption" :key="index"
                                             :label="item.description" :value="item.value" />
@@ -117,11 +105,11 @@
                                 <el-form-item label="是否立即执行">
                                     <el-switch v-model="reform.executeImmediately" @change="reswitchChange" />
                                 </el-form-item>
-                                <el-form-item label="预计执行时间" prop="planRunTime" >
-                                    <el-date-picker v-model="reform.planRunTime" type="datetime" :disabled="retimedisable"
-                                        placeholder="请选择时间" />
+                                <el-form-item label="预计执行时间" prop="planRunTime">
+                                    <el-date-picker v-model="reform.planRunTime" type="datetime"
+                                        :disabled="retimedisable" placeholder="请选择时间" />
                                 </el-form-item>
-                                <el-form-item label="备注" prop="remark" required>
+                                <el-form-item label="备注" prop="remark">
                                     <el-input v-model="reform.remark" />
                                 </el-form-item>
                                 <el-form-item>
@@ -131,6 +119,17 @@
                                     </el-button>
                                 </el-form-item>
                             </el-form>
+                        </el-dialog>
+                        <el-dialog v-model="BackupProcess" title="备份流程" width="800">
+                            <el-progress :percentage="progress" />
+                            <template #footer>
+                                <div class="dialog-footer">
+                                    <el-button @click="BackupProcess = false">取消</el-button>
+                                    <el-button type="primary" @click="stopbackup(recordInfo)">
+                                        停止备份
+                                    </el-button>
+                                </div>
+                            </template>
                         </el-dialog>
                     </el-col>
                     <el-col style="margin-top: 20px; display: flex; flex-direction: row-reverse;">
@@ -151,12 +150,9 @@ import getManageInfo from "../utils/manageRequest"
 const BackupProcess = ref(false)
 const backupsDialog = ref(false)
 const rebackups = ref(false)
-const buttondisabled = ref(false)
 const nodeIpoption = ref([])
 const renodeIpoption = ref([])
 const page = ref({})
-const stopFlag = ref(false)
-const restoreflag = ref (false)
 const form = ref({
     taskName: '',
     remark: '',
@@ -170,6 +166,7 @@ const reform = ref({
     planRunTime: '',
     type: "",
     executeImmediately: true,
+    key:"",
     nodeIp: ""
 })
 const timedisable = ref(true)
@@ -184,14 +181,15 @@ const rules = ref({
     "nodeIp": [{ required: true, message: '请选择节点Ip', trigger: 'change' }]
 })
 const rerules = ref({
-    "taskName": [{ required: true, message: '请输入任务名称' }],
-    "remark": [{ required: true, message: '请输入备注' }],
+    "taskName": [{ required: true, message: '请输入任务名称', trigger: 'blur' }],
+    "remark": [{ required: true, message: '请输入备注', trigger: 'blur' }],
     "type": [{ required: true, message: '请选择类型', trigger: 'change' }],
     "nodeIp": [{ required: true, message: '请选择节点Ip', trigger: 'change' }]
 })
 const formRef = ref(null)
 const formRef2 = ref(null)
 const progress = ref(null)
+const recordInfo = ref({})
 let url = window.localStorage.getItem("address")//地址
 function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
     const hasPath = ipWithMaybePath.includes('/') && !ipWithMaybePath.endsWith(':');
@@ -225,18 +223,12 @@ const BackupList = async () => {
         "pageSize": 10,
         "currentPage": 1
     }
-    const BackupqueryData = await getManageInfo(BackupqueryUrl, "POST", JSON.stringify(Backupquery))
-    tableData.value = BackupqueryData.response
+    const BackupqueryData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/page", "POST", JSON.stringify(Backupquery))
     const BackupselectUrl = replaceOrAddUrlPath(url, "/dataBackup/select")
-    const BackupselectData = await getManageInfo(BackupselectUrl, "GET")
-    tableData.value.forEach(item => {
+    const BackupselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/select", "GET")
+    BackupqueryData.response.forEach(item => {
         item.createTime = timeConversion(Number(item.createTime))
         item.planRunTime = timeConversion(Number(item.planRunTime))
-        if(item.status !== "wait" || item.status !== "stop"){
-            buttondisabled.value = true
-        }else{
-            buttondisabled.value = false
-        }
         BackupselectData.response.status.forEach(item2 => {
             if (item2.value === item.status) {
                 item.status = item2.description
@@ -248,10 +240,12 @@ const BackupList = async () => {
             }
         })
     })
+    tableData.value = BackupqueryData.response
     page.value = BackupqueryData.page
 }
-onMounted( async() => {
-   await BackupList()
+onMounted(async () => {
+    await BackupList()
+
 })
 //分页查询数据备份
 const handleCurrentChange = async (val: number) => {
@@ -261,18 +255,13 @@ const handleCurrentChange = async (val: number) => {
         "pageSize": 10,
         "currentPage": val
     }
-    const BackupqueryData = await getManageInfo(BackupqueryUrl, "POST", JSON.stringify(Backupquery))
+    const BackupqueryData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/page", "POST", JSON.stringify(Backupquery))
     tableData.value = BackupqueryData.response
     const BackupselectUrl = replaceOrAddUrlPath(url, "/dataBackup/select")
-    const BackupselectData = await getManageInfo(BackupselectUrl, "GET")
+    const BackupselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/select", "GET")
     tableData.value.forEach(item => {
         item.createTime = timeConversion(Number(item.createTime))
         item.planRunTime = timeConversion(Number(item.planRunTime))
-        if(item.status !== "wait"){
-            buttondisabled.value = true
-        }else{
-            buttondisabled.value = false
-        }
         BackupselectData.response.status.forEach(item2 => {
             if (item2.value === item.status) {
                 item.status = item2.description
@@ -303,7 +292,7 @@ const addBackup = async (backuptype: number) => {
     type.value = backuptype
     //下拉获取nodeip
     const nodeIpUrl = replaceOrAddUrlPath(url, "/database/nodeList")
-    const nodeIpData = await getManageInfo(nodeIpUrl, "GET")
+    const nodeIpData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/database/nodeList", "GET")
     nodeIpoption.value = nodeIpData.response
 
 }
@@ -324,29 +313,22 @@ const confirmBackup = async (formRef) => {
             const dataBackupQuery = {
                 'taskName': form.value.taskName,
                 'type': type.value,
-                'planRunTime': form.value.planRunTime === "" ? JSON.stringify(Date.now()) :form.value.planRunTime,
+                'planRunTime': form.value.planRunTime === "" ? JSON.stringify(Date.now()) : form.value.planRunTime,
                 'remark': form.value.remark,
                 'executeImmediately': form.value.executeImmediately,
                 "nodeIp": form.value.nodeIp
             }
-            await getManageInfo(dataBackupqueryUrl, "POST", JSON.stringify(dataBackupQuery))
+            await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/test", "POST", JSON.stringify(dataBackupQuery))
             await BackupList()
-            backupsDialog.value = false
+            backupsDialog.value = false 
         }
     })
 
 }
 //备份进度
 const Backup = (record) => {
-    console.log(record,'341')
+    recordInfo.value = record
     BackupProcess.value = true
-    if(record.status === "已完成"){
-        stopFlag.value = true
-        restoreflag.value = true
-    }else{
-        stopFlag.value = false
-        restoreflag.value = false
-    }
     progress.value = record.progress
 }
 //删除
@@ -355,31 +337,34 @@ const handleDelete = (row) => {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
-    }).then(() => {
-        const deldataBuckupUrl = replaceOrAddUrlPath(url, '/dataBuckup')
+    }).then(async () => {
+        const deldataBuckupUrl = replaceOrAddUrlPath(url, '/dataBackup')
         const delquery = {
-            "key":row.key
+            "key": row.key
         }
-        getManageInfo(deldataBuckupUrl, "DELETE", JSON.stringify(delquery))
-        BackupList()
-        ElMessage({
-            type: 'success',
-            message: "删除成功",
-        })
+        let info = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/test", "DELETE", JSON.stringify(delquery))
+        if (info) {
+            await BackupList()
+            ElMessage({
+                type: 'success',
+                message: "删除成功",
+            })
+        }
+        
     }).catch(() => { })
 }
 
 //修改
 const handleEdit = async (row) => {
-    console.log(row,'355')
+    console.log(row, 'row')
     rebackups.value = true
     backupsTitle.value = "修改备份"
-     //下拉获取nodeip
-     const nodeIpUrl = replaceOrAddUrlPath(url, "/database/nodeList")
-    const renodeIpData = await getManageInfo(nodeIpUrl, "GET")
+    //下拉获取nodeip
+    const nodeIpUrl = replaceOrAddUrlPath(url, "/database/nodeList")
+    const renodeIpData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/database/nodeList", "GET")
     renodeIpoption.value = renodeIpData.response
     const BackupselectUrl = replaceOrAddUrlPath(url, "/dataBackup/select")
-    const BackupselectData = await getManageInfo(BackupselectUrl, "GET")
+    const BackupselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/select", "GET")
     typeOption.value = BackupselectData.response.type
     let type
     typeOption.value.forEach((item) => {
@@ -393,12 +378,12 @@ const handleEdit = async (row) => {
         planRunTime: row.planRunTime,
         nodeIp: row.nodeIp,
         executeImmediately: row.executeImmediately,
+        key:row.key,
         type
     }
 }
 const reswitchChange = (value) => {
     retimedisable.value = value
-
 }
 //确定修改
 const confirm = async (formRef) => {
@@ -410,50 +395,55 @@ const confirm = async (formRef) => {
             } else {
                 reform.value.planRunTime = JSON.stringify(new Date(form.value.planRunTime).getTime())
             }
+            console.log(reform.value,'reform')
             const dataBackupQuery = {
                 'taskName': reform.value.taskName,
                 'type': reform.value.type,
-                'planRunTime': form.value.planRunTime === "" ? JSON.stringify(Date.now()) :form.value.planRunTime,
+                'planRunTime': form.value.planRunTime === "" ? JSON.stringify(Date.now()) : form.value.planRunTime,
                 'remark': reform.value.remark,
-                'executeImmediately': reform.value.executeImmediately,
-                "nodeIp": reform.value.remark
+                'executeImmediately': reform.value.executeImmediately === undefined ? true : reform.value.executeImmediately,
+                "nodeIp": reform.value.remark,
+                "key":reform.value.key
             }
-            await getManageInfo(dataBackupqueryUrl, "PUT", JSON.stringify(dataBackupQuery))
+            console.log(dataBackupQuery,'query')
+            await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/test", "PUT", JSON.stringify(dataBackupQuery))
             await BackupList()
             rebackups.value = false
         }
     })
 
 }
-const close = ()=>{
+const close = () => {
     reform.value = ref({
         taskName: '',
         remark: '',
         planRunTime: undefined,
         type: "",
         executeImmediately: true,
+        key:"",
         nodeIp: ""
     })
 }
 //停止备份
 const stopbackup = async (row) => {
+    console.log(row,'444')
     const stopURL = replaceOrAddUrlPath(url, "/dataBackup/stop")
     const stopquery = {
         "key": row.key
     }
-    await getManageInfo(stopURL, "POST", JSON.stringify(stopquery))
+    await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/test", "POST", JSON.stringify(stopquery))
     await BackupList()
     BackupProcess.value = false
 }
 //恢复
- const restore = async(row)=>{
+const restore = async (row) => {
     const restoreUrl = replaceOrAddUrlPath(url, "/dataBackup/restore")
     const restorepquery = {
         "key": row.key
     }
-    await getManageInfo(restoreUrl, "POST", JSON.stringify(restorepquery))
+    await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/test", "POST", JSON.stringify(restorepquery))
     await BackupList()
- }
+}
 </script>
 
 <style scoped>

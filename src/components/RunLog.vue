@@ -47,11 +47,6 @@ function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
         return `${ipWithMaybePath}/${newPath}`;
     }
 }
-const generateRandomId = () => {
-    const timestamp = new Date().getTime(); // 获取当前时间戳
-    const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
-    return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
-};
 onMounted(async () => {
     const runLogqueryUrl = replaceOrAddUrlPath(url, '/runLog')
     const runLogquery = {

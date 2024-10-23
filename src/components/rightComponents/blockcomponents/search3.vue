@@ -115,7 +115,7 @@ const opt = ref({
     "CodeMirror-lint-markers",
   ],
 });
-let abortController: AbortController | null = null;
+let abortController = null;
 // 使用watch来监听message prop的变化  
 watch(() => props.flagshowL, (newValue, oldValue) => {
   console.log(`Message changed from '${oldValue}' to '${newValue}'`);
@@ -203,7 +203,7 @@ const funClick = async () => {
   }
 };
 //停止
-let url: string | null = window.localStorage.getItem("address")//地址
+let url = window.localStorage.getItem("address")//地址
 const closeurl = url.replace('/query', '/close')
 const breakClick = () => {
   // loadingFlag.value = !loadingFlag.value;
