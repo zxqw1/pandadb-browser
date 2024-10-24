@@ -438,7 +438,7 @@ const handleDelete = (row) => {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
-    }).then(() => {
+    }).then(async() => {
         const delwarnParamUrl = replaceOrAddUrlPath(url, '/warnParam')
         const delquery = {
             "key": row.key
@@ -451,7 +451,7 @@ const handleDelete = (row) => {
             "pageSize": 10,
             "currentPage": 1
         }
-        const warnParampageData = getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
+        const warnParampageData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
         tableData.value = warnParampageData.response
         tableData.value.forEach(item => {
             warnOption.value.forEach(item2 => {
@@ -480,7 +480,7 @@ const handleDelete = (row) => {
             type: 'success',
             message: "删除成功",
         })
-        thresholdList()
+       await thresholdList()
     }).catch(() => { })
 }
 //修改
