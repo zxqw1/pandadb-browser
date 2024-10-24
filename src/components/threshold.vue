@@ -196,17 +196,10 @@ function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
         return `${ipWithMaybePath}/${newPath}`;
     }
 }
-onMounted(async () => {
-    //获取添加告警阈值时相关的下拉选择框列表
-    const warnParamselectUrl = replaceOrAddUrlPath(url, '/warnParam/select')
-    const warnParamselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/select", "GET")
-    console.log(warnParamselectData, '204    ')
-    warnOption.value = warnParamselectData.response.warnOption
-    warnSendType.value = warnParamselectData.response.warnSendType
-    warnLevelType.value = warnParamselectData.response.warnLevelType
-    warnParamStatus.value = warnParamselectData.response.warnParamStatus
-    //分页查询告警阈值
-    const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
+// 表格数据
+const thresholdList = async()=>{
+ //分页查询告警阈值
+ const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
     const warnParampagequery = {
         "warnOption": "",
         "status": "",
@@ -226,6 +219,16 @@ onMounted(async () => {
         item.warnLevel === "normal" ? item.warnLevel = "一般" : item.warnLevel = "严重"
     })
     page.value = warnParampageData.page
+}
+onMounted(async () => {
+    //获取添加告警阈值时相关的下拉选择框列表
+    const warnParamselectUrl = replaceOrAddUrlPath(url, '/warnParam/select')
+    const warnParamselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/select", "GET")
+    warnOption.value = warnParamselectData.response.warnOption
+    warnSendType.value = warnParamselectData.response.warnSendType
+    warnLevelType.value = warnParamselectData.response.warnLevelType
+    warnParamStatus.value = warnParamselectData.response.warnParamStatus
+    await thresholdList()
 })
 //筛选
 const siftclick = async () => {
@@ -317,10 +320,9 @@ const addconfirmClick = async (formRef) => {
                     item.warnLevel === "normal" ? item.warnLevel = "一般" : item.warnLevel = "严重"
                 })
                 page.value = warnParampageData.page
-
                 warnParamFlag.value = false
+               await thresholdList()
             } else if (dialogTitle.value === "修改") {
-                console.log(addWarnItem.value.status,'323')
                 addWarnItem.value.status === "启用" ? addWarnItem.value.status = "on" : (addWarnItem.value.status === "on" ? addWarnItem.value.status = "on" : addWarnItem.value.status = "off")
                 addWarnItem.value.warnOption === "系统磁盘" ? addWarnItem.value.warnOption = "2" : addWarnItem.value.warnOption === "系统内存" ? addWarnItem.value.warnOption = "1" : addWarnItem.value.warnOption = "0"
                 addWarnItem.value.threshold = Number(addWarnItem.value.threshold)
@@ -328,7 +330,6 @@ const addconfirmClick = async (formRef) => {
                 const replacewarnParamUrl = replaceOrAddUrlPath(url, '/warnParam')
                 await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam", "PUT", JSON.stringify(addWarnItem.value))
                 const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
-                console.log(addWarnItem.value.status,'330')
                 const warnParampagequery = {
                     "warnOption": warnValue.value !== "" ? warnValue.value === undefined ? "" : warnValue.value : "",
                     "status": warnParamValue.value !== "" ? warnParamValue.value === undefined ? "" : warnParamValue.value : "",
@@ -349,6 +350,7 @@ const addconfirmClick = async (formRef) => {
                 })
                 page.value = warnParampageData.page
                 warnParamFlag.value = false
+                await thresholdList()
             }
         }
     })
@@ -389,6 +391,7 @@ const handleDelete = (row) => {
             type: 'success',
             message: "删除成功",
         })
+        thresholdList()
     }).catch(() => { })
 }
 //修改
