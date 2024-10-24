@@ -77,7 +77,8 @@ import * as echarts from 'echarts';
 import mitts from '../utils/bus';
 import getManageInfo from "../utils/manageRequest"
 const systemnodeValue = ref('')
-const systemnodeva = ref("")
+// const systemnodeva = ref("")
+const systemnodequery = ref("")
 const timeValue = ref('')
 const systemoption = ref([])
 const systemState = ref("")
@@ -237,11 +238,11 @@ onMounted(async () => {
 const nodeChange = async () => {
     systemoption.value.forEach(item => {
         if (systemnodeValue.value === item.description) {
-            systemnodeva.value = item.value
+            systemnodequery.value = item.value
         }
     })
     const systemRunquery = {
-        "nodeIp": systemnodeva.value,
+        "nodeIp": systemnodequery.value,
         "period": timeValue.value === "" ? options.value[0].value : timeValue.value
     }
     const systemRunUrl = replaceOrAddUrlPath(url, '/system/detail')
@@ -370,8 +371,13 @@ const nodeChange = async () => {
 //时间
 const timeChange = async () => {
     console.log(systemnodeValue.value,'372')
+    systemoption.value.forEach(item => {
+        if (systemnodeValue.value === item.description) {
+            systemnodequery.value = item.value
+        }
+    })
     const systemRunquery = {
-        "nodeIp": systemnodeValue.value === "" ? systemoption.value[0].value : systemnodeValue.value,
+        "nodeIp": systemnodeValue.value === "" ? "" : systemnodequery.value,
         "period": timeValue.value
     }
     const systemRunUrl = replaceOrAddUrlPath(url, '/system/detail')

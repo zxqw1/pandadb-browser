@@ -66,15 +66,15 @@
                                 <el-form-item label="发送方式：" prop="sendType">
                                     <el-select v-model="addWarnItem.sendType" placeholder="请选择" style="width:80%"
                                         clearable>
-                                        <el-option value="phone" label="手机"></el-option>
-                                        <el-option value="email" label="邮箱"></el-option>
+                                        <el-option v-for="item in warnSendType" :key="item.value"
+                                            :label="item.description" :value="item.value" />
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="告警级别：" prop="warnLevel">
                                     <el-select v-model="addWarnItem.warnLevel" placeholder="请选择" style="width:80%"
                                         clearable>
-                                        <el-option value="badly" label="严重"></el-option>
-                                        <el-option value="normal" label="一般"></el-option>
+                                        <el-option v-for="item in warnLevelType" :key="item.value"
+                                            :label="item.description" :value="item.value" />
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="状态：" prop="status">
@@ -144,6 +144,8 @@ import getManageInfo from "../utils/manageRequest"
 import { ElMessage, ElMessageBox } from 'element-plus'
 const tableData = ref([])
 const warnOption = ref([])
+const warnLevelType = ref([])
+const warnSendType = ref([])
 const warnParamStatus = ref([])
 const warnValue = ref("")
 const warnParamValue = ref("")
@@ -197,8 +199,11 @@ function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
 onMounted(async () => {
     //获取添加告警阈值时相关的下拉选择框列表
     const warnParamselectUrl = replaceOrAddUrlPath(url, '/warnParam/select')
-    const warnParamselectData = await getManageInfo(warnParamselectUrl, "GET")
+    const warnParamselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/select", "GET")
+    console.log(warnParamselectData, '204    ')
     warnOption.value = warnParamselectData.response.warnOption
+    warnSendType.value = warnParamselectData.response.warnSendType
+    warnLevelType.value = warnParamselectData.response.warnLevelType
     warnParamStatus.value = warnParamselectData.response.warnParamStatus
     //分页查询告警阈值
     const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
@@ -208,7 +213,7 @@ onMounted(async () => {
         "pageSize": 10,
         "currentPage": 1
     }
-    const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
+    const warnParampageData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
     tableData.value = warnParampageData.response
     tableData.value.forEach(item => {
         warnOption.value.forEach(item2 => {
@@ -232,7 +237,7 @@ const siftclick = async () => {
         "pageSize": 10,
         "currentPage": 1
     }
-    const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
+    const warnParampageData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
     tableData.value = warnParampageData.response
     tableData.value.forEach(item => {
         warnOption.value.forEach(item2 => {
@@ -241,6 +246,8 @@ const siftclick = async () => {
             }
         })
         item.status === "on" ? item.status = "启用" : item.status = "禁用"
+        item.sendType === "email" ? item.sendType = "邮箱" : item.sendType = "手机"
+        item.warnLevel === "normal" ? item.warnLevel = "一般" : item.warnLevel = "严重"
     })
     page.value = warnParampageData.page
 }
@@ -254,7 +261,7 @@ const handleCurrentChange = async (val: number) => {
         "pageSize": 10,
         "currentPage": val
     }
-    const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
+    const warnParampageData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
     tableData.value = warnParampageData.response
     tableData.value.forEach(item => {
         warnOption.value.forEach(item2 => {
@@ -263,6 +270,8 @@ const handleCurrentChange = async (val: number) => {
             }
         })
         item.status === "on" ? item.status = "启用" : item.status = "禁用"
+        item.sendType === "email" ? item.sendType = "邮箱" : item.sendType = "手机"
+        item.warnLevel === "normal" ? item.warnLevel = "一般" : item.warnLevel = "严重"
     })
     page.value = warnParampageData.page
 }
@@ -287,7 +296,7 @@ const addconfirmClick = async (formRef) => {
         if (valid) {
             if (dialogTitle.value === "新增") {
                 const addwarnParamUrl = replaceOrAddUrlPath(url, '/warnParam')
-                await getManageInfo(addwarnParamUrl, "POST", JSON.stringify(addWarnItem.value))
+                await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam", "POST", JSON.stringify(addWarnItem.value))
                 const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
                 const warnParampagequery = {
                     "warnOption": warnValue.value !== "" ? warnValue.value === undefined ? "" : warnValue.value : "",
@@ -295,7 +304,7 @@ const addconfirmClick = async (formRef) => {
                     "pageSize": 10,
                     "currentPage": 1
                 }
-                const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
+                const warnParampageData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
                 tableData.value = warnParampageData.response
                 tableData.value.forEach(item => {
                     warnOption.value.forEach(item2 => {
@@ -304,25 +313,29 @@ const addconfirmClick = async (formRef) => {
                         }
                     })
                     item.status === "on" ? item.status = "启用" : item.status = "禁用"
+                    item.sendType === "email" ? item.sendType = "邮箱" : item.sendType = "手机"
+                    item.warnLevel === "normal" ? item.warnLevel = "一般" : item.warnLevel = "严重"
                 })
                 page.value = warnParampageData.page
 
                 warnParamFlag.value = false
             } else if (dialogTitle.value === "修改") {
-                addWarnItem.value.status === "启用" ? addWarnItem.value.status = "on" : addWarnItem.value.status = "off"
+                console.log(addWarnItem.value.status,'323')
+                addWarnItem.value.status === "启用" ? addWarnItem.value.status = "on" : (addWarnItem.value.status === "on" ? addWarnItem.value.status = "on" : addWarnItem.value.status = "off")
                 addWarnItem.value.warnOption === "系统磁盘" ? addWarnItem.value.warnOption = "2" : addWarnItem.value.warnOption === "系统内存" ? addWarnItem.value.warnOption = "1" : addWarnItem.value.warnOption = "0"
                 addWarnItem.value.threshold = Number(addWarnItem.value.threshold)
-                addWarnItem.value.sendType === "手机" ? addWarnItem.value.sendType = "phone" : addWarnItem.value.sendType = "email" 
+                addWarnItem.value.sendType === "手机" ? addWarnItem.value.sendType = "phone" : addWarnItem.value.sendType = "email"
                 const replacewarnParamUrl = replaceOrAddUrlPath(url, '/warnParam')
-                await getManageInfo(replacewarnParamUrl, "PUT", JSON.stringify(addWarnItem.value))
+                await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam", "PUT", JSON.stringify(addWarnItem.value))
                 const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
+                console.log(addWarnItem.value.status,'330')
                 const warnParampagequery = {
                     "warnOption": warnValue.value !== "" ? warnValue.value === undefined ? "" : warnValue.value : "",
                     "status": warnParamValue.value !== "" ? warnParamValue.value === undefined ? "" : warnParamValue.value : "",
                     "pageSize": 10,
                     "currentPage": 1
                 }
-                const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
+                const warnParampageData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
                 tableData.value = warnParampageData.response
                 tableData.value.forEach(item => {
                     warnOption.value.forEach(item2 => {
@@ -331,6 +344,8 @@ const addconfirmClick = async (formRef) => {
                         }
                     })
                     item.status === "on" ? item.status = "启用" : item.status = "禁用"
+                    item.sendType === "email" ? item.sendType = "邮箱" : item.sendType = "手机"
+                    item.warnLevel === "normal" ? item.warnLevel = "一般" : item.warnLevel = "严重"
                 })
                 page.value = warnParampageData.page
                 warnParamFlag.value = false
@@ -349,7 +364,7 @@ const handleDelete = (row) => {
         const delquery = {
             "key": row.key
         }
-        getManageInfo(delwarnParamUrl, "DELETE", JSON.stringify(delquery))
+        getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam", "DELETE", JSON.stringify(delquery))
         const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
         const warnParampagequery = {
             "warnOption": warnValue.value !== "" ? warnValue.value === undefined ? "" : warnValue.value : "",
@@ -357,7 +372,7 @@ const handleDelete = (row) => {
             "pageSize": 10,
             "currentPage": 1
         }
-        const warnParampageData = getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
+        const warnParampageData = getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
         tableData.value = warnParampageData.response
         tableData.value.forEach(item => {
             warnOption.value.forEach(item2 => {
@@ -366,6 +381,8 @@ const handleDelete = (row) => {
                 }
             })
             item.status === "on" ? item.status = "启用" : item.status = "禁用"
+            item.sendType === "email" ? item.sendType = "邮箱" : item.sendType = "手机"
+            item.warnLevel === "normal" ? item.warnLevel = "一般" : item.warnLevel = "严重"
         })
         page.value = warnParampageData.page
         ElMessage({
@@ -376,7 +393,6 @@ const handleDelete = (row) => {
 }
 //修改
 const handleEdit = (row) => {
-    console.log(row)
     warnParamFlag.value = true
     row.threshold = Number(row.threshold)
     addWarnItem.value = JSON.parse(JSON.stringify(row)) // 利用 JSON 转换，深拷贝一下，防止数据污染
