@@ -267,7 +267,7 @@ const siftclick = async () => {
         })
         warnSendType.value.forEach(item4 => {
             if (item.sendType === item4.value) {
-                item.warnOption = item4.description
+                item.sendType = item4.description
             }
         })
         warnLevelType.value.forEach(item5 => {
@@ -303,7 +303,7 @@ const handleCurrentChange = async (val: number) => {
         })
         warnSendType.value.forEach(item4 => {
             if (item.sendType === item4.value) {
-                item.warnOption = item4.description
+                item.sendType = item4.description
             }
         })
         warnLevelType.value.forEach(item5 => {
@@ -359,7 +359,7 @@ const addconfirmClick = async (formRef) => {
                     })
                     warnSendType.value.forEach(item4 => {
                         if (item.sendType === item4.value) {
-                            item.warnOption = item4.description
+                            item.sendType = item4.description
                         }
                     })
                     warnLevelType.value.forEach(item5 => {
@@ -416,7 +416,7 @@ const addconfirmClick = async (formRef) => {
                     })
                     warnSendType.value.forEach(item4 => {
                         if (item.sendType === item4.value) {
-                            item.warnOption = item4.description
+                            item.sendType = item4.description
                         }
                     })
                     warnLevelType.value.forEach(item5 => {
@@ -466,7 +466,7 @@ const handleDelete = (row) => {
             })
             warnSendType.value.forEach(item4 => {
                 if (item.sendType === item4.value) {
-                    item.warnOption = item4.description
+                    item.sendType = item4.description
                 }
             })
             warnLevelType.value.forEach(item5 => {
