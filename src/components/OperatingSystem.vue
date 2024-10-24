@@ -117,7 +117,7 @@ onMounted(async () => {
     const diskUsage = echarts.init(window.document.getElementById("diskUsage"));
     let diskUsageoption = {
         tooltip: {
-            formatter: `利用率  : ${(Number(systemRunData.response.diskUsage.used) / (Number(systemRunData.response.diskUsage.total) / 100)).toFixed(2)}%`
+            formatter: `占用率  : ${(Number(systemRunData.response.diskUsage.used) / (Number(systemRunData.response.diskUsage.total) / 100)).toFixed(2)}%`
         },
         series: [
             {
@@ -251,7 +251,7 @@ const nodeChange = async () => {
     const diskUsage = echarts.init(window.document.getElementById("diskUsage"));
     let diskUsageoption = {
         tooltip: {
-            formatter: `利用率  : ${(Number(systemRunData.response.diskUsage.used) / (Number(systemRunData.response.diskUsage.total) / 100)).toFixed(2)}%`
+            formatter: `占用率  : ${(Number(systemRunData.response.diskUsage.used) / (Number(systemRunData.response.diskUsage.total) / 100)).toFixed(2)}%`
         },
         series: [
             {
@@ -369,8 +369,9 @@ const nodeChange = async () => {
 }
 //时间
 const timeChange = async () => {
+    console.log(systemnodeValue.value,'372')
     const systemRunquery = {
-        "nodeIp": systemnodeValue.value === "" ? systemoption.value[0].value : systemnodeva.value,
+        "nodeIp": systemnodeValue.value === "" ? systemoption.value[0].value : systemnodeValue.value,
         "period": timeValue.value
     }
     const systemRunUrl = replaceOrAddUrlPath(url, '/system/detail')
@@ -380,7 +381,7 @@ const timeChange = async () => {
     const diskUsage = echarts.init(window.document.getElementById("diskUsage"));
     let diskUsageoption = {
         tooltip: {
-            formatter: `利用率  : ${(Number(systemRunData.response.diskUsage.used) / (Number(systemRunData.response.diskUsage.total) / 100)).toFixed(2)}%`
+            formatter: `占用率  : ${(Number(systemRunData.response.diskUsage.used) / (Number(systemRunData.response.diskUsage.total) / 100)).toFixed(2)}%`
         },
         series: [
             {
