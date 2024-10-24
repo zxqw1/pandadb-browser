@@ -104,7 +104,7 @@ const timeConversion = (timestamp) => {
 onMounted(async () => {
     //获取告警级别枚举
     const alarmlevelqueryUrl = replaceOrAddUrlPath(url, '/warnParam/select')
-    const alarmlevelData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/select", "GET")
+    const alarmlevelData = await getManageInfo(alarmlevelqueryUrl, "GET")
     alarmleveloption.value = alarmlevelData.response.warnLevelType
     //分页查询告警记录
     const warnLogqueryUrl = replaceOrAddUrlPath(url, '/warnLog')
@@ -116,7 +116,7 @@ onMounted(async () => {
         "pageSize": 10,
         "currentPage": 1
     }
-    const warnLogData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnLog", "POST",JSON.stringify(warnLogquery))
+    const warnLogData = await getManageInfo(warnLogqueryUrl, "POST",JSON.stringify(warnLogquery))
     tableData.value = warnLogData.response
     tableData.value.forEach(item=>{
         item.time = timeConversion(Number(item.time))
@@ -149,7 +149,7 @@ const siftclick = async ()=>{
         "pageSize": 10,
         "currentPage": 1
     }
-    const warnLogData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnLog", "POST",JSON.stringify(warnLogquery))
+    const warnLogData = await getManageInfo(warnLogqueryUrl, "POST",JSON.stringify(warnLogquery))
     tableData.value = warnLogData.response
     tableData.value.forEach(item=>{
         item.time = timeConversion(Number(item.time))
@@ -182,7 +182,7 @@ const handleCurrentChange = async(val: number)=>{
         "pageSize": 10,
         "currentPage": val 
     }
-    const warnLogData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnLog", "POST",JSON.stringify(warnLogquery))
+    const warnLogData = await getManageInfo(warnLogqueryUrl, "POST",JSON.stringify(warnLogquery))
     tableData.value = warnLogData.response
     tableData.value.forEach(item=>{
         item.time = timeConversion(Number(item.time))

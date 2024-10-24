@@ -197,9 +197,16 @@ function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
     }
 }
 // 表格数据
-const thresholdList = async()=>{
- //分页查询告警阈值
- const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
+const thresholdList = async () => {
+    //获取添加告警阈值时相关的下拉选择框列表
+    const warnParamselectUrl = replaceOrAddUrlPath(url, '/warnParam/select')
+    const warnParamselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/select", "GET")
+    warnOption.value = warnParamselectData.response.warnOption
+    warnSendType.value = warnParamselectData.response.warnSendType
+    warnLevelType.value = warnParamselectData.response.warnLevelType
+    warnParamStatus.value = warnParamselectData.response.warnParamStatus
+    //分页查询告警阈值
+    const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
     const warnParampagequery = {
         "warnOption": "",
         "status": "",
@@ -214,20 +221,25 @@ const thresholdList = async()=>{
                 item.warnOption = item2.description
             }
         })
-        item.status === "on" ? item.status = "启用" : item.status = "禁用"
-        item.sendType === "email" ? item.sendType = "邮箱" : item.sendType = "手机"
-        item.warnLevel === "normal" ? item.warnLevel = "一般" : item.warnLevel = "严重"
+        warnParamStatus.value.forEach(item3 => {
+            if (item.status === item3.value) {
+                item.status = item3.description
+            }
+        })
+        warnSendType.value.forEach(item4 => {
+            if (item.sendType === item4.value) {
+                item.sendType = item4.description
+            }
+        })
+        warnLevelType.value.forEach(item5 => {
+            if (item.warnLevel === item5.value) {
+                item.warnLevel = item5.description
+            }
+        })
     })
     page.value = warnParampageData.page
 }
 onMounted(async () => {
-    //获取添加告警阈值时相关的下拉选择框列表
-    const warnParamselectUrl = replaceOrAddUrlPath(url, '/warnParam/select')
-    const warnParamselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/select", "GET")
-    warnOption.value = warnParamselectData.response.warnOption
-    warnSendType.value = warnParamselectData.response.warnSendType
-    warnLevelType.value = warnParamselectData.response.warnLevelType
-    warnParamStatus.value = warnParamselectData.response.warnParamStatus
     await thresholdList()
 })
 //筛选
@@ -248,9 +260,21 @@ const siftclick = async () => {
                 item.warnOption = item2.description
             }
         })
-        item.status === "on" ? item.status = "启用" : item.status = "禁用"
-        item.sendType === "email" ? item.sendType = "邮箱" : item.sendType = "手机"
-        item.warnLevel === "normal" ? item.warnLevel = "一般" : item.warnLevel = "严重"
+        warnParamStatus.value.forEach(item3 => {
+            if (item.status === item3.value) {
+                item.status = item3.description
+            }
+        })
+        warnSendType.value.forEach(item4 => {
+            if (item.sendType === item4.value) {
+                item.warnOption = item4.description
+            }
+        })
+        warnLevelType.value.forEach(item5 => {
+            if (item.warnLevel === item5.value) {
+                item.warnLevel = item5.description
+            }
+        })
     })
     page.value = warnParampageData.page
 }
@@ -272,9 +296,21 @@ const handleCurrentChange = async (val: number) => {
                 item.warnOption = item2.description
             }
         })
-        item.status === "on" ? item.status = "启用" : item.status = "禁用"
-        item.sendType === "email" ? item.sendType = "邮箱" : item.sendType = "手机"
-        item.warnLevel === "normal" ? item.warnLevel = "一般" : item.warnLevel = "严重"
+        warnParamStatus.value.forEach(item3 => {
+            if (item.status === item3.value) {
+                item.status = item3.description
+            }
+        })
+        warnSendType.value.forEach(item4 => {
+            if (item.sendType === item4.value) {
+                item.warnOption = item4.description
+            }
+        })
+        warnLevelType.value.forEach(item5 => {
+            if (item.warnLevel === item5.value) {
+                item.warnLevel = item5.description
+            }
+        })
     })
     page.value = warnParampageData.page
 }
@@ -291,6 +327,7 @@ const addClick = () => {
         "content": "",
         "remark": ""
     }
+  
     warnParamFlag.value = true
     dialogTitle.value = "新增"
 }
@@ -315,18 +352,46 @@ const addconfirmClick = async (formRef) => {
                             item.warnOption = item2.description
                         }
                     })
-                    item.status === "on" ? item.status = "启用" : item.status = "禁用"
-                    item.sendType === "email" ? item.sendType = "邮箱" : item.sendType = "手机"
-                    item.warnLevel === "normal" ? item.warnLevel = "一般" : item.warnLevel = "严重"
+                    warnParamStatus.value.forEach(item3 => {
+                        if (item.status === item3.value) {
+                            item.status = item3.description
+                        }
+                    })
+                    warnSendType.value.forEach(item4 => {
+                        if (item.sendType === item4.value) {
+                            item.warnOption = item4.description
+                        }
+                    })
+                    warnLevelType.value.forEach(item5 => {
+                        if (item.warnLevel === item5.value) {
+                            item.warnLevel = item5.description
+                        }
+                    })
                 })
                 page.value = warnParampageData.page
                 warnParamFlag.value = false
-               await thresholdList()
+                await thresholdList()
             } else if (dialogTitle.value === "修改") {
-                addWarnItem.value.status === "启用" ? addWarnItem.value.status = "on" : (addWarnItem.value.status === "on" ? addWarnItem.value.status = "on" : addWarnItem.value.status = "off")
-                addWarnItem.value.warnOption === "系统磁盘" ? addWarnItem.value.warnOption = "2" : addWarnItem.value.warnOption === "系统内存" ? addWarnItem.value.warnOption = "1" : addWarnItem.value.warnOption = "0"
-                addWarnItem.value.threshold = Number(addWarnItem.value.threshold)
-                addWarnItem.value.sendType === "手机" ? addWarnItem.value.sendType = "phone" : addWarnItem.value.sendType = "email"
+                warnOption.value.forEach(item2 => {
+                        if (addWarnItem.value.warnOption === item2.description) {
+                            addWarnItem.value.warnOption = item2.value
+                        }
+                    })
+                    warnParamStatus.value.forEach(item3 => {
+                        if (addWarnItem.value.status === item3.description) {
+                            addWarnItem.value.status = item3.value
+                        }
+                    })
+                    warnSendType.value.forEach(item4 => {
+                        if (addWarnItem.value.sendType === item4.description) {
+                            addWarnItem.value.sendType = item4.value
+                        }
+                    })
+                    warnLevelType.value.forEach(item5 => {
+                        if (addWarnItem.value.warnLevel  === item5.description) {
+                            addWarnItem.value.warnLevel = item5.value
+                        }
+                    })
                 const replacewarnParamUrl = replaceOrAddUrlPath(url, '/warnParam')
                 await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam", "PUT", JSON.stringify(addWarnItem.value))
                 const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
@@ -344,9 +409,21 @@ const addconfirmClick = async (formRef) => {
                             item.warnOption = item2.description
                         }
                     })
-                    item.status === "on" ? item.status = "启用" : item.status = "禁用"
-                    item.sendType === "email" ? item.sendType = "邮箱" : item.sendType = "手机"
-                    item.warnLevel === "normal" ? item.warnLevel = "一般" : item.warnLevel = "严重"
+                    warnParamStatus.value.forEach(item3 => {
+                        if (item.status === item3.value) {
+                            item.status = item3.description
+                        }
+                    })
+                    warnSendType.value.forEach(item4 => {
+                        if (item.sendType === item4.value) {
+                            item.warnOption = item4.description
+                        }
+                    })
+                    warnLevelType.value.forEach(item5 => {
+                        if (item.warnLevel === item5.value) {
+                            item.warnLevel = item5.description
+                        }
+                    })
                 })
                 page.value = warnParampageData.page
                 warnParamFlag.value = false
@@ -382,9 +459,21 @@ const handleDelete = (row) => {
                     item.warnOption = item2.description
                 }
             })
-            item.status === "on" ? item.status = "启用" : item.status = "禁用"
-            item.sendType === "email" ? item.sendType = "邮箱" : item.sendType = "手机"
-            item.warnLevel === "normal" ? item.warnLevel = "一般" : item.warnLevel = "严重"
+            warnParamStatus.value.forEach(item3 => {
+                if (item.status === item3.value) {
+                    item.status = item3.description
+                }
+            })
+            warnSendType.value.forEach(item4 => {
+                if (item.sendType === item4.value) {
+                    item.warnOption = item4.description
+                }
+            })
+            warnLevelType.value.forEach(item5 => {
+                if (item.warnLevel === item5.value) {
+                    item.warnLevel = item5.description
+                }
+            })
         })
         page.value = warnParampageData.page
         ElMessage({
