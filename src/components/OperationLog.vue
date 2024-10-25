@@ -58,7 +58,7 @@
         </el-table>
       </el-col>
       <el-col style="margin-top: 20px; display: flex; flex-direction: row-reverse;">
-        <el-pagination background layout="prev, pager, next" :total="page.totalRow" @current-change="handleCurrentChange" />
+        <el-pagination background layout="prev, pager, next" :total="page.totalRow" @current-change="handleCurrentChange"  :current-page="currentPage"  />
       </el-col>
     </el-row>
   </div>
@@ -73,6 +73,7 @@ const value1 = ref('')
 const value = ref('')
 const tableData = ref([])
 const page = ref({})
+const currentPage = ref()
 let url = window.localStorage.getItem("address")//地址
 function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
     // 检查IP地址中是否包含'/'（除了最后一个字符可能是':'的情况）  
@@ -121,6 +122,7 @@ onMounted(async () => {
     item.operationTime = timeConversion(Number(item.operationTime))
   })
   page.value = data.page
+  currentPage.value = 1
 })
 // 筛选
 const siftclick = async ()=>{
@@ -139,6 +141,7 @@ const siftclick = async ()=>{
     item.operationTime = timeConversion(Number(item.operationTime))
   })
   page.value = data.page
+  currentPage.value = 1
 }
 //分页
 const handleCurrentChange = async (val: number)=>{
@@ -157,6 +160,7 @@ const handleCurrentChange = async (val: number)=>{
     item.operationTime = timeConversion(Number(item.operationTime))
   })
   page.value = data.page
+  currentPage.value = val
 }
 </script>
 

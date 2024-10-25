@@ -53,7 +53,7 @@
                         </el-table>
                     </el-col>
                     <el-col style="margin-top: 20px; display: flex; flex-direction: row-reverse;">
-                        <el-pagination background layout="prev, pager, next" :total="page.totalRow" @current-change="handleCurrentChange"/>
+                        <el-pagination background layout="prev, pager, next" :total="page.totalRow" @current-change="handleCurrentChange" :current-page="currentPage"/>
                     </el-col>
                 </el-row>
             </el-col>
@@ -69,6 +69,7 @@ const timeValue = ref('')
 const alarmleveValue = ref('')
 const tableData = ref([])
 const alarmleveloption = ref({})
+const currentPage = ref()
 const page = ref({})
 let url = window.localStorage.getItem("address")//地址
 function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
@@ -137,6 +138,7 @@ onMounted(async () => {
         }
     })
     page.value = warnLogData.page
+    currentPage.value = 1
 })
 //筛选
 const siftclick = async ()=>{
@@ -170,6 +172,7 @@ const siftclick = async ()=>{
         }
     })
     page.value = warnLogData.page
+    currentPage.value = 1
 }
 // 分页
 const handleCurrentChange = async(val: number)=>{
@@ -202,6 +205,8 @@ const handleCurrentChange = async(val: number)=>{
             item.sendType = "邮箱"
         }
     })
+    page.value = warnLogData.page
+    currentPage.value = val
 }
 </script>
 

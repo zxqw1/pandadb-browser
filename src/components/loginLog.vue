@@ -44,7 +44,7 @@
       </el-col>
       <el-col style="margin-top: 20px; display: flex; flex-direction: row-reverse;">
         <el-pagination background layout="prev, pager, next" :total="page.totalRow"
-          @current-change="handleCurrentChange" />
+          @current-change="handleCurrentChange" :current-page="currentPage"/>
       </el-col>
     </el-row>
   </div>
@@ -56,6 +56,7 @@ import getManageInfo from "../utils/manageRequest"
 const userName = ref('')
 const tableData = ref([])
 const page = ref({})
+const currentPage = ref()
 let url = window.localStorage.getItem("address")//地址
 function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
   // 检查IP地址中是否包含'/'（除了最后一个字符可能是':'的情况）  
@@ -89,7 +90,7 @@ const timeConversion = (timestamp) => {
 onMounted(async () => {
   const loginLogUrl = replaceOrAddUrlPath(url, '/loginLog')
   const loginLogquery = {
-    'userName': window.localStorage.getItem("username") ? window.localStorage.getItem("username") : "",
+    'userName': "",
     "queryId": generateRandomId(),
     'pageSize': 10,
     'currentPage': 1
@@ -100,12 +101,13 @@ onMounted(async () => {
     item.time = timeConversion(Number(item.time))
   })
   page.value = loginLogData.page
+  currentPage.value = 1
 })
 //分页
 const handleCurrentChange = async (val: number) => {
   const loginLogUrl = replaceOrAddUrlPath(url, '/loginLog')
   const loginLogquery = {
-    'userName': userName.value === "" ? window.localStorage.getItem("username") ? window.localStorage.getItem("username") : "" : userName.value,
+    'userName': userName.value,
     "queryId": generateRandomId(),
     'pageSize': 10,
     'currentPage': val
@@ -117,6 +119,7 @@ const handleCurrentChange = async (val: number) => {
     item.time = timeConversion(Number(item.time))
   })
   page.value = loginLogData.page
+  currentPage.value = val
 }
 //筛选
 const siftClick = async () => {
@@ -134,6 +137,7 @@ const siftClick = async () => {
     item.time = timeConversion(Number(item.time))
   })
   page.value = loginLogData.page
+  currentPage.value = 1
 }
 </script>
 

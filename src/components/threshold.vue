@@ -132,7 +132,7 @@
             </el-col>
             <el-col style="margin-top: 20px; display: flex; flex-direction: row-reverse;">
                 <el-pagination background layout="prev, pager, next" :total="page.totalRow"
-                    @current-change="handleCurrentChange" />
+                    @current-change="handleCurrentChange" :current-page="currentPage"/>
             </el-col>
         </el-row>
     </div>
@@ -150,6 +150,7 @@ const warnParamStatus = ref([])
 const warnValue = ref("")
 const warnParamValue = ref("")
 const page = ref({})
+const currentPage = ref()
 const warnParamFlag = ref(false)
 const addWarnItem = ref({
     "warnOption": "",
@@ -200,7 +201,7 @@ function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
 const thresholdList = async () => {
     //获取添加告警阈值时相关的下拉选择框列表
     const warnParamselectUrl = replaceOrAddUrlPath(url, '/warnParam/select')
-    const warnParamselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/select", "GET")
+    const warnParamselectData = await getManageInfo(warnParamselectUrl, "GET")
     warnOption.value = warnParamselectData.response.warnOption
     warnSendType.value = warnParamselectData.response.warnSendType
     warnLevelType.value = warnParamselectData.response.warnLevelType
@@ -213,7 +214,7 @@ const thresholdList = async () => {
         "pageSize": 10,
         "currentPage": 1
     }
-    const warnParampageData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
+    const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
     tableData.value = warnParampageData.response
     tableData.value.forEach(item => {
         warnOption.value.forEach(item2 => {
@@ -238,6 +239,7 @@ const thresholdList = async () => {
         })
     })
     page.value = warnParampageData.page
+    currentPage.value = 1
 }
 onMounted(async () => {
     await thresholdList()
@@ -252,7 +254,7 @@ const siftclick = async () => {
         "pageSize": 10,
         "currentPage": 1
     }
-    const warnParampageData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
+    const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
     tableData.value = warnParampageData.response
     tableData.value.forEach(item => {
         warnOption.value.forEach(item2 => {
@@ -277,6 +279,7 @@ const siftclick = async () => {
         })
     })
     page.value = warnParampageData.page
+    currentPage.value = 1
 }
 //分页
 const handleCurrentChange = async (val: number) => {
@@ -288,7 +291,7 @@ const handleCurrentChange = async (val: number) => {
         "pageSize": 10,
         "currentPage": val
     }
-    const warnParampageData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
+    const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
     tableData.value = warnParampageData.response
     tableData.value.forEach(item => {
         warnOption.value.forEach(item2 => {
@@ -313,6 +316,7 @@ const handleCurrentChange = async (val: number) => {
         })
     })
     page.value = warnParampageData.page
+    currentPage.value = val
 }
 //新增
 const addClick = () => {
@@ -336,7 +340,7 @@ const addconfirmClick = async (formRef) => {
         if (valid) {
             if (dialogTitle.value === "新增") {
                 const addwarnParamUrl = replaceOrAddUrlPath(url, '/warnParam')
-                await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam", "POST", JSON.stringify(addWarnItem.value))
+                await getManageInfo(addwarnParamUrl, "POST", JSON.stringify(addWarnItem.value))
                 const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
                 const warnParampagequery = {
                     "warnOption": warnValue.value !== "" ? warnValue.value === undefined ? "" : warnValue.value : "",
@@ -344,7 +348,7 @@ const addconfirmClick = async (formRef) => {
                     "pageSize": 10,
                     "currentPage": 1
                 }
-                const warnParampageData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
+                const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
                 tableData.value = warnParampageData.response
                 tableData.value.forEach(item => {
                     warnOption.value.forEach(item2 => {
@@ -393,7 +397,7 @@ const addconfirmClick = async (formRef) => {
                         }
                     })
                 const replacewarnParamUrl = replaceOrAddUrlPath(url, '/warnParam')
-                await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam", "PUT", JSON.stringify(addWarnItem.value))
+                await getManageInfo(replacewarnParamUrl, "PUT", JSON.stringify(addWarnItem.value))
                 const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
                 const warnParampagequery = {
                     "warnOption": warnValue.value !== "" ? warnValue.value === undefined ? "" : warnValue.value : "",
@@ -401,7 +405,7 @@ const addconfirmClick = async (formRef) => {
                     "pageSize": 10,
                     "currentPage": 1
                 }
-                const warnParampageData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
+                const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
                 tableData.value = warnParampageData.response
                 tableData.value.forEach(item => {
                     warnOption.value.forEach(item2 => {
@@ -443,7 +447,7 @@ const handleDelete = (row) => {
         const delquery = {
             "key": row.key
         }
-        getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam", "DELETE", JSON.stringify(delquery))
+        getManageInfo(delwarnParamUrl, "DELETE", JSON.stringify(delquery))
         const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
         const warnParampagequery = {
             "warnOption": warnValue.value !== "" ? warnValue.value === undefined ? "" : warnValue.value : "",
@@ -451,7 +455,7 @@ const handleDelete = (row) => {
             "pageSize": 10,
             "currentPage": 1
         }
-        const warnParampageData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
+        const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
         tableData.value = warnParampageData.response
         tableData.value.forEach(item => {
             warnOption.value.forEach(item2 => {
@@ -476,6 +480,7 @@ const handleDelete = (row) => {
             })
         })
         page.value = warnParampageData.page
+        currentPage.value = 1
         ElMessage({
             type: 'success',
             message: "删除成功",
@@ -487,7 +492,7 @@ const handleDelete = (row) => {
 const handleEdit = (row) => {
     warnParamFlag.value = true
     row.threshold = Number(row.threshold)
-    addWarnItem.value = JSON.parse(JSON.stringify(row)) // 利用 JSON 转换，深拷贝一下，防止数据污染
+    addWarnItem.value = JSON.parse(JSON.stringify(row)) //深拷贝，防止数据污染
     dialogTitle.value = "修改"
 }
 

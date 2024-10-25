@@ -47,7 +47,8 @@
         </span>
       </template>
       <div v-if="tabsName" class="content">
-        <File />
+        <!-- <File /> -->
+         <Files/>
       </div>
     </el-tab-pane>
     <el-tab-pane name="教程" :disabled="loginelse">
@@ -159,6 +160,7 @@ import about from "./menuComponents/about.vue";
 import setter from "./menuComponents/setter.vue";
 import favorate from "./menuComponents/Favorate.vue";
 import File from "./menuComponents/file.vue";
+import Files from "./menuComponents/files.vue";
 import Manage from "./menuComponents/manage.vue";
 const tabPosition = ref<TabsInstance["tabPosition"]>("left");
 import getJsonDataInfo from "../utils/request.js"

@@ -247,7 +247,7 @@ const nodeChange = async () => {
     }
     const systemRunUrl = replaceOrAddUrlPath(url, '/system/detail')
     const systemRunData = await getManageInfo(systemRunUrl, "POST", JSON.stringify(systemRunquery))
-    // systemState.value = systemRunData.response.nodeStatus
+
     runTime.value = systemRunData.response.runTime
     const diskUsage = echarts.init(window.document.getElementById("diskUsage"));
     let diskUsageoption = {

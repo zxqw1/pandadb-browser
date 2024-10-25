@@ -3,7 +3,7 @@ async function getManageInfo(url,queryMethod,querytext){
         return await fetch(url,{ 
             method:queryMethod,
             headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "text/plain",
                 "userName" : window.localStorage.getItem("username") ? window.localStorage.getItem("username") : "admin"
             },
             body:querytext

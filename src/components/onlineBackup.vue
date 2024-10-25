@@ -135,7 +135,7 @@
                     </el-col>
                     <el-col style="margin-top: 20px; display: flex; flex-direction: row-reverse;">
                         <el-pagination background layout="prev, pager, next" :total="page.totalRow"
-                            @current-change="handleCurrentChange" />
+                            @current-change="handleCurrentChange" :current-page="currentPage"/>
                     </el-col>
                 </el-row>
             </el-col>
@@ -154,6 +154,7 @@ const rebackups = ref(false)
 const nodeIpoption = ref([])
 const renodeIpoption = ref([])
 const page = ref({})
+const currentPage = ref()
 const form = ref({
     taskName: '',
     remark: '',
@@ -244,6 +245,7 @@ const BackupList = async () => {
     })
     tableData.value = BackupqueryData.response
     page.value = BackupqueryData.page
+    currentPage.value = 1
 }
 onMounted(async () => {
     await BackupList()
@@ -276,6 +278,7 @@ const handleCurrentChange = async (val: number) => {
         })
     })
     page.value = BackupqueryData.page
+    currentPage.value = val
 }
 //新增数据备份
 const addBackup = async (backuptype: number) => {

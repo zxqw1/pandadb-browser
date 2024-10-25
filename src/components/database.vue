@@ -9,7 +9,8 @@
                                 <span class="demonstration">节点：</span>
                                 <el-select v-model="databaseNodeValue" placeholder="请选择" style="width: 240px "
                                     @change="nodeChange">
-                                    <el-option v-for="(item, index) in databaseoption" :value="item.value">{{ item.description}}</el-option>
+                                    <el-option v-for="item in databaseoption" :value="item.value">{{
+                                        item.description}}</el-option>
                                 </el-select>
                             </div>
                         </div>
@@ -37,7 +38,8 @@
             <el-col style="margin-top: 20px; position: relative;">
                 <el-select v-model="timeValue" placeholder="最近一小时" size="large" style="width: 240px"
                     @change="timeChange">
-                    <el-option v-for="item in options" :key="item.value" :label="item.description" :value="item.value" />
+                    <el-option v-for="item in options" :key="item.value" :label="item.description"
+                        :value="item.value" />
                 </el-select>
                 <el-row style="margin-top: 10px;">
                     <el-col :span="12">
@@ -46,7 +48,7 @@
                                 style="width: 13px;height: 13px;display: inline-block; background-color: rgb(108, 125, 46); border-radius: 50%;margin-right: 10px;"></span>
                             <span style="font-size: 15px; font-weight: bold;">读取速率变化</span>
                         </div>
-                        <div id="category" style="height: 400px;"></div>
+                        <div id="readSpeed" style="height: 400px;"></div>
                     </el-col>
                     <el-col :span="12">
                         <div>
@@ -54,7 +56,7 @@
                                 style="width: 13px;height: 13px;display: inline-block; background-color: rgb(108, 125, 46); border-radius: 50%;margin-right: 10px;"></span>
                             <span style="font-size: 15px; font-weight: bold;">写入速率变化</span>
                         </div>
-                        <div id="category2" style="height: 400px;"></div>
+                        <div id="writeSpeed" style="height: 400px;"></div>
                     </el-col>
                 </el-row>
             </el-col>
@@ -86,225 +88,348 @@ function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
         return `${ipWithMaybePath}/${newPath}`;
     }
 }
-const generateRandomId = () => {
-    const timestamp = new Date().getTime(); // 获取当前时间戳
-    const randomNum = Math.floor(Math.random() * 1000); // 生成一个0-999之间的随机数
-    return `id_${timestamp}_${randomNum}`; // 返回拼接后的ID字符串
-};
 onMounted(async () => { // 初始化图表
     //数据库节点状态枚举
-    const databaseUrl = replaceOrAddUrlPath(url,'/databaseStatusTypeList')
-    const databasequery = {
-        "queryId":generateRandomId()
-    }
-    const databaseNodeData = await getManageInfo(databaseUrl, "GET",JSON.stringify(databasequery))
+    const databaseUrl = replaceOrAddUrlPath(url, '/database/nodeList')
+    const databaseNodeData = await getManageInfo(databaseUrl, "GET")
     databaseoption.value = databaseNodeData.response
+    databaseNodeValue.value = databaseoption.value[0].description
     //图表时间段枚举
-    const databaseperiodUrl = replaceOrAddUrlPath(url,'/database/period')
-    options.value = await getManageInfo(databaseperiodUrl,'GET')
+    const databaseperiodUrl = replaceOrAddUrlPath(url, '/database/period')
+    const databaseperiodData = await getManageInfo(databaseperiodUrl, 'GET')
+    options.value = databaseperiodData.response
     // 数据库节点运行情况
     const databaseRunquery = {
-        "nodeIp": url.slice(url.indexOf('//')+2, url.lastIndexOf(':')),
-        "period": options.value[0]
+        "nodeIp": databaseoption.value[0].value,
+        "period": options.value[0].value
     }
-    const databaseRunData = await getManageInfo(databaseperiodUrl, "GET",JSON.stringify(databaseRunquery))
-    console.log(databaseRunData, '106')
+    const databaseRunUrl = replaceOrAddUrlPath(url, '/database/detail')
+    const databaseRunData = await getManageInfo(databaseRunUrl, "POST", JSON.stringify(databaseRunquery))
     nodeStatus.value = databaseRunData.response.nodeStatus
     runTime.value = databaseRunData.response.runTime
-    var myChart = echarts.init(window.document.getElementById("category"));
-    var myChart2 = echarts.init(window.document.getElementById("category2"));
-    let readSpeedData = {
-        grid: {
-            left: '0%', // 图表距离容器左侧的距离
-            right: '4%', // 图表距离容器右侧的距离
-            top: '10px', // 图表距离容器上部的距离
-            bottom: '40px', // 图表距离容器底部的距离
-            containLabel: true // 确保标签在grid内显示
+    const readSpeedData = echarts.init(window.document.getElementById("readSpeed"));
+    let dataX = []
+    let dataY = []
+    let tooltip = []
+    databaseRunData.response.memoryUsageData.forEach((item: any) => {
+        let date = new Date(Number(item.x)).toLocaleString().split(" ")[1] // 这块呢，我把时间 年-月-日 空格 时：分：秒 我用空格截取的，取的是 时分秒 用来显示 X轴的时分秒
+        let tooltipS = new Date(Number(item.x)).toLocaleString() // 这块呢，我没截取，就是 年月日时分秒 用来显示完整的时间
+        tooltip.push(tooltipS)
+        dataX.push(date)
+        dataY.push(item.y)
+    })
+
+    const readSpeedoption = {
+        tooltip: { // 鼠标移入的 title 相关的对象
+            trigger: 'axis',
+            formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
+                let tooltipContent = ` 利用率: ${Number(params[0].value).toFixed(2)} %<br/>${tooltip[params[0].dataIndex]} ` // 拼接数据
+                return tooltipContent // return 数据回去显示
+            }
         },
         xAxis: {
             type: 'category',
-            data: databaseRunData.response.readSpeedData.x
+            data: dataX,
+            axisLabel: {
+                fontSize: 8,
+                interval: 0,
+                rotate: 30// 旋转角度
+            },
         },
         yAxis: {
             type: 'value',
-            data: databaseRunData.response.readSpeedData.y
         },
         series: [
             {
-                data: [0.5, 1],
+                data: dataY,
                 type: 'line',
+                showSymbol: false, //是否显示 线上面的 节点
+                smooth: true //线是否圆润，就是圆角线
+            }
+        ]
+    }
+    readSpeedData.setOption(readSpeedoption);
+    const writeSpeedData = echarts.init(window.document.getElementById("writeSpeed"));
+    let writeSpeeddataX = []
+    let writeSpeeddataY = []
+    let cputooltip = []
+    databaseRunData.response.cupUsageData.forEach((item: any) => {
+        let date = new Date(Number(item.x)).toLocaleString().split(" ")[1]
+        let cputooltipS = new Date(Number(item.x)).toLocaleString()
+        cputooltip.push(cputooltipS)
+        writeSpeeddataX.push(date)
+        writeSpeeddataY.push(item.y)
+    })
+    const writeSpeedoption = {
+        tooltip: { // 鼠标移入的 title 相关的对象
+            trigger: 'axis',
+            formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
+                let tooltipContent = ` 利用率: ${Number(params[0].value).toFixed(2)} %<br/>${tooltip[params[0].dataIndex]}` // 拼接数据
+                return tooltipContent // return 数据回去显示
+            }
+        },
+        xAxis: {
+            type: 'category',
+            data: writeSpeeddataX,
+            axisLabel: {
+                fontSize: 8,
+                interval: 0,
+                rotate: 40// 旋转角度
+            },
+        },
+        yAxis: {
+            type: 'value'
+            // interval: 10
+        },
+        series: [
+            {
+                data: writeSpeeddataY,
+                type: 'line',
+                showSymbol: false, //是否显示 线上面的 节点
                 smooth: true
             }
         ]
     }
-    myChart.setOption(readSpeedData);
-    let writeSpeedData = {
-        grid: {
-            left: '0%', // 图表距离容器左侧的距离
-            right: '4%', // 图表距离容器右侧的距离
-            top: '10px', // 图表距离容器上部的距离
-            bottom: '40px', // 图表距离容器底部的距离
-            containLabel: true // 确保标签在grid内显示
-        },
-        xAxis: {
-            type: 'category',
-            data: databaseRunData.response.writeSpeedData.x
-        },
-        yAxis: {
-            type: 'value',
-            data: databaseRunData.response.writeSpeedData.y
-        },
-        series: [
-            {
-                data: [0.5, 1],
-                type: 'line',
-                smooth: true
-            }
-        ]
-    }
-    myChart2.setOption(writeSpeedData);
+    writeSpeedData.setOption(writeSpeedoption);
+    //获取系统节点状态枚举
+    const databaseStatusTypeListUrl = replaceOrAddUrlPath(url, '/databaseStatusTypeList')
+    const databaseStatusTypeListData = await getManageInfo(databaseStatusTypeListUrl, "GET")
+    databaseStatusTypeListData.response.forEach(item => {
+        if (databaseRunData.response.nodeStatus === item.value) {
+            nodeStatus.value = item.description
+        }
+    })
 })
+
 //节点
-const nodeChange = async() => {
-    const databaseDetailUrl = replaceOrAddUrlPath(url, '/database/detail')
+const nodeChange = async () => {
+    databaseoption.value.forEach(item => {
+        if (databaseNodeValue.value === item.description) {
+            databaseNodeValue.value = item.value
+        }
+    })
     const databaseRunquery = {
-        "nodeIp": url.slice(url.indexOf('//')+2, url.lastIndexOf(':')),
-        "period": options.value[0]
+        "nodeIp": databaseNodeValue.value,
+        "period": timeValue.value === "" ? options.value[0].value : timeValue.value
     }
-    const databaseRunData = await getManageInfo(databaseDetailUrl, "GET",JSON.stringify(databaseRunquery))
-    console.log(databaseRunData, '106')
+    const databaseRunUrl = replaceOrAddUrlPath(url, '/database/detail')
+    const databaseRunData = await getManageInfo(databaseRunUrl, "GET", JSON.stringify(databaseRunquery))
     nodeStatus.value = databaseRunData.response.nodeStatus
     runTime.value = databaseRunData.response.runTime
-    var myChart = echarts.init(window.document.getElementById("category"));
-    var myChart2 = echarts.init(window.document.getElementById("category2"));
-    let readSpeedData = {
-        grid: {
-            left: '0%', // 图表距离容器左侧的距离
-            right: '4%', // 图表距离容器右侧的距离
-            top: '10px', // 图表距离容器上部的距离
-            bottom: '40px', // 图表距离容器底部的距离
-            containLabel: true // 确保标签在grid内显示
+    const readSpeedData = echarts.init(window.document.getElementById("readSpeed"));
+    let dataX = []
+    let dataY = []
+    let tooltip = []
+    databaseRunData.response.memoryUsageData.forEach((item: any) => {
+        let date = new Date(Number(item.x)).toLocaleString().split(" ")[1] // 这块呢，我把时间 年-月-日 空格 时：分：秒 我用空格截取的，取的是 时分秒 用来显示 X轴的时分秒
+        let tooltipS = new Date(Number(item.x)).toLocaleString() // 这块呢，我没截取，就是 年月日时分秒 用来显示完整的时间
+        tooltip.push(tooltipS)
+        dataX.push(date)
+        dataY.push(item.y)
+    })
+
+    const readSpeedoption = {
+        tooltip: { // 鼠标移入的 title 相关的对象
+            trigger: 'axis',
+            formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
+                let tooltipContent = ` 利用率: ${Number(params[0].value).toFixed(2)} %<br/>${tooltip[params[0].dataIndex]} ` // 拼接数据
+                return tooltipContent // return 数据回去显示
+            }
         },
         xAxis: {
             type: 'category',
-            data: databaseRunData.response.readSpeedData.x
+            data: dataX,
+            axisLabel: {
+                fontSize: 8,
+                interval: 0,
+                rotate: 30// 旋转角度
+            },
         },
         yAxis: {
             type: 'value',
-            data: databaseRunData.response.readSpeedData.y
         },
         series: [
             {
-                data: [0.5, 1],
+                data: dataY,
                 type: 'line',
+                showSymbol: false, //是否显示 线上面的 节点
+                smooth: true //线是否圆润，就是圆角线
+            }
+        ]
+    }
+    readSpeedData.setOption(readSpeedoption);
+    const writeSpeedData = echarts.init(window.document.getElementById("writeSpeed"));
+    let writeSpeeddataX = []
+    let writeSpeeddataY = []
+    let cputooltip = []
+    databaseRunData.response.cupUsageData.forEach((item: any) => {
+        let date = new Date(Number(item.x)).toLocaleString().split(" ")[1]
+        let cputooltipS = new Date(Number(item.x)).toLocaleString()
+        cputooltip.push(cputooltipS)
+        writeSpeeddataX.push(date)
+        writeSpeeddataY.push(item.y)
+    })
+    const writeSpeedoption = {
+        tooltip: { // 鼠标移入的 title 相关的对象
+            trigger: 'axis',
+            formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
+                let tooltipContent = ` 利用率: ${Number(params[0].value).toFixed(2)} %<br/>${tooltip[params[0].dataIndex]}` // 拼接数据
+                return tooltipContent // return 数据回去显示
+            }
+        },
+        xAxis: {
+            type: 'category',
+            data: writeSpeeddataX,
+            axisLabel: {
+                fontSize: 8,
+                interval: 0,
+                rotate: 40// 旋转角度
+            },
+        },
+        yAxis: {
+            type: 'value'
+            // interval: 10
+        },
+        series: [
+            {
+                data: writeSpeeddataY,
+                type: 'line',
+                showSymbol: false, //是否显示 线上面的 节点
                 smooth: true
             }
         ]
     }
-    myChart.setOption(readSpeedData);
-    let writeSpeedData = {
-        grid: {
-            left: '0%', // 图表距离容器左侧的距离
-            right: '4%', // 图表距离容器右侧的距离
-            top: '10px', // 图表距离容器上部的距离
-            bottom: '40px', // 图表距离容器底部的距离
-            containLabel: true // 确保标签在grid内显示
-        },
-        xAxis: {
-            type: 'category',
-            data: databaseRunData.response.writeSpeedData.x
-        },
-        yAxis: {
-            type: 'value',
-            data: databaseRunData.response.writeSpeedData.y
-        },
-        series: [
-            {
-                data: [0.5, 1],
-                type: 'line',
-                smooth: true
-            }
-        ]
-    }
-    myChart2.setOption(writeSpeedData);
+    writeSpeedData.setOption(writeSpeedoption);
+    //获取系统节点状态枚举
+    const databaseStatusTypeListUrl = replaceOrAddUrlPath(url, '/databaseStatusTypeList')
+    const databaseStatusTypeListData = await getManageInfo(databaseStatusTypeListUrl, "GET")
+    databaseStatusTypeListData.response.forEach(item => {
+        if (databaseRunData.response.nodeStatus === item.value) {
+            nodeStatus.value = item.description
+        }
+    })
 }
 // 时间
 const timeChange = async () => {
-    const databaseDetailUrl = replaceOrAddUrlPath(url, '/database/detail')
+    databaseoption.value.forEach(item => {
+        if (databaseNodeValue.value === item.description) {
+            databaseNodeValue.value = item.value
+        }
+    })
     const databaseRunquery = {
-        "nodeIp": url.slice(url.indexOf('//')+2, url.lastIndexOf(':')),
+        "nodeIp": databaseNodeValue.value === "" ? "" : databaseNodeValue.value,
         "period": timeValue.value
     }
-    const databaseRunData = await getManageInfo(databaseDetailUrl, "GET",JSON.stringify(databaseRunquery))
-    console.log(databaseRunData, '106')
+    const databaseRunUrl = replaceOrAddUrlPath(url, '/database/detail')
+    const databaseRunData = await getManageInfo(databaseRunUrl, "GET", JSON.stringify(databaseRunquery))
     nodeStatus.value = databaseRunData.response.nodeStatus
     runTime.value = databaseRunData.response.runTime
-    var myChart = echarts.init(window.document.getElementById("category"));
-    var myChart2 = echarts.init(window.document.getElementById("category2"));
-    let readSpeedData = {
-        grid: {
-            left: '0%', // 图表距离容器左侧的距离
-            right: '4%', // 图表距离容器右侧的距离
-            top: '10px', // 图表距离容器上部的距离
-            bottom: '40px', // 图表距离容器底部的距离
-            containLabel: true // 确保标签在grid内显示
+    const readSpeedData = echarts.init(window.document.getElementById("readSpeed"));
+    let dataX = []
+    let dataY = []
+    let tooltip = []
+    databaseRunData.response.memoryUsageData.forEach((item: any) => {
+        let date = new Date(Number(item.x)).toLocaleString().split(" ")[1] // 这块呢，我把时间 年-月-日 空格 时：分：秒 我用空格截取的，取的是 时分秒 用来显示 X轴的时分秒
+        let tooltipS = new Date(Number(item.x)).toLocaleString() // 这块呢，我没截取，就是 年月日时分秒 用来显示完整的时间
+        tooltip.push(tooltipS)
+        dataX.push(date)
+        dataY.push(item.y)
+    })
+
+    const readSpeedoption = {
+        tooltip: { // 鼠标移入的 title 相关的对象
+            trigger: 'axis',
+            formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
+                let tooltipContent = ` 利用率: ${Number(params[0].value).toFixed(2)} %<br/>${tooltip[params[0].dataIndex]} ` // 拼接数据
+                return tooltipContent // return 数据回去显示
+            }
         },
         xAxis: {
             type: 'category',
-            data: databaseRunData.response.readSpeedData.x
+            data: dataX,
+            axisLabel: {
+                fontSize: 8,
+                interval: 0,
+                rotate: 30// 旋转角度
+            },
         },
         yAxis: {
             type: 'value',
-            data: databaseRunData.response.readSpeedData.y
         },
         series: [
             {
-                data: [0.5, 1],
+                data: dataY,
                 type: 'line',
+                showSymbol: false, //是否显示 线上面的 节点
+                smooth: true //线是否圆润，就是圆角线
+            }
+        ]
+    }
+    readSpeedData.setOption(readSpeedoption);
+    const writeSpeedData = echarts.init(window.document.getElementById("writeSpeed"));
+    let writeSpeeddataX = []
+    let writeSpeeddataY = []
+    let cputooltip = []
+    databaseRunData.response.cupUsageData.forEach((item: any) => {
+        let date = new Date(Number(item.x)).toLocaleString().split(" ")[1]
+        let cputooltipS = new Date(Number(item.x)).toLocaleString()
+        cputooltip.push(cputooltipS)
+        writeSpeeddataX.push(date)
+        writeSpeeddataY.push(item.y)
+    })
+    const writeSpeedoption = {
+        tooltip: { // 鼠标移入的 title 相关的对象
+            trigger: 'axis',
+            formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
+                let tooltipContent = ` 利用率: ${Number(params[0].value).toFixed(2)} %<br/>${tooltip[params[0].dataIndex]}` // 拼接数据
+                return tooltipContent // return 数据回去显示
+            }
+        },
+        xAxis: {
+            type: 'category',
+            data: writeSpeeddataX,
+            axisLabel: {
+                fontSize: 8,
+                interval: 0,
+                rotate: 40// 旋转角度
+            },
+        },
+        yAxis: {
+            type: 'value'
+            // interval: 10
+        },
+        series: [
+            {
+                data: writeSpeeddataY,
+                type: 'line',
+                showSymbol: false, //是否显示 线上面的 节点
                 smooth: true
             }
         ]
     }
-    myChart.setOption(readSpeedData);
-    let writeSpeedData = {
-        grid: {
-            left: '0%', // 图表距离容器左侧的距离
-            right: '4%', // 图表距离容器右侧的距离
-            top: '10px', // 图表距离容器上部的距离
-            bottom: '40px', // 图表距离容器底部的距离
-            containLabel: true // 确保标签在grid内显示
-        },
-        xAxis: {
-            type: 'category',
-            data: databaseRunData.response.writeSpeedData.x
-        },
-        yAxis: {
-            type: 'value',
-            data: databaseRunData.response.writeSpeedData.y
-        },
-        series: [
-            {
-                data: [0.5, 1],
-                type: 'line',
-                smooth: true
-            }
-        ]
-    }
-    myChart2.setOption(writeSpeedData);
+    writeSpeedData.setOption(writeSpeedoption);
+    //获取系统节点状态枚举
+    const databaseStatusTypeListUrl = replaceOrAddUrlPath(url, '/databaseStatusTypeList')
+    const databaseStatusTypeListData = await getManageInfo(databaseStatusTypeListUrl, "GET")
+    databaseStatusTypeListData.response.forEach(item => {
+        if (databaseRunData.response.nodeStatus === item.value) {
+            nodeStatus.value = item.description
+        }
+    })
 }
 mitts.on("resize", () => { // 这个是 点击了 数据库运行情况 执行的，也是为啥刷新图表
     nextTick(() => {
-        var myChart = echarts.init(window.document.getElementById("category"));
-        var myChart2 = echarts.init(window.document.getElementById("category2"));
-        myChart.resize();
-        myChart2.resize();
+        var readSpeedData = echarts.init(window.document.getElementById("readSpeed"));
+        var writeSpeedData = echarts.init(window.document.getElementById("writeSpeed"));
+        readSpeedData.resize();
+        writeSpeedData.resize();
     })
 })
 window.addEventListener('resize', function () { // 这个是浏览器改变宽度，监听的，会刷新 图表
-    var myChart = echarts.init(window.document.getElementById("category"));
-    var myChart2 = echarts.init(window.document.getElementById("category2"));
-    myChart.resize();
-    myChart2.resize();
+    var readSpeedData = echarts.init(window.document.getElementById("readSpeed"));
+    var writeSpeedData = echarts.init(window.document.getElementById("writeSpeed"));
+    readSpeedData.resize();
+    writeSpeedData.resize();
 });
 </script>
 
