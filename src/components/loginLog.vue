@@ -32,13 +32,13 @@
           <span style="font-size: 15px; font-weight: bold;">日志</span>
         </div>
         <el-table :data="tableData" max-height="630" border>
-          <el-table-column fixed prop="type" label="类型">
+          <el-table-column fixed prop="type" label="类型" width="120">
             <template #default="scope">
               <el-tag type="primary"    color="rgb(236 255 165)" style="border: none; color: #6c7d2e;">{{scope.row.type === "login" ? "登录" : "登出"}}</el-tag>
             </template>
             </el-table-column>
-            <el-table-column prop="time" label="登录/登出时间" />
-            <el-table-column prop="userName" label="用户名" />
+            <el-table-column prop="time" label="登录/登出时间"  width="200"/>
+            <el-table-column prop="userName" label="用户名" width="160"/>
             <el-table-column prop="addressIp" label="客户端IP" />
         </el-table>
       </el-col>

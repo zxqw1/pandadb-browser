@@ -43,11 +43,11 @@
                     </el-col>
                     <el-col style="margin-top: 10px;">
                         <el-table :data="tableData" style="width: 100%" border max-height="630">
-                            <el-table-column prop="time" label="告警时间" />
-                            <el-table-column prop="level" label="告警级别" />
+                            <el-table-column prop="time" label="告警时间" width="200"/>
+                            <el-table-column prop="level" label="告警级别" width="100"/>
                             <el-table-column prop="content" label="告警内容" />
-                            <el-table-column prop="sendType" label="告警信息发送类型" />
-                            <el-table-column prop="isSend" label="是否已发送" />
+                            <el-table-column prop="sendType" label="告警信息发送类型" width="100" />
+                            <el-table-column prop="isSend" label="是否已发送" width="100"/>
                             <el-table-column prop="sendPath" label="发送地址" />
                             <el-table-column prop="remark" label="备注" />
                         </el-table>

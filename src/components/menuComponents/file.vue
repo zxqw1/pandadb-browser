@@ -93,7 +93,6 @@ const addFiles = () => {
         children: [],
         show: false,
         type: 'files'
-        // fileList: []
     })
     nextTick(() => {
         document.getElementById("myInput").focus();
@@ -122,7 +121,6 @@ const newFolderClick = (scoped) => {
         children: [],
         show: false,
         type: 'files'
-        // fileList: []
     })
     buttonRef.value = false;
     window.localStorage.setItem("fileTreedata", JSON.stringify(fileTreedata.value));
@@ -185,26 +183,6 @@ const findNodeById = (nodes, id) => {
     }
     return null;
 }
-// scopedInfo.value.children.push(uploadFile)
-// console.log(scopedInfo.value, '129')
-// const formData = new FormData()
-// formData.append('file',uploadFile)
-// formData.append('uploadDir',url.value )
-// let fileUrl = window.localStorage.getItem('address').replace("/query","/file")
-// console.log(fileUrl,'135')
-// fetch(fileUrl, {
-//         method: 'POST',
-//         body: formData
-//     })
-//         .then(response => response.text())
-//         .then(data => {
-//             console.log(data)
-//         })
-//         .catch(error => {
-//             console.error('Error:', error);
-//         });
-//         window.localStorage.setItem("fileTreedata", JSON.stringify(fileTreedata.value));
-
 //拿到父节点
 const getParentNodes = (node) => {
     const parentNodes = [];

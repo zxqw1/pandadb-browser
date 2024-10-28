@@ -103,13 +103,13 @@
                     </el-col>
                     <el-col style="margin-top: 10px;">
                         <el-table :data="tableData" style="width: 100%;" border>
-                            <el-table-column prop="warnOption" label="告警项" />
-                            <el-table-column prop="threshold" label="阈值" />
+                            <el-table-column prop="warnOption" label="告警项" width="100"/>
+                            <el-table-column prop="threshold" label="阈值" width="100"/>
                             <el-table-column prop="warnPath" label="告警地址" />
-                            <el-table-column prop="sendType" label="发送方式" />
-                            <el-table-column prop="warnLevel" label="告警级别" />
-                            <el-table-column prop="status" label="状态" />
-                            <el-table-column prop="rate" label="频率ms" />
+                            <el-table-column prop="sendType" label="发送方式" width="100"/>
+                            <el-table-column prop="warnLevel" label="告警级别"  width="100"/>
+                            <el-table-column prop="status" label="状态" width="100"/>
+                            <el-table-column prop="rate" label="频率ms" width="100"/>
                             <el-table-column prop="content" label="告警内容" />
                             <el-table-column prop="remark" label="备注" />
                             <el-table-column label="操作">

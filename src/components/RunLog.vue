@@ -17,9 +17,9 @@
                         <el-button color="#6c7d2e" @click="previouspageClick">查询上一页</el-button>
                     </div>
                     <el-table :data="tableData" border style="width: 100%" max-height="630">
-                        <el-table-column prop="level" label="等级" />
+                        <el-table-column prop="level" label="等级" width="100"/>
                         <el-table-column prop="clazz" label="线程" />
-                        <el-table-column prop="timestamp" label="时间" />
+                        <el-table-column prop="timestamp" label="时间" width="200"/>
                         <el-table-column prop="content" label="内容" />
                     </el-table>
                 </div>

@@ -12,7 +12,7 @@
           <span style="font-size: 15px; font-weight: bold;">筛选</span>
         </div>
         <el-row style="display: flex;align-items: flex-end;">
-          <el-col :span="10">
+          <el-col :span="8">
             <div style="margin-top: 10px;">
               <div>
                 <span class="demonstration">操作时间：</span>
@@ -35,6 +35,14 @@
               </div>
             </div>
           </el-col>
+          <el-col :span="6">
+            <div style="margin-top: 10px;">
+              <div>
+                <span class="demonstration">用户名：</span>
+                <el-input v-model="userName" style="width: 240px" placeholder="请输入" />
+              </div>
+            </div>
+          </el-col>
           <el-col :span="4">
             <el-button type="primary" @click="siftclick">确定</el-button>
           </el-col>
@@ -47,9 +55,9 @@
           <span style="font-size: 15px; font-weight: bold;">日志</span>
         </div>
         <el-table :data="tableData" style="width: 100%;" max-height="630" border>
-          <el-table-column fixed prop="operationTime" label="操作时间" />
-          <el-table-column prop="userName" label="用户名" />
-          <el-table-column prop="operationType" label="操作类型" >
+          <el-table-column fixed prop="operationTime" label="操作时间" width="200"/>
+          <el-table-column prop="userName" label="用户名" width="100"/>
+          <el-table-column prop="operationType" label="操作类型" width="100">
             <template #default="scope">
               <el-tag type="primary"    color="rgb(236 255 165)" style="border: none; color: #6c7d2e;">{{scope.row.operationType }}</el-tag>
             </template>
@@ -71,6 +79,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import getManageInfo from "../utils/manageRequest"
 const value1 = ref('')
 const value = ref('')
+const userName = ref("")
 const tableData = ref([])
 const page = ref({})
 const currentPage = ref()
@@ -109,6 +118,7 @@ onMounted(async () => {
   const queryId = generateRandomId()
   const OperationLogUrl = replaceOrAddUrlPath(url,"/operationLog")
   const querytext = {
+    "userName":"",
     "startTime": "",
     "endTime": "",
     "operationType": "",
@@ -131,6 +141,7 @@ const siftclick = async ()=>{
     "startTime": value1.value !== "" ? value1.value === null ? "": new Date(value1.value[0]).getTime(): "",
     "endTime": value1.value !=="" ? value1.value === null ? "": new Date(value1.value[1]).getTime() : "",
     "operationType": value.value !=="" ? value.value === undefined ? "" : value.value : "",
+    "userName" :userName.value,
     "queryId":generateRandomId(),
     "pageSize": 10,
     "currentPage": 1  
@@ -150,6 +161,7 @@ const handleCurrentChange = async (val: number)=>{
     "startTime": value1.value[0] ? new Date(value1.value[0]).getTime() :"" ,
     "endTime": value1.value[1] ? new Date(value1.value[1]).getTime() : "",
     "operationType": value.value ? value.value : "",
+    "userName" :userName.value,
     "queryId":generateRandomId(),
     "pageSize": 10,
     "currentPage": val  

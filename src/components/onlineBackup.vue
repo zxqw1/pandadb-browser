@@ -49,12 +49,12 @@
                     <el-col style="margin-top: 10px;">
                         <el-table :data="tableData" style="width: 100%" border row-key="key">
                             <el-table-column property="taskName" label="任务名称" />
-                            <el-table-column property="createTime" label="创建时间" show-overflow-tooltip />
-                            <el-table-column property="type" label="备份类型" />
-                            <el-table-column property="planRunTime" label="预计执行时间" />
+                            <el-table-column property="createTime" label="创建时间" show-overflow-tooltip width="200" />
+                            <el-table-column property="type" label="备份类型" width="120"/>
+                            <el-table-column property="planRunTime" label="预计执行时间" width="200"/>
                             <el-table-column property="remark" label="备注" />
-                            <el-table-column property="status" label="状态" />
-                            <el-table-column property="progress" fixed="right" label="备份进度" min-width="120">
+                            <el-table-column property="status" label="状态" width="100" />
+                            <el-table-column property="progress" fixed="right" label="备份进度" width="120">
                                 <template #default="scope">
                                     <el-button link type="primary" size="small" @click="Backup(scope.row)">{{
                                         scope.row.status }}</el-button>
@@ -71,12 +71,6 @@
                                             style="color: #6a8322;text-decoration: underline">
                                             删除
                                         </el-button>
-                                    </el-col>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="恢复">
-                                <template #default="scope">
-                                    <el-col style="display: flex;">
                                         <el-button @click="restore(scope.row)" text
                                             style="color: #6a8322;text-decoration: underline">
                                             恢复
@@ -220,7 +214,6 @@ const timeConversion = (timestamp) => {
 //表格数据
 const BackupList = async () => {
     const BackupqueryUrl = replaceOrAddUrlPath(url, "/dataBackup/page")
-    // const  BackupqueryUrl = "https://65f1886m24.goho.co" + "/dataBackup/page"
     const Backupquery = {
         "queryId": generateRandomId(),
         "pageSize": 10,
