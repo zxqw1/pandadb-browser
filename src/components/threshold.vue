@@ -201,7 +201,7 @@ function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
 const thresholdList = async () => {
     //获取添加告警阈值时相关的下拉选择框列表
     const warnParamselectUrl = replaceOrAddUrlPath(url, '/warnParam/select')
-    const warnParamselectData = await getManageInfo(warnParamselectUrl, "GET")
+    const warnParamselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/select", "GET")
     warnOption.value = warnParamselectData.response.warnOption
     warnSendType.value = warnParamselectData.response.warnSendType
     warnLevelType.value = warnParamselectData.response.warnLevelType
@@ -214,7 +214,7 @@ const thresholdList = async () => {
         "pageSize": 10,
         "currentPage": 1
     }
-    const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
+    const warnParampageData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
     tableData.value = warnParampageData.response
     tableData.value.forEach(item => {
         warnOption.value.forEach(item2 => {
