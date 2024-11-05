@@ -100,12 +100,12 @@ function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
 onMounted(async () => {
     //获取系统节点列表
     const systemnodequeryUrl = replaceOrAddUrlPath(url, '/system/nodeList')
-    const systemNodeData = await getManageInfo(systemnodequeryUrl, "GET")
+    const systemNodeData = await getManageInfo("text/plain",systemnodequeryUrl, "GET")
     systemoption.value = systemNodeData.response
     systemnodeValue.value = systemoption.value[0].description
     // 图表时间段枚举
     const systemperiodUrl = replaceOrAddUrlPath(url, '/system/period')
-    const systemperiodData = await getManageInfo(systemperiodUrl, "GET")
+    const systemperiodData = await getManageInfo("text/plain",systemperiodUrl, "GET")
     options.value = systemperiodData.response
     // 获取系统节点运行情况
     const systemRunquery = {
@@ -113,7 +113,7 @@ onMounted(async () => {
         "period": options.value[0].value
     }
     const systemRunUrl = replaceOrAddUrlPath(url, '/system/detail')
-    const systemRunData = await getManageInfo(systemRunUrl, "POST", JSON.stringify(systemRunquery))
+    const systemRunData = await getManageInfo("text/plain",systemRunUrl, "POST", JSON.stringify(systemRunquery))
     runTime.value = systemRunData.response.runTime
     const diskUsage = echarts.init(window.document.getElementById("diskUsage"));
     let diskUsageoption = {
@@ -227,7 +227,7 @@ onMounted(async () => {
     cupUsageData.setOption(cupUsageoption);
     //获取系统节点状态枚举
     const systemStatusTypeListUrl = replaceOrAddUrlPath(url, '/systemStatusTypeList')
-    const systemStatusTypeListData = await getManageInfo(systemStatusTypeListUrl, "GET")
+    const systemStatusTypeListData = await getManageInfo("text/plain",systemStatusTypeListUrl, "GET")
     systemStatusTypeListData.response.forEach(item => {
         if (systemRunData.response.nodeStatus === item.value) {
             systemState.value = item.description
@@ -246,7 +246,7 @@ const nodeChange = async () => {
         "period": timeValue.value === "" ? options.value[0].value : timeValue.value
     }
     const systemRunUrl = replaceOrAddUrlPath(url, '/system/detail')
-    const systemRunData = await getManageInfo(systemRunUrl, "POST", JSON.stringify(systemRunquery))
+    const systemRunData = await getManageInfo("text/plain",systemRunUrl, "POST", JSON.stringify(systemRunquery))
 
     runTime.value = systemRunData.response.runTime
     const diskUsage = echarts.init(window.document.getElementById("diskUsage"));
@@ -361,7 +361,7 @@ const nodeChange = async () => {
     cupUsageData.setOption(cupUsageoption);
     //获取系统节点状态枚举
     const systemStatusTypeListUrl = replaceOrAddUrlPath(url, '/systemStatusTypeList')
-    const systemStatusTypeListData = await getManageInfo(systemStatusTypeListUrl, "GET")
+    const systemStatusTypeListData = await getManageInfo("text/plain",systemStatusTypeListUrl, "GET")
     systemStatusTypeListData.response.forEach(item => {
         if (systemRunData.response.nodeStatus === item.value) {
             systemState.value = item.description
@@ -381,7 +381,7 @@ const timeChange = async () => {
         "period": timeValue.value
     }
     const systemRunUrl = replaceOrAddUrlPath(url, '/system/detail')
-    const systemRunData = await getManageInfo(systemRunUrl, "POST", JSON.stringify(systemRunquery))
+    const systemRunData = await getManageInfo("text/plain",systemRunUrl, "POST", JSON.stringify(systemRunquery))
     // systemState.value = systemRunData.response.nodeStatus
     runTime.value = systemRunData.response.runTime
     const diskUsage = echarts.init(window.document.getElementById("diskUsage"));
@@ -496,7 +496,7 @@ const timeChange = async () => {
     cupUsageData.setOption(cupUsageoption);
     //获取系统节点状态枚举
     const systemStatusTypeListUrl = replaceOrAddUrlPath(url, '/systemStatusTypeList')
-    const systemStatusTypeListData = await getManageInfo(systemStatusTypeListUrl, "GET")
+    const systemStatusTypeListData = await getManageInfo("text/plain",systemStatusTypeListUrl, "GET")
     systemStatusTypeListData.response.forEach(item => {
         if (systemRunData.response.nodeStatus === item.value) {
             systemState.value = item.description

@@ -26,7 +26,6 @@ declare module 'vue' {
     Login: typeof import('./src/components/rightComponents/login.vue')['default']
     LoginLog: typeof import('./src/components/loginLog.vue')['default']
     Manage: typeof import('./src/components/menuComponents/manage.vue')['default']
-    'Management ': typeof import('./src/components/Management .vue')['default']
     Menu: typeof import('./src/components/menu.vue')['default']
     OnlineBackup: typeof import('./src/components/onlineBackup.vue')['default']
     OperatingSystem: typeof import('./src/components/OperatingSystem.vue')['default']

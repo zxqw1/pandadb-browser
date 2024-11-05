@@ -201,7 +201,7 @@ function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
 const thresholdList = async () => {
     //获取添加告警阈值时相关的下拉选择框列表
     const warnParamselectUrl = replaceOrAddUrlPath(url, '/warnParam/select')
-    const warnParamselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/select", "GET")
+    const warnParamselectData = await getManageInfo("text/plain",warnParamselectUrl, "GET")
     warnOption.value = warnParamselectData.response.warnOption
     warnSendType.value = warnParamselectData.response.warnSendType
     warnLevelType.value = warnParamselectData.response.warnLevelType
@@ -214,7 +214,7 @@ const thresholdList = async () => {
         "pageSize": 10,
         "currentPage": 1
     }
-    const warnParampageData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/warnParam/page", "POST", JSON.stringify(warnParampagequery))
+    const warnParampageData = await getManageInfo("text/plain",warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
     tableData.value = warnParampageData.response
     tableData.value.forEach(item => {
         warnOption.value.forEach(item2 => {
@@ -254,7 +254,7 @@ const siftclick = async () => {
         "pageSize": 10,
         "currentPage": 1
     }
-    const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
+    const warnParampageData = await getManageInfo("text/plain",warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
     tableData.value = warnParampageData.response
     tableData.value.forEach(item => {
         warnOption.value.forEach(item2 => {
@@ -291,7 +291,7 @@ const handleCurrentChange = async (val: number) => {
         "pageSize": 10,
         "currentPage": val
     }
-    const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
+    const warnParampageData = await getManageInfo("text/plain",warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
     tableData.value = warnParampageData.response
     tableData.value.forEach(item => {
         warnOption.value.forEach(item2 => {
@@ -340,7 +340,7 @@ const addconfirmClick = async (formRef) => {
         if (valid) {
             if (dialogTitle.value === "新增") {
                 const addwarnParamUrl = replaceOrAddUrlPath(url, '/warnParam')
-                await getManageInfo(addwarnParamUrl, "POST", JSON.stringify(addWarnItem.value))
+                await getManageInfo("text/plain",addwarnParamUrl, "POST", JSON.stringify(addWarnItem.value))
                 const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
                 const warnParampagequery = {
                     "warnOption": warnValue.value !== "" ? warnValue.value === undefined ? "" : warnValue.value : "",
@@ -348,7 +348,7 @@ const addconfirmClick = async (formRef) => {
                     "pageSize": 10,
                     "currentPage": 1
                 }
-                const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
+                const warnParampageData = await getManageInfo("text/plain",warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
                 tableData.value = warnParampageData.response
                 tableData.value.forEach(item => {
                     warnOption.value.forEach(item2 => {
@@ -397,7 +397,7 @@ const addconfirmClick = async (formRef) => {
                         }
                     })
                 const replacewarnParamUrl = replaceOrAddUrlPath(url, '/warnParam')
-                await getManageInfo(replacewarnParamUrl, "PUT", JSON.stringify(addWarnItem.value))
+                await getManageInfo("text/plain",replacewarnParamUrl, "PUT", JSON.stringify(addWarnItem.value))
                 const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
                 const warnParampagequery = {
                     "warnOption": warnValue.value !== "" ? warnValue.value === undefined ? "" : warnValue.value : "",
@@ -405,7 +405,7 @@ const addconfirmClick = async (formRef) => {
                     "pageSize": 10,
                     "currentPage": 1
                 }
-                const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
+                const warnParampageData = await getManageInfo("text/plain",warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
                 tableData.value = warnParampageData.response
                 tableData.value.forEach(item => {
                     warnOption.value.forEach(item2 => {
@@ -447,7 +447,7 @@ const handleDelete = (row) => {
         const delquery = {
             "key": row.key
         }
-        getManageInfo(delwarnParamUrl, "DELETE", JSON.stringify(delquery))
+        getManageInfo("text/plain",delwarnParamUrl, "DELETE", JSON.stringify(delquery))
         const warnParampageUrl = replaceOrAddUrlPath(url, '/warnParam/page')
         const warnParampagequery = {
             "warnOption": warnValue.value !== "" ? warnValue.value === undefined ? "" : warnValue.value : "",
@@ -455,7 +455,7 @@ const handleDelete = (row) => {
             "pageSize": 10,
             "currentPage": 1
         }
-        const warnParampageData = await getManageInfo(warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
+        const warnParampageData = await getManageInfo("text/plain",warnParampageUrl, "POST", JSON.stringify(warnParampagequery))
         tableData.value = warnParampageData.response
         tableData.value.forEach(item => {
             warnOption.value.forEach(item2 => {

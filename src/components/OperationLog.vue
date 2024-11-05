@@ -126,7 +126,7 @@ onMounted(async () => {
     "pageSize": 10,
     "currentPage": 1  
   }
-   const data = await getManageInfo(OperationLogUrl,"POST",JSON.stringify(querytext))
+   const data = await getManageInfo("text/plain",OperationLogUrl,"POST",JSON.stringify(querytext))
   tableData.value = data.response
   tableData.value.forEach(item => {
     item.operationTime = timeConversion(Number(item.operationTime))
@@ -146,7 +146,7 @@ const siftclick = async ()=>{
     "pageSize": 10,
     "currentPage": 1  
   }
-  const data = await getManageInfo(OperationLogUrl,"POST",JSON.stringify(querytext))
+  const data = await getManageInfo("text/plain",OperationLogUrl,"POST",JSON.stringify(querytext))
   tableData.value = data.response
   tableData.value.forEach(item => {
     item.operationTime = timeConversion(Number(item.operationTime))
@@ -166,7 +166,7 @@ const handleCurrentChange = async (val: number)=>{
     "pageSize": 10,
     "currentPage": val  
   }
-  const data = await getManageInfo(OperationLogUrl,"POST",JSON.stringify(querytext))
+  const data = await getManageInfo("text/plain",OperationLogUrl,"POST",JSON.stringify(querytext))
   tableData.value = data.response
   tableData.value.forEach(item => {
     item.operationTime = timeConversion(Number(item.operationTime))
