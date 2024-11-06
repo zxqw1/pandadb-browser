@@ -53,7 +53,7 @@ onMounted(async () => {
         'pageSize':10,
         'currentPage':1
     }
-    const runLogData = await getManageInfo("text/plain",runLogqueryUrl, "POST",JSON.stringify(runLogquery))
+    const runLogData = await getManageInfo(runLogqueryUrl, "POST",JSON.stringify(runLogquery))
     tableData.value = runLogData.response
 })
 //查询最新
@@ -64,7 +64,7 @@ const newClick = async()=>{
         'pageSize':10,
         'currentPage':1
     }
-    const runLogData = await getManageInfo("text/plain",runLogqueryUrl, "POST",JSON.stringify(runLogquery))
+    const runLogData = await getManageInfo(runLogqueryUrl, "POST",JSON.stringify(runLogquery))
     tableData.value = runLogData.response
 }
 //查询上一页
@@ -75,7 +75,7 @@ const previouspageClick = async()=>{
         'pageSize':10,
         'currentPage':currentPage.value 
     }
-    const runLogData = await getManageInfo("text/plain",runLogqueryUrl, "POST",JSON.stringify(runLogquery))
+    const runLogData = await getManageInfo(runLogqueryUrl, "POST",JSON.stringify(runLogquery))
     tableData.value = runLogData.response
 }
 </script>

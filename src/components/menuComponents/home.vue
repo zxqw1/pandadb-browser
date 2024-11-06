@@ -94,6 +94,7 @@ import { ref, watch, onMounted, nextTick } from "vue";
 import dataBase from "@/data/dataBase";
 import mitts from "../../utils/bus.js";
 import { useStore } from "vuex";
+import getManageInfo from "../../utils/manageRequest.js"
 const store = useStore();
 const username = window.localStorage.getItem("username");
 const address = window.localStorage.getItem("address");
@@ -124,13 +125,34 @@ const options = [
     label: "Option2",
   },
 ];
-
+//url替换
+function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
+  // 检查IP地址中是否包含'/'（除了最后一个字符可能是':'的情况）  
+  // 这里假设IP地址格式正确，并且':'只出现在端口号之前  
+  const hasPath = ipWithMaybePath.includes('/') && !ipWithMaybePath.endsWith(':');
+  if (hasPath) {
+    // 如果包含路径，则替换最后一个'/'及其后面的所有内容  
+    return ipWithMaybePath.replace(/\/[^\/]*$/, `${newPath}`);
+  } else {
+    // 如果没有路径，则直接添加新路径  
+    return `${ipWithMaybePath}/${newPath}`;
+  }
+}
+let url = window.localStorage.getItem("address")//地址
 //断开连接
-const disconnectClick = () => {
-  window.localStorage.removeItem("username"),
+const disconnectClick = async () => {
+  const logoutUrl = replaceOrAddUrlPath(url, '/logout')
+  const logoutQuery = {
+    "userName": window.localStorage.getItem("username"),
+  }
+  const logoutmessage =  await getManageInfo(logoutUrl, "POST", JSON.stringify(logoutQuery))
+  console.log(logoutmessage,'149')
+  if(logoutmessage.success){
+     window.localStorage.removeItem("username"),
     window.localStorage.removeItem("password"),
-    window.localStorage.removeItem("address"),
-    location.reload();
+    window.localStorage.removeItem("address")
+     location.reload();
+  }
 };
 //节点标签颜色
 const getNodeColor = (key) => {
@@ -260,7 +282,7 @@ const relationShow = (e) => {
     }
   });
   const queryobj = {
-    'query': 'MATCH p=()-->() RETURN p LIMIT 25'  ,
+    'query': 'MATCH p=()-->() RETURN p LIMIT 25',
     'queryId': queryId
   }
   const startTime = performance.now();
@@ -311,7 +333,7 @@ const relationClick = (e) => {
     }
   });
   const queryobj = {
-    'query': `MATCH p=()-[r:${e.target.innerText}]->() RETURN p LIMIT 25`  ,
+    'query': `MATCH p=()-[r:${e.target.innerText}]->() RETURN p LIMIT 25`,
     'queryId': queryId
   }
   const startTime = performance.now();

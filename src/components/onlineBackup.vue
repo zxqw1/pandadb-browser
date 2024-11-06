@@ -219,9 +219,9 @@ const BackupList = async () => {
         "pageSize": 10,
         "currentPage": 1
     }
-    const BackupqueryData = await getManageInfo("text/plain",BackupqueryUrl, "POST", JSON.stringify(Backupquery))
+    const BackupqueryData = await getManageInfo(BackupqueryUrl, "POST", JSON.stringify(Backupquery))
     const BackupselectUrl = replaceOrAddUrlPath(url, "/dataBackup/select")
-    const BackupselectData = await getManageInfo("text/plain",BackupselectUrl, "GET")
+    const BackupselectData = await getManageInfo(BackupselectUrl, "GET")
     BackupqueryData.response.forEach(item => {
         item.createTime = timeConversion(Number(item.createTime))
         item.planRunTime = timeConversion(Number(item.planRunTime))
@@ -252,10 +252,10 @@ const handleCurrentChange = async (val: number) => {
         "pageSize": 10,
         "currentPage": val
     }
-    const BackupqueryData = await getManageInfo("text/plain",BackupqueryUrl, "POST", JSON.stringify(Backupquery))
+    const BackupqueryData = await getManageInfo(BackupqueryUrl, "POST", JSON.stringify(Backupquery))
     tableData.value = BackupqueryData.response
     const BackupselectUrl = replaceOrAddUrlPath(url, "/dataBackup/select")
-    const BackupselectData = await getManageInfo("text/plain",BackupselectUrl, "GET")
+    const BackupselectData = await getManageInfo(BackupselectUrl, "GET")
     tableData.value.forEach(item => {
         item.createTime = timeConversion(Number(item.createTime))
         item.planRunTime = timeConversion(Number(item.planRunTime))
@@ -290,7 +290,7 @@ const addBackup = async (backuptype: number) => {
     type.value = backuptype
     //下拉获取nodeip
     const nodeIpUrl = replaceOrAddUrlPath(url, "/database/nodeList")
-    const nodeIpData = await getManageInfo("text/plain",nodeIpUrl, "GET")
+    const nodeIpData = await getManageInfo(nodeIpUrl, "GET")
     nodeIpoption.value = nodeIpData.response
 
 }
@@ -318,7 +318,7 @@ const confirmBackup = async (formRef) => {
                 'executeImmediately': form.value.executeImmediately,
                 "nodeIp": form.value.nodeIp
             }
-            await getManageInfo("text/plain",dataBackupqueryUrl, "POST", JSON.stringify(dataBackupQuery))
+            await getManageInfo(dataBackupqueryUrl, "POST", JSON.stringify(dataBackupQuery))
             await BackupList()
             backupsDialog.value = false
         }
@@ -342,7 +342,7 @@ const handleDelete = (row) => {
         const delquery = {
             "key": row.key
         }
-        let info = await getManageInfo("text/plain",deldataBuckupUrl, "DELETE", JSON.stringify(delquery))
+        let info = await getManageInfo(deldataBuckupUrl, "DELETE", JSON.stringify(delquery))
         if (info) {
             await BackupList()
             ElMessage({
@@ -360,10 +360,10 @@ const handleEdit = async (row) => {
     backupsTitle.value = "修改备份"
     //下拉获取nodeip
     const nodeIpUrl = replaceOrAddUrlPath(url, "/database/nodeList")
-    const renodeIpData = await getManageInfo("text/plain",nodeIpUrl, "GET")
+    const renodeIpData = await getManageInfo(nodeIpUrl, "GET")
     renodeIpoption.value = renodeIpData.response
     const BackupselectUrl = replaceOrAddUrlPath(url, "/dataBackup/select")
-    const BackupselectData = await getManageInfo("text/plain",BackupselectUrl, "GET")
+    const BackupselectData = await getManageInfo(BackupselectUrl, "GET")
     typeOption.value = BackupselectData.response.type
     let type
     typeOption.value.forEach((item) => {
@@ -405,7 +405,7 @@ const confirm = async (formRef) => {
                 "nodeIp": reform.value.nodeIp,
                 "key": reform.value.key
             }
-            await getManageInfo("text/plain",dataBackupqueryUrl, "PUT", JSON.stringify(dataBackupQuery))
+            await getManageInfo(dataBackupqueryUrl, "PUT", JSON.stringify(dataBackupQuery))
             await BackupList()
             rebackups.value = false
         }
@@ -430,7 +430,7 @@ const stopbackup = async (row) => {
     const stopquery = {
         "key": row.key
     }
-    await getManageInfo("text/plain",stopURL, "POST", JSON.stringify(stopquery))
+    await getManageInfo(stopURL, "POST", JSON.stringify(stopquery))
     await BackupList()
     BackupProcess.value = false
 }
@@ -440,7 +440,7 @@ const restore = async (row) => {
     const restorepquery = {
         "key": row.key
     }
-    await getManageInfo("text/plain",restoreUrl, "POST", JSON.stringify(restorepquery))
+    await getManageInfo(restoreUrl, "POST", JSON.stringify(restorepquery))
     await BackupList()
 }
 </script>

@@ -10,15 +10,18 @@
             </el-col>
         </el-row>
         <!-- <img :src="base64Image" alt="" v-if="base64Image!=='' "> -->
-        <el-tree style="margin-top: 14px;" v-if="fileTreedata.length" :data="fileTreedata" node-key="id" draggable
-            @node-drag-end="nodeEndDrop" :allow-drop="allowDrop" @node-drag-start="nodeDragStart"
-            @node-click="nodeClick">
+        <el-tree style="margin-top: 14px;" v-if="fileTreedata.length" :data="fileTreedata" node-key="id" draggable 
+            @node-drag-end="nodeEndDrop" :allow-drop="allowDrop" @node-drag-start="nodeDragStart">
             <template #default="scoped">
                 <el-row style="width: 100%;padding-right: 6px">
-                    <el-col :span="22">
+                    <el-col :span="22" style="display: flex;align-items: center;">
+                        <el-icon v-if="scoped.data.isFile" style="margin-right:6px" @click="nodeClick(scoped)">
+                            <View />
+                        </el-icon>
                         <span @dblclick="renameClick(scoped)" v-if="!scoped.data.show">{{ scoped.data.label }}</span>
                         <el-input v-else id="myInput" v-model="scoped.data.label"
                             @blur="handleEnter(scoped)"></el-input>
+
                     </el-col>
                     <el-col :span="2" v-if="!scoped.data.isFile">
                         <el-popover placement="bottom" :width="200" trigger="hover">
@@ -37,7 +40,7 @@
                     </el-col>
                     <el-col :span="2" v-else>
                         <el-popover placement="bottom" :width="200" trigger="hover">
-                            <div style="cursor: pointer;" @click="delClick(scoped)"> Delete Folder</div>
+                            <div style="cursor: pointer;" @click="delClick(scoped)"> Delete</div>
                             <template #reference>
                                 <el-icon size="14">
                                     <More />
@@ -45,6 +48,7 @@
                             </template>
                         </el-popover>
                     </el-col>
+
                 </el-row>
             </template>
         </el-tree>
@@ -56,9 +60,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from "vue";
-import { More } from '@element-plus/icons-vue'
+import { More, View } from '@element-plus/icons-vue'
 import getManageInfo from "../../utils/manageRequest"
-// import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus'
 const fileTreedata = ref([])
 const name = ref("")
 const newname = ref("")
@@ -66,9 +70,7 @@ const fileList = ref([])
 const scopedInfo = ref({})
 const startNodePath = ref("")
 const loading = ref(false)
-// const srcList = ref([])
 const base64Image = ref("")
-// const showViewer = ref(false)
 let url = window.localStorage.getItem("address")//地址
 function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
     // 检查IP地址中是否包含'/'（除了最后一个字符可能是':'的情况）  
@@ -90,7 +92,7 @@ const generateRandomId = () => {
 //获取树形结构
 const obtainTree = async () => {
     const treeUrl = replaceOrAddUrlPath(url, '/file/folderTree')
-    const treeData = await getManageInfo("text/plain",treeUrl, "GET")
+    const treeData = await getManageInfo(treeUrl, "GET")
     fileTreedata.value = treeData.response
 }
 onMounted(async () => {
@@ -122,25 +124,39 @@ const handleEnter = async (scoped) => {
         //新建文件夹
         const fileuploadUrl = replaceOrAddUrlPath(url, '/file/upload')
         const filePathArr = getNodeParentNames(scoped.data.id, fileTreedata.value)
-        const filePath = filePathArr.filter(item => item !== undefined).join('/') + '/' + scoped.data.label
-        const fileuploadquery = {
-            testFile: "",
-            uploadDir: filePath
+        let filePath = filePathArr.filter(item => item !== undefined).join('/') + '/' + scoped.data.label
+        if (filePathArr.length !== 0) {
+            filePath = filePathArr.filter(item2 => item2 !== undefined).join('/') + '/' + scoped.data.label
+        } else {
+            filePath = scoped.data.label
         }
-        await getManageInfo("text/plain",fileuploadUrl, "POST", JSON.stringify(fileuploadquery))
+
+        const fileuploadquery = {
+            fileData: "",
+            filePath: filePath
+        }
+        await getManageInfo(fileuploadUrl, "POST", JSON.stringify(fileuploadquery))
         await obtainTree()
     } else {
         //重命名
         newname.value = scoped.data.label
         const filePathArr = getNodeParentNames(scoped.data.id, fileTreedata.value)
-        const filePath = filePathArr.filter(item => item !== undefined).join('/') 
+        const filePath = filePathArr.filter(item => item !== undefined).join('/')
+        let oldFilePath = filePathArr.filter(item => item !== undefined).join('/') + '/' + name.value
+        let newFilePath = filePathArr.filter(item => item !== undefined).join('/') + '/' + newname.value
+        if (filePathArr.length !== 0) {
+            oldFilePath = filePathArr.filter(item => item !== undefined).join('/') + '/' + name.value
+            newFilePath = filePathArr.filter(item => item !== undefined).join('/') + '/' + newname.value
+        } else {
+            oldFilePath = name.value
+            newFilePath = newname.value
+        }
         const renameUrl = replaceOrAddUrlPath(url, '/file/rename')
         const renameQuery = {
-            "fileName": name.value,
-            "newName": newname.value,
-            "filePath": filePath
+            "oldFilePath": oldFilePath,
+            "newFilePath": newFilePath
         }
-        await getManageInfo("text/plain",renameUrl, "POST", JSON.stringify(renameQuery))
+        await getManageInfo(renameUrl, "POST", JSON.stringify(renameQuery))
         await obtainTree()
     }
 }
@@ -190,19 +206,31 @@ const beforeUpload = async (uploadFile) => {
         return item.name !== uploadFile.name
     })//判断此文件夹是否有相同文件
     if (isFileName) {
-        const filePathArr = getNodeParentNames(scopedInfo.value.node.data.id, fileTreedata.value)
-        let filePath = filePathArr.filter(item => item !== undefined).join('/')
-        if (filePathArr.length !== 0) {
-            filePath = filePath + '/' + scopedInfo.value.data.label 
-        } else {
-            filePath = scopedInfo.value.data.label 
+        const isLt2M = uploadFile.size / 1024 / 1024 < 2; // 限制文件大小不超过2MB
+        if (!isLt2M) {
+            ElMessage("大小不超过2MB")
+            return false;
         }
-        const uploadUrl = replaceOrAddUrlPath(url, '/file/upload')
-        let queryText = new FormData()
-        queryText.append("testFile", uploadFile)
-        queryText.append("uploadDir", filePath)
-        await getManageInfo("multipart/form-data",uploadUrl, "POST", queryText)
-        await obtainTree()
+        const reader = new FileReader();
+        reader.readAsDataURL(uploadFile);
+        reader.onload = async (e) => {
+            const base64String = e.target.result;
+            const filePathArr = getNodeParentNames(scopedInfo.value.node.data.id, fileTreedata.value)
+            let filePath = filePathArr.filter(item => item !== undefined).join('/')
+            if (filePathArr.length !== 0) {
+                filePath = filePath + '/' + scopedInfo.value.data.label + '/' + uploadFile.label
+            } else {
+                filePath = scopedInfo.value.data.label + '/' + uploadFile.label
+            }
+            const uploadUrl = replaceOrAddUrlPath(url, '/file/upload')
+            const queryText = {
+                'fileData': base64String,
+                'filePath': filePath,
+
+            }
+            await getManageInfo(uploadUrl, "POST", JSON.stringify(queryText))
+            await obtainTree()
+        };
     }
 }
 const requestUpload = () => {
@@ -214,57 +242,90 @@ const UploadClick = (scoped) => {
 //删除
 const delClick = async (scoped) => {
     const filePathArr = getNodeParentNames(scoped.data.id, fileTreedata.value)
-    let filePath = filePathArr.filter(item => item !== undefined).join('/') 
+    let filePath = ""
     const delUrl = replaceOrAddUrlPath(url, '/file/delete')
-    const delquery = {
-        "filePath": filePath,
-        "fileName": scoped.data.label
+    let delquery = {}
+    if (scoped.data.isFile === false) {
+        if (scoped.node.level === 1) {
+            filePath = scoped.data.label
+        } else {
+            filePath = filePathArr.filter(item2 => item2 !== undefined).join('/') + "/" + scoped.data.label
+        }
+        delquery = {
+            "filePath": filePath
+        }
+    } else {
+        filePath = filePathArr.filter(item3 => item3 !== undefined).join('/') + '/' + scoped.data.label
+        delquery = {
+            "filePath": filePath
+        }
     }
-    await getManageInfo("text/plain",delUrl, "DELETE", JSON.stringify(delquery))
+
+    await getManageInfo(delUrl, "DELETE", JSON.stringify(delquery))
     await obtainTree()
 }
 //拖拽到目标节点
 const nodeEndDrop = async (draggingNode, dropNode, type) => {
     const dropArr = getNodeParentNames(dropNode.data.id, fileTreedata.value)
     let dropPath
-    if (type === 'inner') {
-        dropPath = dropArr.filter(item2 => item2 !== undefined).join('/') + '/' + dropNode.data.label 
-    } else {
-        dropPath = dropArr.filter(item2 => item2 !== undefined).join('/') 
+    if (type === "inner") { // 如果是往里面放，并且没有找到父级，说明是最外面一层的
+        if (dropArr.length) {
+            if (dropNode.level >= 2) {
+                dropPath = dropArr.filter(item => item !== undefined).join('/') + "/" + dropNode.data.label + "/" + draggingNode.data.label
+            } else {
+                dropPath = dropArr.filter(item => item !== undefined).join('/') + "/" + draggingNode.data.label
+            }
+        } else {
+            dropPath = dropNode.data.label + "/" + draggingNode.data.label // 那么就找到 拖动结束 + “/” + 拖动开始
+        }
+    } else { // if (type === "before" || type === "after") 如果是往外面拿
+        if (dropArr.length) { // 并且有父级，说明不是最外面一层
+            dropPath = dropArr.filter(item => item !== undefined).join('/') + "/" + draggingNode.data.label
+        } else {
+            dropPath = draggingNode.data.label
+        }
     }
-    fileTreedata.value.includes(draggingNode)
 
+    // fileTreedata.value.includes(draggingNode)
     const moveUrl = replaceOrAddUrlPath(url, '/file/move')
-    const movequery = {
-        "oldPath": startNodePath.value,
-        'newPath': dropPath
+    if (!dropPath || startNodePath.value === dropPath) {
+
+    } else {
+        const movequery = {
+            "oldFilePath": startNodePath.value,
+            'newFilePath': dropPath
+        }
+        await getManageInfo(moveUrl, "POST", JSON.stringify(movequery))
+        await obtainTree()
     }
-    await getManageInfo("text/plain",moveUrl, "POST", JSON.stringify(movequery))
-    await obtainTree()
+
 }
 const nodeDragStart = async (startNode) => {
     const draggingArr = getNodeParentNames(startNode.data.id, fileTreedata.value)
-    startNodePath.value = draggingArr.filter(item => item !== undefined).join('/') 
+    if (draggingArr.length !== 0) {
+        startNodePath.value = draggingArr.filter(item => item !== undefined).join('/') + '/' + startNode.label
+    } else {
+        startNodePath.value = startNode.label
+    }
+
 }
 const nodeClick = async (node) => {
-    if (node.isFile === false) {
+    if (node.data.isFile === false) {
         return
     } else {
-        const nodeArr = getNodeParentNames(node.id, fileTreedata.value)
+        const nodeArr = getNodeParentNames(node.data.id, fileTreedata.value)
         let nodePath = ""
         if (nodeArr.length !== 0) {
-            nodePath = nodeArr.filter(item => item !== undefined).join('/')
+            nodePath = nodeArr.filter(item => item !== undefined).join('/') + '/' + node.data.label
         } else {
-            nodePath = '/' + node.label
+            nodePath = node.data.label
         }
         const downloadUrl = replaceOrAddUrlPath(url, '/file/download')
         const downloadquery = {
-            'filePath': nodePath,
-            'fileName': node.label
+            'filePath': nodePath
         }
         loading.value = true
-        //   const img =   await getManageInfo(downloadUrl, "POST",JSON.stringify(downloadquery))
-        const img = await getManageInfo("text/plain",downloadUrl, "POST", JSON.stringify(downloadquery))
+        const img = await getManageInfo(downloadUrl, "POST", JSON.stringify(downloadquery))
         base64Image.value = img.response
         document.querySelector('.elImageClass').children[0].click()
         loading.value = false
@@ -277,7 +338,8 @@ const nodeClick = async (node) => {
 ::v-deep .el-loading-spinner .path {
     stroke: #6a8322 !important;
 }
-::v-deep .el-tree-node__content{
+
+::v-deep .el-tree-node__content {
     height: 36px;
 }
 </style>

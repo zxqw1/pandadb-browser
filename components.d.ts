@@ -17,7 +17,6 @@ declare module 'vue' {
     BlockTop: typeof import('./src/components/rightComponents/blockTop.vue')['default']
     Database: typeof import('./src/components/database.vue')['default']
     Favorate: typeof import('./src/components/menuComponents/Favorate.vue')['default']
-    File: typeof import('./src/components/menuComponents/file.vue')['default']
     Files: typeof import('./src/components/menuComponents/files.vue')['default']
     Guides: typeof import('./src/components/menuComponents/guides.vue')['default']
     Header: typeof import('./src/components/header.vue')['default']
@@ -30,8 +29,6 @@ declare module 'vue' {
     OnlineBackup: typeof import('./src/components/onlineBackup.vue')['default']
     OperatingSystem: typeof import('./src/components/OperatingSystem.vue')['default']
     OperationLog: typeof import('./src/components/OperationLog.vue')['default']
-    OperationRecord: typeof import('./src/components/OperationRecord.vue')['default']
-    Restore: typeof import('./src/components/restore.vue')['default']
     Rightcontent: typeof import('./src/components/rightcontent.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
@@ -40,7 +37,6 @@ declare module 'vue' {
     Search2: typeof import('./src/components/rightComponents/blockcomponents/search2.vue')['default']
     Search3: typeof import('./src/components/rightComponents/blockcomponents/search3.vue')['default']
     Setter: typeof import('./src/components/menuComponents/setter.vue')['default']
-    Statistics: typeof import('./src/components/statistics.vue')['default']
     Threshold: typeof import('./src/components/threshold.vue')['default']
   }
 }

@@ -23,14 +23,10 @@
          <Alarm v-if="menuKey === 'alarm'"></Alarm>
          <!-- 阈值配置 -->
         <Threshold v-if="menuKey === 'threshold'"></Threshold>
-         <!-- 统计信息 -->
-          <!-- <Statistics v-show="menuKey === 'statistics'"></Statistics> -->
           <!-- 作业管理 -->
           <onlineBackup v-if="menuKey === 'onlineBackup'"></onlineBackup>
            <!-- 登录日志 -->
           <loginLog v-if="menuKey === 'loginLog'"></loginLog>
-          <!-- 操作记录 -->
-          <!-- <OperationRecord v-show="menuKey === 'OperationRecord'"></OperationRecord> -->
       </a-col>
     </a-col>
   </a-row>
@@ -48,10 +44,8 @@ import RunLog from "@/components/RunLog.vue";
 import Database from "@/components/database.vue";
 import OperatingSystem from "@/components/OperatingSystem.vue";
 import Alarm from "@/components/alarm.vue"
-// import Statistics from "@/components/statistics.vue";
 import onlineBackup from "@/components/onlineBackup.vue";
 import loginLog from "@/components/loginLog.vue";
-// import OperationRecord from "@/components/OperationRecord.vue";
 import Threshold from "@/components/threshold.vue";
 import { onMounted, ref } from "vue";
 import mitts from "../utils/bus";

@@ -1,14 +1,12 @@
 <template>
-  <div
-    style="
+  <div style="
       padding: 70px;
       background-color: #ffffff;
       width: 100%;
       margin-top: 24px;
       display: flex;
       height: 424px;
-    "
-  >
+    ">
     <div style="display: flex; flex-direction: column" v-if="open">
       <h1>登录页</h1>
       <h3>您已连接，欢迎</h3>
@@ -32,33 +30,22 @@
           <span style="font-size: 20px"> 连接凭据存储在web浏览器中</span>
         </p>
       </a-col>
-      <a-col
-        v-else
-        style="
+      <a-col v-else style="
           width: 100%;
           height: 100%;
           display: flex;
           flex-direction: column;
           justify-content: space-around;
           padding-left: 50px;
-        "
-      >
+        ">
         <div class="mt-4">
           <div style="font-size: 14px; font-weight: 500; margin-bottom: 4px">
             ConnectUrl
           </div>
-          <el-input
-            v-model="input3"
-            style="max-width: 600px"
-            placeholder="0.0.0.0:7680/query"
-            class="input-with-select"
-          >
+          <el-input v-model="input3" style="max-width: 600px" placeholder="0.0.0.0:7680/query"
+            class="input-with-select">
             <template #prepend>
-              <el-select
-                v-model="select"
-                placeholder="请选择"
-                style="width: 115px"
-              >
+              <el-select v-model="select" placeholder="请选择" style="width: 115px">
                 <el-option label="http://" value="http://" />
                 <!-- <el-option label="bolt://" value="bolt://" /> -->
               </el-select>
@@ -69,18 +56,13 @@
           <div style="font-size: 14px; font-weight: 500; margin-bottom: 4px">
             UserName
           </div>
-          <el-input v-model="input" placeholder="请输入用户名" />
+          <el-input v-model="username" placeholder="请输入用户名" />
         </div>
         <div>
           <div style="font-size: 14px; font-weight: 500; margin-bottom: 4px">
             password
           </div>
-          <el-input
-            v-model="input2"
-            type="password"
-            placeholder="请输入密码"
-            show-password
-          />
+          <el-input v-model="password" type="password" placeholder="请输入密码" show-password />
         </div>
         <div>
           <el-button type="primary" @click="loginClick">登录</el-button>
@@ -93,19 +75,33 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import getManageInfo from "../../utils/manageRequest.js"
 const open = ref<boolean>(false);
 const select = ref("http://");
 const input3 = ref("");
-const input = ref("");
-const input2 = ref("");
+const username = ref("");
+const password = ref("");
 // const username = window.localStorage.getItem("username");
 const href = window.localStorage.getItem("address");
 const ipPortRegex = /^(\d{1,3}\.){3}\d{1,3}:\d{1,5}(\/[^\s]*)?$/;
+//url替换
+function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
+  // 检查IP地址中是否包含'/'（除了最后一个字符可能是':'的情况）  
+  // 这里假设IP地址格式正确，并且':'只出现在端口号之前  
+  const hasPath = ipWithMaybePath.includes('/') && !ipWithMaybePath.endsWith(':');
+  if (hasPath) {
+    // 如果包含路径，则替换最后一个'/'及其后面的所有内容  
+    return ipWithMaybePath.replace(/\/[^\/]*$/, `${newPath}`);
+  } else {
+    // 如果没有路径，则直接添加新路径  
+    return `${ipWithMaybePath}/${newPath}`;
+  }
+}
 //拿到输入内容
-const loginClick = () => {
+const loginClick = async () => {
   //非空校验
-  if (input3.value === "") {
-    ElMessageBox.alert("地址不能为空", "提示", {
+  if (input3.value === "" || username.value === "" || password.value === "") {
+    ElMessageBox.alert("地址、用户名、密码为必填，不能为空", "提示", {
       confirmButtonText: "好的",
     });
   } else {
@@ -114,11 +110,20 @@ const loginClick = () => {
         confirmButtonText: "好的",
       });
     } else {
+      const loginUrl = replaceOrAddUrlPath(select.value + input3.value, '/login')
+      const loginQuery = {
+        "userName": username.value,
+        "password": password.value
+      }
+      const message = await getManageInfo(loginUrl, "POST", JSON.stringify(loginQuery))
+      if(message.success){
       window.localStorage.setItem("address", select.value + input3.value);
-      window.localStorage.setItem("username",input.value)
-      // window.localStorage.setItem("password",input2.value)
+      window.localStorage.setItem("username", username.value)
+      window.localStorage.setItem("password", password.value)
       open.value = true;
       window.location.reload();
+      }
+      
     }
   }
 };

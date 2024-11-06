@@ -95,7 +95,7 @@ onMounted(async () => {
     'pageSize': 10,
     'currentPage': 1
   }
-  const loginLogData = await getManageInfo("text/plain",loginLogUrl, "POST", JSON.stringify(loginLogquery))
+  const loginLogData = await getManageInfo(loginLogUrl, "POST", JSON.stringify(loginLogquery))
   tableData.value = loginLogData.response
   tableData.value.forEach(item => {
     item.time = timeConversion(Number(item.time))
@@ -113,7 +113,7 @@ const handleCurrentChange = async (val: number) => {
     'currentPage': val
   }
   // const loginLogText = loginLogUrl + "?" + JSON.stringify(loginLogquery)
-  const loginLogData = await getManageInfo("text/plain",loginLogUrl, "POST", JSON.stringify(loginLogquery))
+  const loginLogData = await getManageInfo(loginLogUrl, "POST", JSON.stringify(loginLogquery))
   tableData.value = loginLogData.response
   tableData.value.forEach(item => {
     item.time = timeConversion(Number(item.time))
@@ -131,7 +131,7 @@ const siftClick = async () => {
     'currentPage': 1
   }
   // const loginLogText = loginLogUrl + "?" + JSON.stringify(loginLogquery)
-  const loginLogData = await getManageInfo("text/plain",loginLogUrl, "POST", JSON.stringify(loginLogquery))
+  const loginLogData = await getManageInfo(loginLogUrl, "POST", JSON.stringify(loginLogquery))
   tableData.value = loginLogData.response
   tableData.value.forEach(item => {
     item.time = timeConversion(Number(item.time))

@@ -91,12 +91,12 @@ function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
 onMounted(async () => { // 初始化图表
     //数据库节点状态枚举
     const databaseUrl = replaceOrAddUrlPath(url, '/database/nodeList')
-    const databaseNodeData = await getManageInfo("text/plain",databaseUrl, "GET")
+    const databaseNodeData = await getManageInfo(databaseUrl, "GET")
     databaseoption.value = databaseNodeData.response
     databaseNodeValue.value = databaseoption.value[0].description
     //图表时间段枚举
     const databaseperiodUrl = replaceOrAddUrlPath(url, '/database/period')
-    const databaseperiodData = await getManageInfo("text/plain",databaseperiodUrl, 'GET')
+    const databaseperiodData = await getManageInfo(databaseperiodUrl, 'GET')
     options.value = databaseperiodData.response
     // 数据库节点运行情况
     const databaseRunquery = {
@@ -104,7 +104,7 @@ onMounted(async () => { // 初始化图表
         "period": options.value[0].value
     }
     const databaseRunUrl = replaceOrAddUrlPath(url, '/database/detail')
-    const databaseRunData = await getManageInfo("text/plain",databaseRunUrl, "POST", JSON.stringify(databaseRunquery))
+    const databaseRunData = await getManageInfo(databaseRunUrl, "POST", JSON.stringify(databaseRunquery))
     nodeStatus.value = databaseRunData.response.nodeStatus
     runTime.value = databaseRunData.response.runTime
     const readSpeedData = echarts.init(window.document.getElementById("readSpeed"));
@@ -193,7 +193,7 @@ onMounted(async () => { // 初始化图表
     writeSpeedData.setOption(writeSpeedoption);
     //获取系统节点状态枚举
     const databaseStatusTypeListUrl = replaceOrAddUrlPath(url, '/databaseStatusTypeList')
-    const databaseStatusTypeListData = await getManageInfo("text/plain",databaseStatusTypeListUrl, "GET")
+    const databaseStatusTypeListData = await getManageInfo(databaseStatusTypeListUrl, "GET")
     databaseStatusTypeListData.response.forEach(item => {
         if (databaseRunData.response.nodeStatus === item.value) {
             nodeStatus.value = item.description
@@ -213,7 +213,7 @@ const nodeChange = async () => {
         "period": timeValue.value === "" ? options.value[0].value : timeValue.value
     }
     const databaseRunUrl = replaceOrAddUrlPath(url, '/database/detail')
-    const databaseRunData = await getManageInfo("text/plain",databaseRunUrl, "GET", JSON.stringify(databaseRunquery))
+    const databaseRunData = await getManageInfo(databaseRunUrl, "GET", JSON.stringify(databaseRunquery))
     nodeStatus.value = databaseRunData.response.nodeStatus
     runTime.value = databaseRunData.response.runTime
     const readSpeedData = echarts.init(window.document.getElementById("readSpeed"));
@@ -302,7 +302,7 @@ const nodeChange = async () => {
     writeSpeedData.setOption(writeSpeedoption);
     //获取系统节点状态枚举
     const databaseStatusTypeListUrl = replaceOrAddUrlPath(url, '/databaseStatusTypeList')
-    const databaseStatusTypeListData = await getManageInfo("text/plain",databaseStatusTypeListUrl, "GET")
+    const databaseStatusTypeListData = await getManageInfo(databaseStatusTypeListUrl, "GET")
     databaseStatusTypeListData.response.forEach(item => {
         if (databaseRunData.response.nodeStatus === item.value) {
             nodeStatus.value = item.description
@@ -321,7 +321,7 @@ const timeChange = async () => {
         "period": timeValue.value
     }
     const databaseRunUrl = replaceOrAddUrlPath(url, '/database/detail')
-    const databaseRunData = await getManageInfo("text/plain",databaseRunUrl, "GET", JSON.stringify(databaseRunquery))
+    const databaseRunData = await getManageInfo(databaseRunUrl, "GET", JSON.stringify(databaseRunquery))
     nodeStatus.value = databaseRunData.response.nodeStatus
     runTime.value = databaseRunData.response.runTime
     const readSpeedData = echarts.init(window.document.getElementById("readSpeed"));
@@ -410,7 +410,7 @@ const timeChange = async () => {
     writeSpeedData.setOption(writeSpeedoption);
     //获取系统节点状态枚举
     const databaseStatusTypeListUrl = replaceOrAddUrlPath(url, '/databaseStatusTypeList')
-    const databaseStatusTypeListData = await getManageInfo("text/plain",databaseStatusTypeListUrl, "GET")
+    const databaseStatusTypeListData = await getManageInfo(databaseStatusTypeListUrl, "GET")
     databaseStatusTypeListData.response.forEach(item => {
         if (databaseRunData.response.nodeStatus === item.value) {
             nodeStatus.value = item.description
