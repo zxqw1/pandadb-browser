@@ -370,7 +370,6 @@ const nodeChange = async () => {
 }
 //时间
 const timeChange = async () => {
-    console.log(systemnodeValue.value,'372')
     systemoption.value.forEach(item => {
         if (systemnodeValue.value === item.description) {
             systemnodequery.value = item.value

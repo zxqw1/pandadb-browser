@@ -146,7 +146,6 @@ const disconnectClick = async () => {
     "userName": window.localStorage.getItem("username"),
   }
   const logoutmessage =  await getManageInfo(logoutUrl, "POST", JSON.stringify(logoutQuery))
-  console.log(logoutmessage,'149')
   if(logoutmessage.success){
      window.localStorage.removeItem("username"),
     window.localStorage.removeItem("password"),

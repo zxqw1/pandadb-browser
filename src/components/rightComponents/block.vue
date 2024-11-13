@@ -3160,7 +3160,6 @@ const addImg = (fileInfo) => {
   imgList.value = [`data:${mimeType2};base64,${fileInfo.bytes}`]
 }
 const downLoadClick = async (fileInfo, scoped) => {
-  console.log(fileInfo,'3153')
   if (fileInfo.info && fileInfo.info !== "") {
     let mimeType = fileInfo.info.split("=")[fileInfo.info.split("=").length - 1]
     let mimeType2 = mimeType.slice(0, mimeType.length - 1)

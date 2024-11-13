@@ -61,7 +61,6 @@ const menuSelect = (key: string, keyPath: string[]) => {
   mitts.emit("menuEmit", key)
 }
 const handleClose = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
 }
 </script>
 
