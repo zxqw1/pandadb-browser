@@ -124,9 +124,6 @@ watch(() => props.flagshowL, (newValue, oldValue) => {
 //获取数据
 const funClick = async () => {
   await nextTick()
-  // setTimeout(() => {
-  //   loadingFlag.value = !loadingFlag.value
-  // }, 100)
   const queryId = props.item.queryId
   if (contentValue.value === "") {
   } else {

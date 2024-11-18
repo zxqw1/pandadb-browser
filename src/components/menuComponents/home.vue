@@ -145,12 +145,12 @@ const disconnectClick = async () => {
   const logoutQuery = {
     "userName": window.localStorage.getItem("username"),
   }
-  const logoutmessage =  await getManageInfo(logoutUrl, "POST", JSON.stringify(logoutQuery))
-  if(logoutmessage.success){
-     window.localStorage.removeItem("username"),
-    window.localStorage.removeItem("password"),
-    window.localStorage.removeItem("address")
-     location.reload();
+  const logoutmessage = await getManageInfo(logoutUrl, "POST", JSON.stringify(logoutQuery))
+  if (logoutmessage.success) {
+    window.localStorage.removeItem("username"),
+      window.localStorage.removeItem("password"),
+      window.localStorage.removeItem("address")
+    location.reload();
   }
 };
 //节点标签颜色
@@ -200,19 +200,33 @@ const labelShow = () => {
       result.summary.server = {};
       result.resTime = Math.round(responseTime) + 'ms'
       const data2 = JSON.parse(data);
-      data2.response.forEach((value, key) => {
-        const keys = Object.keys(value);
-        for (let key in value) {
-          result.records.push({ keys: keys, _fields: [value[key]] });
-        }
-      });
-      result.queryId = data2.queryId
-      result.summary.query.text = data2.query;
-      result.summary.server.address = window.localStorage.getItem('address');
-      result.summary.server.agent = "PandaDB";
-      mitts.emit("params", result);
-      store.commit("ScrollChange", result);
-
+      if (data2.error) {
+        const result = {};
+        result.summary = {};
+        result.summary.query = {};
+        result.summary.server = {};
+        result.summary.query.text = data2.query;
+        result.summary.server.address =
+          window.localStorage.getItem("address");
+        result.summary.server.agent = "PandaDB";
+        result.error = data2.error;
+        result.queryId = data2.queryId
+        mitts.emit("params", result);
+        store.commit("ScrollChange", result);
+      } else if (data2.response) {
+        data2.response.forEach((value, key) => {
+          const keys = Object.keys(value);
+          for (let key in value) {
+            result.records.push({ keys: keys, _fields: [value[key]] });
+          }
+        });
+        result.queryId = data2.queryId
+        result.summary.query.text = data2.query;
+        result.summary.server.address = window.localStorage.getItem('address');
+        result.summary.server.agent = "PandaDB";
+        mitts.emit("params", result);
+        store.commit("ScrollChange", result);
+      }
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -252,18 +266,35 @@ const graphShow = (e) => {
       result.summary.server = {};
       result.resTime = Math.round(responseTime) + "ms";
       const data2 = JSON.parse(data);
-      data2.response.forEach((value, key) => {
-        const keys = Object.keys(value);
-        for (let key in value) {
-          result.records.push({ keys: keys, _fields: [value[key]] });
-        }
-      });
-      result.queryId = data2.queryId
-      result.summary.query.text = data2.query;
-      result.summary.server.address = window.localStorage.getItem('address');
-      result.summary.server.agent = "PandaDB";
-      mitts.emit("params", result);
-      store.commit("ScrollChange", result);
+      if (data2.error) {
+        const result = {};
+        result.summary = {};
+        result.summary.query = {};
+        result.summary.server = {};
+        result.summary.query.text = data2.query;
+        result.summary.server.address =
+          window.localStorage.getItem("address");
+        result.summary.server.agent = "PandaDB";
+        result.error = data2.error;
+        result.queryId = data2.queryId
+        mitts.emit("params", result);
+        store.commit("ScrollChange", result);
+      } else if (data2.response) {
+        data2.response.forEach((value, key) => {
+          const keys = Object.keys(value);
+          for (let key in value) {
+            result.records.push({ keys: keys, _fields: [value[key]] });
+          }
+        });
+        result.queryId = data2.queryId
+        result.summary.query.text = data2.query;
+        result.summary.server.address = window.localStorage.getItem('address');
+        result.summary.server.agent = "PandaDB";
+        mitts.emit("params", result);
+        store.commit("ScrollChange", result);
+      }
+
+
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -301,20 +332,35 @@ const relationShow = (e) => {
       result.summary.query = {};
       result.summary.server = {};
       const data2 = JSON.parse(data);
-      const responseTime = endTime - startTime;
-      result.resTime = Math.round(responseTime) + "ms";
-      data2.response.forEach((value, key) => {
-        const keys = Object.keys(value);
-        for (let key in value) {
-          result.records.push({ keys: keys, _fields: [value[key]] });
-        }
-      });
-      result.summary.query.text = data2.query;
-      result.summary.server.address = window.localStorage.getItem('address');
-      result.summary.server.agent = "PandaDB";
-      // console.log(result);
-      mitts.emit("params", result);
-      store.commit("ScrollChange", result);
+      if (data2.error) {
+        const result = {};
+        result.summary = {};
+        result.summary.query = {};
+        result.summary.server = {};
+        result.summary.query.text = data2.query;
+        result.summary.server.address =
+          window.localStorage.getItem("address");
+        result.summary.server.agent = "PandaDB";
+        result.error = data2.error;
+        result.queryId = data2.queryId
+        mitts.emit("params", result);
+        store.commit("ScrollChange", result);
+      } else if (data2.response) {
+        const responseTime = endTime - startTime;
+        result.resTime = Math.round(responseTime) + "ms";
+        data2.response.forEach((value, key) => {
+          const keys = Object.keys(value);
+          for (let key in value) {
+            result.records.push({ keys: keys, _fields: [value[key]] });
+          }
+        });
+        result.summary.query.text = data2.query;
+        result.summary.server.address = window.localStorage.getItem('address');
+        result.summary.server.agent = "PandaDB";
+        mitts.emit("params", result);
+        store.commit("ScrollChange", result);
+      }
+
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -354,21 +400,35 @@ const relationClick = (e) => {
       result.summary.query = {};
       result.summary.server = {};
       const data2 = JSON.parse(data);
-      result.resTime = Math.round(responseTime) + "ms";
-      // console.log(data2)
-      data2.response.forEach((value, key) => {
-        const keys = Object.keys(value);
-        for (let key in value) {
-          result.records.push({ keys: keys, _fields: [value[key]] });
-        }
-      });
-      result.queryId = data2.queryId
-      result.summary.query.text = data2.query;
-      result.summary.server.address = window.localStorage.getItem('address');
-      result.summary.server.agent = "PandaDB";
-      // console.log(result);
-      mitts.emit("params", result);
-      store.commit("ScrollChange", result);
+      if (data2.error) {
+        const result = {};
+        result.summary = {};
+        result.summary.query = {};
+        result.summary.server = {};
+        result.summary.query.text = data2.query;
+        result.summary.server.address =
+          window.localStorage.getItem("address");
+        result.summary.server.agent = "PandaDB";
+        result.error = data2.error;
+        result.queryId = data2.queryId
+        mitts.emit("params", result);
+        store.commit("ScrollChange", result);
+      } else if (data2.response) {
+        result.resTime = Math.round(responseTime) + "ms";
+        data2.response.forEach((value, key) => {
+          const keys = Object.keys(value);
+          for (let key in value) {
+            result.records.push({ keys: keys, _fields: [value[key]] });
+          }
+        });
+        result.queryId = data2.queryId
+        result.summary.query.text = data2.query;
+        result.summary.server.address = window.localStorage.getItem('address');
+        result.summary.server.agent = "PandaDB";
+        // console.log(result);
+        mitts.emit("params", result);
+        store.commit("ScrollChange", result);
+      }
     })
     .catch((error) => {
       console.error("Error:", error);
