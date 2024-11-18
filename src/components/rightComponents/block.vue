@@ -4,6 +4,7 @@
     top: isFullscreen ? '0' : '0',
     left: isFullscreen ? '0' : '0',
     width: isFullscreen ? '100vw' : 'auto',
+    zIndex: isFullscreen ? '1' :'0'
   }">
     <el-row>
       <div style="background-color: #f6f6f6; width: 100%; height: 24px" v-if="!isFullscreen"></div>
