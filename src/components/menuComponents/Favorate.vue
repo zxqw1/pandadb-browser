@@ -42,7 +42,6 @@
           @node-drag-over="handleDragOver"
           @node-drag-end="handleDragEnd"
           @node-drop="handleDrop"
-          :render-content="renderContent"
         >
           <template #default="scoped">
             <div style="width: 100%; display: flex" id:scoped.data.id>
@@ -131,17 +130,17 @@ const input = ref("");
 const renameFlag = ref(false);
 const TreeData = ref(!JSON.parse(localStorage.getItem("treedata")) ? [] : JSON.parse(localStorage.getItem("treedata")));
 //删除
-const deleteClick = (scoped) => {
+const deleteClick = (scoped:any) => {
   TreeData.value = TreeData.value.filter((item) => {
     return item.id !== scoped.data.id;
   });
   window.localStorage.setItem("treedata", JSON.stringify(TreeData.value));
 };
 
-const RenameClick = (scoped) => {
+const RenameClick = (scoped:any) => {
   scoped.data.show = !scoped.data.show;
 };
-const handleEnter = (scoped) => {
+const handleEnter = (scoped:any) => {
   // scoped.data.label =
   // // console.log(input.value,'119')
   // // console.log(scoped,'120')

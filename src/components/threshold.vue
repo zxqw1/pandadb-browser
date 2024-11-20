@@ -172,7 +172,9 @@ const validateNumberRange = (rule: any, value: any, callback: any) => {
 };
 const rules = ref({
     "warnOption": [{ required: true, message: '请输入告警项' }],
-    "threshold": [{ required: true, message: '请输入阈值' }, { validator: validateNumberRange, trigger: 'change' }, { type: 'number', message: '请输入数字', trigger: 'change' }],
+    "threshold": [{ required: true, message: '请输入阈值' },
+    //  { validator: validateNumberRange, trigger: 'change' },
+      { type: 'number', message: '请输入数字', trigger: 'change' }],
     "warnPath": [{ required: true, message: '请输入告警地址' }],
     "sendType": [{ required: true, message: '请选择发送方式' }],
     "warnLevel": [{ required: true, message: '请选择告警级别' }],

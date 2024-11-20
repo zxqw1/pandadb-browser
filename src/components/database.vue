@@ -9,7 +9,7 @@
                                 <span class="demonstration">节点：</span>
                                 <el-select v-model="databaseNodeValue" placeholder="请选择" style="width: 240px "
                                     @change="nodeChange">
-                                    <el-option v-for="item in databaseoption" :value="item.value">{{
+                                    <el-option v-for="item in databaseoption" :value="item.description">{{
                                         item.description}}</el-option>
                                 </el-select>
                             </div>
@@ -20,14 +20,13 @@
             <el-col style="display:flex;align-items: center;border-bottom: 1px dashed #999;padding-bottom: 10px;">
                 <div style="width: 6px; height: 18px; background-color: rgb(108, 125, 46);"></div>
                 <div style="font-size: 16px;color: #333;font-weight:bold;margin-left: 12px;">总览</div>
-                <!-- <el-tag style="margin-left: 10px;" effect="dark" :type="'danger'">2条告警</el-tag> -->
             </el-col>
             <el-col style="margin-top: 24px; width: 100%;">
                 <el-descriptions :column="2">
                     <el-descriptions-item label="数据库状态：">
                         <el-tag size="small">{{ nodeStatus }}</el-tag>
                     </el-descriptions-item>
-                    <el-descriptions-item label="服务已启动：">{{ runTime }}</el-descriptions-item>
+                    <el-descriptions-item label="服务已启动：">{{ runTime }}ms</el-descriptions-item>
                 </el-descriptions>
             </el-col>
             <el-col
@@ -36,7 +35,7 @@
                 <div style="font-size: 16px;color: #333;font-weight:bold;margin-left: 12px;">图表</div>
             </el-col>
             <el-col style="margin-top: 20px; position: relative;">
-                <el-select v-model="timeValue" placeholder="最近一小时" size="large" style="width: 240px"
+                <el-select v-model="timeValue"  size="large" style="width: 240px"
                     @change="timeChange">
                     <el-option v-for="item in options" :key="item.value" :label="item.description"
                         :value="item.value" />
@@ -71,6 +70,7 @@ import mitts from '../utils/bus';
 import getManageInfo from "../utils/manageRequest"
 const timeValue = ref('')
 const databaseNodeValue = ref('')
+const requestNodeValue = ref("")
 const databaseoption = ref([])
 const nodeStatus = ref("")
 const runTime = ref("")
@@ -91,29 +91,30 @@ function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
 onMounted(async () => { // 初始化图表
     //数据库节点状态枚举
     const databaseUrl = replaceOrAddUrlPath(url, '/database/nodeList')
-    const databaseNodeData = await getManageInfo(databaseUrl, "GET")
+    const databaseNodeData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/database/nodeList", "GET")
     databaseoption.value = databaseNodeData.response
     databaseNodeValue.value = databaseoption.value[0].description
     //图表时间段枚举
     const databaseperiodUrl = replaceOrAddUrlPath(url, '/database/period')
-    const databaseperiodData = await getManageInfo(databaseperiodUrl, 'GET')
+    const databaseperiodData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/database/period", 'GET')
     options.value = databaseperiodData.response
+    timeValue.value = options.value[0].description
     // 数据库节点运行情况
     const databaseRunquery = {
         "nodeIp": databaseoption.value[0].value,
         "period": options.value[0].value
     }
     const databaseRunUrl = replaceOrAddUrlPath(url, '/database/detail')
-    const databaseRunData = await getManageInfo(databaseRunUrl, "POST", JSON.stringify(databaseRunquery))
+    const databaseRunData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/database/detail", "POST", JSON.stringify(databaseRunquery))
     nodeStatus.value = databaseRunData.response.nodeStatus
     runTime.value = databaseRunData.response.runTime
     const readSpeedData = echarts.init(window.document.getElementById("readSpeed"));
     let dataX = []
     let dataY = []
     let tooltip = []
-    databaseRunData.response.memoryUsageData.forEach((item: any) => {
-        let date = new Date(Number(item.x)).toLocaleString().split(" ")[1] // 这块呢，我把时间 年-月-日 空格 时：分：秒 我用空格截取的，取的是 时分秒 用来显示 X轴的时分秒
-        let tooltipS = new Date(Number(item.x)).toLocaleString() // 这块呢，我没截取，就是 年月日时分秒 用来显示完整的时间
+    databaseRunData.response.readSpeedData.forEach((item: any) => {
+        let date = new Date(Number(item.x)).toLocaleString().split(" ")[1] // 时间 年-月-日 空格 时：分：秒 用空格截取的，取的是 时分秒 用来显示 X轴的时分秒
+        let tooltipS = new Date(Number(item.x)).toLocaleString() // 没截取，就是 年月日时分秒 用来显示完整的时间
         tooltip.push(tooltipS)
         dataX.push(date)
         dataY.push(item.y)
@@ -123,7 +124,7 @@ onMounted(async () => { // 初始化图表
         tooltip: { // 鼠标移入的 title 相关的对象
             trigger: 'axis',
             formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
-                let tooltipContent = ` 利用率: ${Number(params[0].value).toFixed(2)} %<br/>${tooltip[params[0].dataIndex]} ` // 拼接数据
+                let tooltipContent = ` 当前速率: ${Number(params[0].value).toFixed(2)} 次/s<br/>${tooltip[params[0].dataIndex]} ` // 拼接数据
                 return tooltipContent // return 数据回去显示
             }
         },
@@ -153,7 +154,7 @@ onMounted(async () => { // 初始化图表
     let writeSpeeddataX = []
     let writeSpeeddataY = []
     let cputooltip = []
-    databaseRunData.response.cupUsageData.forEach((item: any) => {
+    databaseRunData.response.writeSpeedData.forEach((item: any) => {
         let date = new Date(Number(item.x)).toLocaleString().split(" ")[1]
         let cputooltipS = new Date(Number(item.x)).toLocaleString()
         cputooltip.push(cputooltipS)
@@ -164,7 +165,7 @@ onMounted(async () => { // 初始化图表
         tooltip: { // 鼠标移入的 title 相关的对象
             trigger: 'axis',
             formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
-                let tooltipContent = ` 利用率: ${Number(params[0].value).toFixed(2)} %<br/>${tooltip[params[0].dataIndex]}` // 拼接数据
+                let tooltipContent = ` 当前速率: ${Number(params[0].value).toFixed(2)} 次/s<br/>${tooltip[params[0].dataIndex]}` // 拼接数据
                 return tooltipContent // return 数据回去显示
             }
         },
@@ -193,7 +194,7 @@ onMounted(async () => { // 初始化图表
     writeSpeedData.setOption(writeSpeedoption);
     //获取系统节点状态枚举
     const databaseStatusTypeListUrl = replaceOrAddUrlPath(url, '/databaseStatusTypeList')
-    const databaseStatusTypeListData = await getManageInfo(databaseStatusTypeListUrl, "GET")
+    const databaseStatusTypeListData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/databaseStatusTypeList", "GET")
     databaseStatusTypeListData.response.forEach(item => {
         if (databaseRunData.response.nodeStatus === item.value) {
             nodeStatus.value = item.description
@@ -205,24 +206,24 @@ onMounted(async () => { // 初始化图表
 const nodeChange = async () => {
     databaseoption.value.forEach(item => {
         if (databaseNodeValue.value === item.description) {
-            databaseNodeValue.value = item.value
+            requestNodeValue.value = item.value
         }
     })
     const databaseRunquery = {
-        "nodeIp": databaseNodeValue.value,
+        "nodeIp": requestNodeValue.value,
         "period": timeValue.value === "" ? options.value[0].value : timeValue.value
     }
     const databaseRunUrl = replaceOrAddUrlPath(url, '/database/detail')
-    const databaseRunData = await getManageInfo(databaseRunUrl, "GET", JSON.stringify(databaseRunquery))
+    const databaseRunData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/database/detail", "POST", JSON.stringify(databaseRunquery))
     nodeStatus.value = databaseRunData.response.nodeStatus
     runTime.value = databaseRunData.response.runTime
     const readSpeedData = echarts.init(window.document.getElementById("readSpeed"));
     let dataX = []
     let dataY = []
     let tooltip = []
-    databaseRunData.response.memoryUsageData.forEach((item: any) => {
-        let date = new Date(Number(item.x)).toLocaleString().split(" ")[1] // 这块呢，我把时间 年-月-日 空格 时：分：秒 我用空格截取的，取的是 时分秒 用来显示 X轴的时分秒
-        let tooltipS = new Date(Number(item.x)).toLocaleString() // 这块呢，我没截取，就是 年月日时分秒 用来显示完整的时间
+    databaseRunData.response.readSpeedData.forEach((item: any) => {
+        let date = new Date(Number(item.x)).toLocaleString().split(" ")[1]
+        let tooltipS = new Date(Number(item.x)).toLocaleString() 
         tooltip.push(tooltipS)
         dataX.push(date)
         dataY.push(item.y)
@@ -232,7 +233,7 @@ const nodeChange = async () => {
         tooltip: { // 鼠标移入的 title 相关的对象
             trigger: 'axis',
             formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
-                let tooltipContent = ` 利用率: ${Number(params[0].value).toFixed(2)} %<br/>${tooltip[params[0].dataIndex]} ` // 拼接数据
+                let tooltipContent = ` 当前速率: ${Number(params[0].value).toFixed(2)} 次/s<br/>${tooltip[params[0].dataIndex]} ` // 拼接数据
                 return tooltipContent // return 数据回去显示
             }
         },
@@ -262,7 +263,7 @@ const nodeChange = async () => {
     let writeSpeeddataX = []
     let writeSpeeddataY = []
     let cputooltip = []
-    databaseRunData.response.cupUsageData.forEach((item: any) => {
+    databaseRunData.response.writeSpeedData.forEach((item: any) => {
         let date = new Date(Number(item.x)).toLocaleString().split(" ")[1]
         let cputooltipS = new Date(Number(item.x)).toLocaleString()
         cputooltip.push(cputooltipS)
@@ -273,7 +274,7 @@ const nodeChange = async () => {
         tooltip: { // 鼠标移入的 title 相关的对象
             trigger: 'axis',
             formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
-                let tooltipContent = ` 利用率: ${Number(params[0].value).toFixed(2)} %<br/>${tooltip[params[0].dataIndex]}` // 拼接数据
+                let tooltipContent = ` 当前速率: ${Number(params[0].value).toFixed(2)} 次/s<br/>${tooltip[params[0].dataIndex]}` // 拼接数据
                 return tooltipContent // return 数据回去显示
             }
         },
@@ -302,7 +303,7 @@ const nodeChange = async () => {
     writeSpeedData.setOption(writeSpeedoption);
     //获取系统节点状态枚举
     const databaseStatusTypeListUrl = replaceOrAddUrlPath(url, '/databaseStatusTypeList')
-    const databaseStatusTypeListData = await getManageInfo(databaseStatusTypeListUrl, "GET")
+    const databaseStatusTypeListData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/databaseStatusTypeList", "GET")
     databaseStatusTypeListData.response.forEach(item => {
         if (databaseRunData.response.nodeStatus === item.value) {
             nodeStatus.value = item.description
@@ -313,24 +314,24 @@ const nodeChange = async () => {
 const timeChange = async () => {
     databaseoption.value.forEach(item => {
         if (databaseNodeValue.value === item.description) {
-            databaseNodeValue.value = item.value
+            requestNodeValue.value = item.value
         }
     })
     const databaseRunquery = {
-        "nodeIp": databaseNodeValue.value === "" ? "" : databaseNodeValue.value,
+        "nodeIp": databaseNodeValue.value === "" ? "" : requestNodeValue.value,
         "period": timeValue.value
     }
     const databaseRunUrl = replaceOrAddUrlPath(url, '/database/detail')
-    const databaseRunData = await getManageInfo(databaseRunUrl, "GET", JSON.stringify(databaseRunquery))
+    const databaseRunData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/database/detail", "POST", JSON.stringify(databaseRunquery))
     nodeStatus.value = databaseRunData.response.nodeStatus
     runTime.value = databaseRunData.response.runTime
     const readSpeedData = echarts.init(window.document.getElementById("readSpeed"));
     let dataX = []
     let dataY = []
     let tooltip = []
-    databaseRunData.response.memoryUsageData.forEach((item: any) => {
-        let date = new Date(Number(item.x)).toLocaleString().split(" ")[1] // 这块呢，我把时间 年-月-日 空格 时：分：秒 我用空格截取的，取的是 时分秒 用来显示 X轴的时分秒
-        let tooltipS = new Date(Number(item.x)).toLocaleString() // 这块呢，我没截取，就是 年月日时分秒 用来显示完整的时间
+    databaseRunData.response.readSpeedData.forEach((item: any) => {
+        let date = new Date(Number(item.x)).toLocaleString().split(" ")[1] 
+        let tooltipS = new Date(Number(item.x)).toLocaleString() 
         tooltip.push(tooltipS)
         dataX.push(date)
         dataY.push(item.y)
@@ -340,7 +341,7 @@ const timeChange = async () => {
         tooltip: { // 鼠标移入的 title 相关的对象
             trigger: 'axis',
             formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
-                let tooltipContent = ` 利用率: ${Number(params[0].value).toFixed(2)} %<br/>${tooltip[params[0].dataIndex]} ` // 拼接数据
+                let tooltipContent = ` 当前速率: ${Number(params[0].value).toFixed(2)} m/s<br/>${tooltip[params[0].dataIndex]} ` // 拼接数据
                 return tooltipContent // return 数据回去显示
             }
         },
@@ -370,7 +371,7 @@ const timeChange = async () => {
     let writeSpeeddataX = []
     let writeSpeeddataY = []
     let cputooltip = []
-    databaseRunData.response.cupUsageData.forEach((item: any) => {
+    databaseRunData.response.writeSpeedData.forEach((item: any) => {
         let date = new Date(Number(item.x)).toLocaleString().split(" ")[1]
         let cputooltipS = new Date(Number(item.x)).toLocaleString()
         cputooltip.push(cputooltipS)
@@ -381,7 +382,7 @@ const timeChange = async () => {
         tooltip: { // 鼠标移入的 title 相关的对象
             trigger: 'axis',
             formatter: function (params) { // 鼠标移入当前的事件，会默认带出一个参数，相关的数据
-                let tooltipContent = ` 利用率: ${Number(params[0].value).toFixed(2)} %<br/>${tooltip[params[0].dataIndex]}` // 拼接数据
+                let tooltipContent = ` 当前速率: ${Number(params[0].value).toFixed(2)} m/s<br/>${tooltip[params[0].dataIndex]}` // 拼接数据
                 return tooltipContent // return 数据回去显示
             }
         },
@@ -410,7 +411,7 @@ const timeChange = async () => {
     writeSpeedData.setOption(writeSpeedoption);
     //获取系统节点状态枚举
     const databaseStatusTypeListUrl = replaceOrAddUrlPath(url, '/databaseStatusTypeList')
-    const databaseStatusTypeListData = await getManageInfo(databaseStatusTypeListUrl, "GET")
+    const databaseStatusTypeListData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/databaseStatusTypeList", "GET")
     databaseStatusTypeListData.response.forEach(item => {
         if (databaseRunData.response.nodeStatus === item.value) {
             nodeStatus.value = item.description
