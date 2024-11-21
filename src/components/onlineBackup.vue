@@ -49,8 +49,8 @@
                         <el-table :data="tableData" style="width: 100%" border row-key="key">
                             <el-table-column property="taskName" label="任务名称" />
                             <el-table-column property="createTime" label="创建时间" show-overflow-tooltip width="200" />
-                            <el-table-column property="type" label="备份类型" width="120"/>
-                            <el-table-column property="planRunTime" label="预计执行时间" width="200"/>
+                            <el-table-column property="type" label="备份类型" width="120" />
+                            <el-table-column property="planRunTime" label="预计执行时间" width="200" />
                             <el-table-column property="remark" label="备注" />
                             <el-table-column property="status" label="状态" width="200" />
                             <el-table-column property="progress" fixed="right" label="备份进度" width="200">
@@ -90,7 +90,7 @@
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="节点Ip" prop="nodeIp">
-                                    <el-select v-model="reform.nodeIp" placeholder="请选择" style="width: 240px" disabled  >
+                                    <el-select v-model="reform.nodeIp" placeholder="请选择" style="width: 240px" disabled>
                                         <el-option v-for="(item, index) in renodeIpoption" :key="index"
                                             :label="item.description" :value="item.value" />
                                     </el-select>
@@ -128,7 +128,7 @@
                     </el-col>
                     <el-col style="margin-top: 20px; display: flex; flex-direction: row-reverse;">
                         <el-pagination background layout="prev, pager, next" :total="page.totalRow"
-                            @current-change="handleCurrentChange" :current-page="currentPage"/>
+                            @current-change="handleCurrentChange" :current-page="currentPage" />
                     </el-col>
                 </el-row>
             </el-col>
@@ -136,7 +136,7 @@
     </div>
 </template>
 
-<script setup >
+<script setup>
 import { ref, onMounted } from 'vue'
 import { ElTable } from 'element-plus'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -326,13 +326,25 @@ const confirmBackup = async (formRef) => {
 
 }
 //备份进度
-const Backup = (record) => {
-    recordInfo.value = record
+const Backup = async (record) => {
     BackupProcess.value = true
-    progress.value = record.progress
+    const progressUrl = replaceOrAddUrlPath(url, "/dataBackup/progress")
+    const progressData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/progress", "GET")
+    recordInfo.value = progressData.response
+    progress.value = progressData.response.progress
+    const intervalId = setInterval(async() => {
+        const progressUrl = replaceOrAddUrlPath(url, "/dataBackup/progress")
+        const progressData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/progress", "GET")
+        progress.value = progressData.response.progress
+        if(progress.value === 100){
+            clearInterval(intervalId)
+        }
+    }, 3000)
+
+
 }
 //删除
-const handleDelete = async(row) => {
+const handleDelete = async (row) => {
     ElMessageBox.confirm('是否确认删除？', '温馨提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

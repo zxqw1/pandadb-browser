@@ -27,7 +27,7 @@
                     :value="item.value" />
                 </el-select>
               </el-form-item>
-              <el-form-item label="状态">
+              <el-form-item label="启用">
                 <el-switch v-model="form.status" @change="switchChange" />
               </el-form-item>
               <el-form-item label="cron表达式" required prop="cron">
@@ -47,7 +47,7 @@
             <el-table :data="tableData" style="width: 100%" border row-key="key">
               <el-table-column property="createTime" label="创建时间" />
               <el-table-column property="taskName" label="任务名称" />
-              <el-table-column property="cronStr" label="cron表达式" show-overflow-tooltip width="200" />
+              <el-table-column property="cron" label="cron表达式" show-overflow-tooltip width="200" />
               <el-table-column property="type" label="备份类型" width="120" />
               <el-table-column property="remark" label="备注" />
               <el-table-column property="status" label="状态" width="200" />
@@ -81,7 +81,7 @@
                       :value="item.value" />
                   </el-select>
                 </el-form-item>
-                <el-form-item label="状态">
+                <el-form-item label="启用">
                   <el-switch v-model="reform.status" @change="reswitchChange" />
                 </el-form-item>
                 <el-form-item label="备份类型">
@@ -272,6 +272,7 @@ const addBackup = async (backuptype) => {
 const confirmBackup = async (formRef) => {
   await formRef.validate(async (valid, fields) => {
     if (valid) {
+      const dataBackupautoqueryUrl = replaceOrAddUrlPath(url, "/dataBackup/auto")
       const addOfflineBackupQuery = {
         "taskName": form.value.taskName,
         "cron": form.value.cron,
@@ -317,13 +318,15 @@ const handleEdit = async (row) => {
   const nodeIpUrl = replaceOrAddUrlPath(url, "/database/nodeList")
   const renodeIpData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/database/nodeList", "GET")
   renodeIpoption.value = renodeIpData.response
+  console.log(row,'321')
   reform.value = {
     "taskName": row.taskName,
-    "cron": row.cronStr,
+    "cron": row.cron,
     "remark": row.remark,
     "nodeIp": row.nodeIp,
     "type": row.type,
-    "status": row.status,
+    "status": row.status === "开启" ? true : false,
+    "key":row.key
   }
 }
 //确定修改
@@ -337,7 +340,8 @@ const confirm = async (formRef2) => {
         "remark": reform.value.remark,
         "nodeIp": reform.value.nodeIp,
         "type": reform.value.type === "全量备份" ? 0 : 1,
-        "status": reform.value === "关闭" ? 0 : 1
+        "status": reform.value.status === true ? 1 : 0,
+        "key":reform.value.key
       }
       await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/auto", "PUT", JSON.stringify(dataBackupautoQuery))
       await BackupList()
