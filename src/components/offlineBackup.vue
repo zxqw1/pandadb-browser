@@ -28,7 +28,7 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="状态">
-                <el-switch v-model="form.state" @change="switchChange" />
+                <el-switch v-model="form.status" @change="switchChange" />
               </el-form-item>
               <el-form-item label="cron表达式" required prop="cron">
                 <el-input v-model="form.cron" />
@@ -45,8 +45,9 @@
           </el-dialog>
           <el-col style="margin-top: 10px;">
             <el-table :data="tableData" style="width: 100%" border row-key="key">
+              <el-table-column property="createTime" label="创建时间" />
               <el-table-column property="taskName" label="任务名称" />
-              <el-table-column property="cron" label="cron表达式" show-overflow-tooltip width="200" />
+              <el-table-column property="cronStr" label="cron表达式" show-overflow-tooltip width="200" />
               <el-table-column property="type" label="备份类型" width="120" />
               <el-table-column property="remark" label="备注" />
               <el-table-column property="status" label="状态" width="200" />
@@ -58,9 +59,6 @@
                     </el-button>
                     <el-button @click="handleDelete(scope.row)" text style="color: #6a8322;text-decoration: underline">
                       删除
-                    </el-button>
-                    <el-button @click="restore(scope.row)" text style="color: #6a8322;text-decoration: underline">
-                      恢复
                     </el-button>
                   </el-col>
                 </template>
@@ -78,13 +76,13 @@
                   </el-select>
                 </el-form-item>
                 <el-form-item label="节点Ip" prop="nodeIp">
-                  <el-select v-model="reform.nodeIp" placeholder="请选择" style="width: 240px">
+                  <el-select v-model="reform.nodeIp" placeholder="请选择" style="width: 240px" disabled>
                     <el-option v-for="(item, index) in renodeIpoption" :key="index" :label="item.description"
                       :value="item.value" />
                   </el-select>
                 </el-form-item>
                 <el-form-item label="状态">
-                  <el-switch v-model="reform.state" @change="reswitchChange" />
+                  <el-switch v-model="reform.status" @change="reswitchChange" />
                 </el-form-item>
                 <el-form-item label="备份类型">
                   <!-- <el-switch v-model="reform.type" @change="reswitchChange" /> -->
@@ -94,7 +92,7 @@
                   </el-select>
                 </el-form-item>
                 <el-form-item label="cron表达式" required prop="cron">
-                  <el-input v-model="form.cron" />
+                  <el-input v-model="reform.cron" />
                 </el-form-item>
                 <el-form-item label="备注" prop="remark">
                   <el-input v-model="reform.remark" />
@@ -105,17 +103,6 @@
                   </el-button>
                 </el-form-item>
               </el-form>
-            </el-dialog>
-            <el-dialog v-model="BackupProcess" title="备份流程" width="800">
-              <el-progress :percentage="progress" />
-              <template #footer>
-                <div class="dialog-footer">
-                  <el-button @click="BackupProcess = false">取消</el-button>
-                  <el-button type="primary" @click="stopbackup(recordInfo)">
-                    停止备份
-                  </el-button>
-                </div>
-              </template>
             </el-dialog>
           </el-col>
           <el-col style="margin-top: 20px; display: flex; flex-direction: row-reverse;">
@@ -144,14 +131,14 @@ const form = ref({
   taskName: '',
   nodeIp: '',
   cron: '',
-  state: true,
+  status: true,
   remark: ""
 })
 const reform = ref({
   taskName: '',
   nodeIp: '',
   cron: '',
-  state: true,
+  status: true,
   type: "",
   remark: ""
 })
@@ -190,18 +177,31 @@ const generateRandomId = async () => {
   const randomNum = Math.floor(Math.random() * 1000);
   return `id_${timestamp}_${randomNum}`;
 };
+const timeConversion = (timestamp) => {
+  const date = new Date(timestamp)
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  return formattedDate
+}
 //表格数据
 const offlineList = async () => {
-  const offlineUrl = replaceOrAddUrlPath(url, "/dataBackup/page")
+  const offlineUrl = replaceOrAddUrlPath(url, "/dataBackup/auto/page")
   const offlinequery = {
     "queryId": generateRandomId(),
     "pageSize": 10,
     "currentPage": 1
   }
-  const offlinequeryData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/page", "POST", JSON.stringify(offlinequery))
+  const offlinequeryData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/auto/page", "POST", JSON.stringify(offlinequery))
   const offlineselectUrl = replaceOrAddUrlPath(url, "/dataBackup/select")
   const offlineselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/select", "GET")
   offlinequeryData.response.forEach(item => {
+    item.createTime = timeConversion(Number(item.createTime))
+    item.status === 0 ? item.status = "关闭" : item.status = "开启"
     offlineselectData.response.status.forEach(item2 => {
       if (item2.value === item.status) {
         item.status = item2.description
@@ -228,7 +228,7 @@ const handleCurrentChange = async (val) => {
     "pageSize": 10,
     "currentPage": val
   }
-  const offlinequeryData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/page", "POST", JSON.stringify(Backupquery))
+  const offlinequeryData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/auto/page", "POST", JSON.stringify(Backupquery))
   tableData.value = offlinequeryData.response
   const offlineselectUrl = replaceOrAddUrlPath(url, "/dataBackup/select")
   const offlineselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/select", "GET")
@@ -248,8 +248,112 @@ const handleCurrentChange = async (val) => {
   currentPage.value = val
 }
 //新增数据备份
-const addBackup = ()=>{
-  
+const addBackup = async (backuptype) => {
+  form.value = ({
+    taskName: '',
+    nodeIp: '',
+    cron: '',
+    status: true,
+    remark: ""
+  })
+  if (backuptype === 0) {
+    backupsTitle.value = "全量备份"
+  } else {
+    backupsTitle.value = "增量备份"
+  }
+  backupsDialog.value = true
+  type.value = backuptype
+  //下拉获取nodeip
+  const nodeIpUrl = replaceOrAddUrlPath(url, "/database/nodeList")
+  const nodeIpData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/database/nodeList", "GET")
+  nodeIpoption.value = nodeIpData.response
+}
+//确定新增备份
+const confirmBackup = async (formRef) => {
+  await formRef.validate(async (valid, fields) => {
+    if (valid) {
+      const addOfflineBackupQuery = {
+        "taskName": form.value.taskName,
+        "cron": form.value.cron,
+        "remark": form.value.remark,
+        "nodeIp": form.value.nodeIp,
+        "type": type.value,
+        "status": form.value.status === true ? 1 : 0
+      }
+      await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/auto", "POST", JSON.stringify(addOfflineBackupQuery))
+      await offlineList()
+      backupsDialog.value = false
+    }
+  })
+}
+//删除
+const handleDelete = async (row) => {
+  ElMessageBox.confirm('是否确认删除？', '温馨提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  }).then(async () => {
+    const delDataBackupAutoUrl = replaceOrAddUrlPath(url, '/dataBackup/auto')
+    const delquery = {
+      "key": row.key
+    }
+    let info = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/auto", "DELETE", JSON.stringify(delquery))
+    if (info) {
+      await offlineList()
+      ElMessage({
+        type: 'success',
+        message: "删除成功",
+      })
+    }
+
+  }).catch(() => { })
+
+}
+//修改
+const handleEdit = async (row) => {
+  rebackups.value = true
+  backupsTitle.value = "修改备份"
+  //下拉获取nodeip
+  const nodeIpUrl = replaceOrAddUrlPath(url, "/database/nodeList")
+  const renodeIpData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/database/nodeList", "GET")
+  renodeIpoption.value = renodeIpData.response
+  reform.value = {
+    "taskName": row.taskName,
+    "cron": row.cronStr,
+    "remark": row.remark,
+    "nodeIp": row.nodeIp,
+    "type": row.type,
+    "status": row.status,
+  }
+}
+//确定修改
+const confirm = async (formRef2) => {
+  await formRef2.validate(async (valid, fields) => {
+    if (valid) {
+      const dataBackupautoqueryUrl = replaceOrAddUrlPath(url, "/dataBackup/auto")
+      const dataBackupautoQuery = {
+        "taskName": reform.value.taskName,
+        "cron": reform.value.cron,
+        "remark": reform.value.remark,
+        "nodeIp": reform.value.nodeIp,
+        "type": reform.value.type === "全量备份" ? 0 : 1,
+        "status": reform.value === "关闭" ? 0 : 1
+      }
+      await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/auto", "PUT", JSON.stringify(dataBackupautoQuery))
+      await BackupList()
+      rebackups.value = false
+    }
+  })
+}
+const close = () => {
+  reform.value = {
+    taskName: '',
+    nodeIp: '',
+    cron: '',
+    status: true,
+    type: "",
+    remark: ""
+  }
 }
 </script>
 

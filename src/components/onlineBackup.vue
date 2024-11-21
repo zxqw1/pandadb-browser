@@ -90,7 +90,7 @@
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="节点Ip" prop="nodeIp">
-                                    <el-select v-model="reform.nodeIp" placeholder="请选择" style="width: 240px">
+                                    <el-select v-model="reform.nodeIp" placeholder="请选择" style="width: 240px" disabled  >
                                         <el-option v-for="(item, index) in renodeIpoption" :key="index"
                                             :label="item.description" :value="item.value" />
                                     </el-select>
@@ -332,7 +332,7 @@ const Backup = (record) => {
     progress.value = record.progress
 }
 //删除
-const handleDelete = (row) => {
+const handleDelete = async(row) => {
     ElMessageBox.confirm('是否确认删除？', '温馨提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -386,8 +386,8 @@ const reswitchChange = (value) => {
     retimedisable.value = value
 }
 //确定修改
-const confirm = async (formRef) => {
-    await formRef.validate(async (valid, fields) => {
+const confirm = async (formRef2) => {
+    await formRef2.validate(async (valid, fields) => {
         if (valid) {
             const dataBackupqueryUrl = replaceOrAddUrlPath(url, "/dataBackup")
             if (reform.value.planRunTime !== null) {
