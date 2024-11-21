@@ -23,8 +23,10 @@
          <Alarm v-if="menuKey === 'alarm'"></Alarm>
          <!-- 阈值配置 -->
         <Threshold v-if="menuKey === 'threshold'"></Threshold>
-          <!-- 作业管理 -->
+          <!-- 在线管理 -->
           <onlineBackup v-if="menuKey === 'onlineBackup'"></onlineBackup>
+          <!--  离线管理-->
+            <offlineBackup v-if="menuKey === 'offlineBackup'"></offlineBackup>
            <!-- 登录日志 -->
           <loginLog v-if="menuKey === 'loginLog'"></loginLog>
       </a-col>
@@ -47,6 +49,7 @@ import Alarm from "@/components/alarm.vue"
 import onlineBackup from "@/components/onlineBackup.vue";
 import loginLog from "@/components/loginLog.vue";
 import Threshold from "@/components/threshold.vue";
+import offlineBackup from "@/components/offlineBackup.vue";
 import { onMounted, ref } from "vue";
 import mitts from "../utils/bus";
 let menuKey = ref("home")

@@ -1,61 +1,85 @@
   <template>
-  <div>
-    <el-menu class="el-menu-vertical-demo" active-text-color="#6C7D2E" active-color="#f8ffe3" @select="menuSelect"
-      @close="handleClose">
-      <el-sub-menu index="Monitor">
-        <template #title>
-          <el-icon>
-            <Odometer />
-          </el-icon>
-          <span class="monitor">实时监控</span>
-        </template>
-        <el-menu-item index="OperationLog">
-          <el-icon>
-            <Tickets />
-          </el-icon>
-          <span>操作日志</span>
-        </el-menu-item>
-        <el-menu-item index="RunLog">
-          <el-icon>
-            <Memo />
-          </el-icon>
-          <span>运行日志</span>
-        </el-menu-item>
-        <el-menu-item index="Database">
-          <el-icon><Coin /></el-icon>
-          <span>
-            数据库运行情况
-          </span>
+    <div>
+      <el-menu class="el-menu-vertical-demo" active-text-color="#6C7D2E" active-color="#f8ffe3" @select="menuSelect"
+        @close="handleClose">
+        <el-sub-menu index="Monitor">
+          <template #title>
+            <el-icon>
+              <Odometer />
+            </el-icon>
+            <span class="monitor">实时监控</span>
+          </template>
+          <el-menu-item index="OperationLog">
+            <el-icon>
+              <Tickets />
+            </el-icon>
+            <span>操作日志</span>
           </el-menu-item>
-        <el-menu-item index="OperatingSystem">
-          <el-icon><DataBoard /></el-icon>
-        <span>系统运行情况</span>  
-        </el-menu-item>
-        <el-menu-item index="alarm">
-          <el-icon><Warning /></el-icon>
-        <span>告警记录</span>  
-        </el-menu-item>
-        <el-menu-item index="threshold">
-          <el-icon><Postcard /></el-icon>
-          <span>阈值配置</span>
-        </el-menu-item>
-      </el-sub-menu>
-      <el-menu-item index="onlineBackup">
-        <el-icon>
-          <CopyDocument />
-        </el-icon>
-        <span>作业管理</span>
-      </el-menu-item>
+          <el-menu-item index="RunLog">
+            <el-icon>
+              <Memo />
+            </el-icon>
+            <span>运行日志</span>
+          </el-menu-item>
+          <el-menu-item index="Database">
+            <el-icon>
+              <Coin />
+            </el-icon>
+            <span>
+              数据库运行情况
+            </span>
+          </el-menu-item>
+          <el-menu-item index="OperatingSystem">
+            <el-icon>
+              <DataBoard />
+            </el-icon>
+            <span>系统运行情况</span>
+          </el-menu-item>
+          <el-menu-item index="alarm">
+            <el-icon>
+              <Warning />
+            </el-icon>
+            <span>告警记录</span>
+          </el-menu-item>
+          <el-menu-item index="threshold">
+            <el-icon>
+              <Postcard />
+            </el-icon>
+            <span>阈值配置</span>
+          </el-menu-item>
+        </el-sub-menu>
+        <el-sub-menu>
+          <template #title>
+            <el-icon>
+              <Files />
+            </el-icon>
+            <span class="monitor">作业管理</span>
+          </template>
+          <el-menu-item index="onlineBackup">
+            <el-icon>
+              <CopyDocument />
+            </el-icon>
+            <span>在线备份</span>
+          </el-menu-item>
+          <el-menu-item index="offlineBackup">
+            <el-icon>
+              <CopyDocument />
+            </el-icon>
+            <span>离线备份</span>
+          </el-menu-item>
+        </el-sub-menu>
         <el-menu-item index="loginLog">
-          <el-icon><DocumentRemove /></el-icon>
+          <el-icon>
+            <DocumentRemove />
+          </el-icon>
           <span>登录日志</span>
         </el-menu-item>
-    </el-menu>
-  </div>
-</template>
+      </el-menu>
+    </div>
+  </template>
 
 <script setup lang="ts">
-import { Odometer, CopyDocument, SetUp, CreditCard, Tickets,Memo,Coin,DataBoard,Warning,Postcard,DataAnalysis,Management,DocumentRemove,Reading} from '@element-plus/icons-vue'
+import { Odometer, CopyDocument, SetUp, CreditCard, Tickets, Memo, Coin, DataBoard, Warning, Postcard, DataAnalysis, Management, DocumentRemove, Reading, Files } from '@element-plus/icons-vue'
 import mitts from '../../utils/bus'
 const menuSelect = (key: string, keyPath: string[]) => {
   mitts.emit("menuEmit", key)
