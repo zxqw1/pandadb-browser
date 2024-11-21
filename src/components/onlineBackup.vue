@@ -3,13 +3,13 @@
         <el-row>
             <el-col style="display:flex;align-items: center;border-bottom: 1px dashed #999;padding-bottom: 10px;">
                 <div style="width: 6px; height: 18px; background-color: rgb(108, 125, 46);"></div>
-                <div style="font-size: 16px;color: #333;font-weight:bold;margin-left: 12px;">任务列表在线备份</div>
+                <div style="font-size: 16px;color: #333;font-weight:bold;margin-left: 12px;">在线备份任务列表</div>
             </el-col>
             <el-col>
                 <div style="margin-top: 10px;">
                     <span
                         style="width: 13px;height: 13px;display: inline-block; background-color: rgb(108, 125, 46); border-radius: 50%;margin-right: 10px;"></span>
-                    <span style="font-size: 15px; font-weight: bold;">备份列表</span>
+                    <span style="font-size: 15px; font-weight: bold;">在线备份列表</span>
                 </div>
                 <el-row>
                     <el-col style="margin-top: 10px;display: flex;    flex-direction: row-reverse;">
@@ -136,7 +136,7 @@
     </div>
 </template>
 
-<script setup lang="ts">
+<script setup >
 import { ref, onMounted } from 'vue'
 import { ElTable } from 'element-plus'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -244,7 +244,7 @@ onMounted(async () => {
 
 })
 //分页查询数据备份
-const handleCurrentChange = async (val: number) => {
+const handleCurrentChange = async (val) => {
     const BackupqueryUrl = replaceOrAddUrlPath(url, "/dataBackup/page")
     const Backupquery = {
         "queryId": generateRandomId(),
@@ -273,7 +273,7 @@ const handleCurrentChange = async (val: number) => {
     currentPage.value = val
 }
 //新增数据备份
-const addBackup = async (backuptype: number) => {
+const addBackup = async (backuptype) => {
     form.value = ({
         taskName: '',
         remark: '',

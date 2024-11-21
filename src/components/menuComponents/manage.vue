@@ -65,7 +65,7 @@
             <el-icon>
               <CopyDocument />
             </el-icon>
-            <span>离线备份</span>
+            <span>自动备份</span>
           </el-menu-item>
         </el-sub-menu>
         <el-menu-item index="loginLog">
