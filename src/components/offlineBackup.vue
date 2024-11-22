@@ -196,9 +196,9 @@ const offlineList = async () => {
     "pageSize": 10,
     "currentPage": 1
   }
-  const offlinequeryData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/auto/page", "POST", JSON.stringify(offlinequery))
+  const offlinequeryData = await getManageInfo(offlineUrl, "POST", JSON.stringify(offlinequery))
   const offlineselectUrl = replaceOrAddUrlPath(url, "/dataBackup/select")
-  const offlineselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/select", "GET")
+  const offlineselectData = await getManageInfo(offlineselectUrl, "GET")
   offlinequeryData.response.forEach(item => {
     item.createTime = timeConversion(Number(item.createTime))
     item.status === 0 ? item.status = "关闭" : item.status = "开启"
@@ -228,10 +228,10 @@ const handleCurrentChange = async (val) => {
     "pageSize": 10,
     "currentPage": val
   }
-  const offlinequeryData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/auto/page", "POST", JSON.stringify(Backupquery))
+  const offlinequeryData = await getManageInfo(offlineUrl, "POST", JSON.stringify(offlinequery))
   tableData.value = offlinequeryData.response
   const offlineselectUrl = replaceOrAddUrlPath(url, "/dataBackup/select")
-  const offlineselectData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/select", "GET")
+  const offlineselectData = await getManageInfo(offlineselectUrl, "GET")
   tableData.value.forEach(item => {
     offlineselectData.response.status.forEach(item2 => {
       if (item2.value === item.status) {
@@ -265,7 +265,7 @@ const addBackup = async (backuptype) => {
   type.value = backuptype
   //下拉获取nodeip
   const nodeIpUrl = replaceOrAddUrlPath(url, "/database/nodeList")
-  const nodeIpData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/database/nodeList", "GET")
+  const nodeIpData = await getManageInfo(nodeIpUrl, "GET")
   nodeIpoption.value = nodeIpData.response
 }
 //确定新增备份
@@ -281,7 +281,7 @@ const confirmBackup = async (formRef) => {
         "type": type.value,
         "status": form.value.status === true ? 1 : 0
       }
-      await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/auto", "POST", JSON.stringify(addOfflineBackupQuery))
+      await getManageInfo(dataBackupautoqueryUrl, "POST", JSON.stringify(addOfflineBackupQuery))
       await offlineList()
       backupsDialog.value = false
     }
@@ -298,7 +298,7 @@ const handleDelete = async (row) => {
     const delquery = {
       "key": row.key
     }
-    let info = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/auto", "DELETE", JSON.stringify(delquery))
+    let info = await getManageInfo(delDataBackupAutoUrl, "DELETE", JSON.stringify(delquery))
     if (info) {
       await offlineList()
       ElMessage({
@@ -316,9 +316,8 @@ const handleEdit = async (row) => {
   backupsTitle.value = "修改备份"
   //下拉获取nodeip
   const nodeIpUrl = replaceOrAddUrlPath(url, "/database/nodeList")
-  const renodeIpData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/database/nodeList", "GET")
+  const renodeIpData = await getManageInfo(nodeIpUrl, "GET")
   renodeIpoption.value = renodeIpData.response
-  console.log(row,'321')
   reform.value = {
     "taskName": row.taskName,
     "cron": row.cron,
@@ -343,8 +342,8 @@ const confirm = async (formRef2) => {
         "status": reform.value.status === true ? 1 : 0,
         "key":reform.value.key
       }
-      await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/auto", "PUT", JSON.stringify(dataBackupautoQuery))
-      await BackupList()
+      await getManageInfo(dataBackupautoqueryUrl, "PUT", JSON.stringify(dataBackupautoQuery))
+      await offlineList()
       rebackups.value = false
     }
   })

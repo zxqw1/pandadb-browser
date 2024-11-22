@@ -114,11 +114,11 @@
                                 </el-form-item>
                             </el-form>
                         </el-dialog>
-                        <el-dialog v-model="BackupProcess" title="备份流程" width="800">
+                        <el-dialog v-model="BackupProcess" title="备份流程" width="800" @close="handleClose">
                             <el-progress :percentage="progress" />
                             <template #footer>
                                 <div class="dialog-footer">
-                                    <el-button @click="BackupProcess = false">取消</el-button>
+                                    <el-button @click="cancel">取消</el-button>
                                     <el-button type="primary" @click="stopbackup(recordInfo)">
                                         停止备份
                                     </el-button>
@@ -185,6 +185,7 @@ const formRef = ref(null)
 const formRef2 = ref(null)
 const progress = ref(null)
 const recordInfo = ref({})
+const intervalId = ref()
 let url = window.localStorage.getItem("address")//地址
 function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
     const hasPath = ipWithMaybePath.includes('/') && !ipWithMaybePath.endsWith(':');
@@ -329,15 +330,18 @@ const confirmBackup = async (formRef) => {
 const Backup = async (record) => {
     BackupProcess.value = true
     const progressUrl = replaceOrAddUrlPath(url, "/dataBackup/progress")
-    const progressData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/progress", "GET")
+    console.log(record,'332')
+    const progressquery = {
+        "key":record.key
+    }
+    const progressData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/progress", "POST",JSON.stringify(progressquery))
     recordInfo.value = progressData.response
     progress.value = progressData.response.progress
-    const intervalId = setInterval(async() => {
-        const progressUrl = replaceOrAddUrlPath(url, "/dataBackup/progress")
-        const progressData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/progress", "GET")
+    intervalId.value = setInterval(async() => {
+        const progressData = await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/progress", "POST",JSON.stringify(progressquery))
         progress.value = progressData.response.progress
         if(progress.value === 100){
-            clearInterval(intervalId)
+            clearInterval(intervalId.value)
         }
     }, 3000)
 
@@ -446,6 +450,16 @@ const stopbackup = async (row) => {
     await getManageInfo("https://apifoxmock.com/m1/5219875-4886398-default/dataBackup/stop", "POST", JSON.stringify(stopquery))
     await BackupList()
     BackupProcess.value = false
+    clearInterval(intervalId.value)
+}
+//取消
+const cancel = ()=>{
+    BackupProcess.value = false
+    clearInterval(intervalId.value)
+}
+const handleClose = ()=>{
+    BackupProcess.value = false
+    clearInterval(intervalId.value)
 }
 //恢复
 const restore = async (row) => {
