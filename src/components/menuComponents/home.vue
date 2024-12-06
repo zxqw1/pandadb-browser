@@ -88,7 +88,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script  setup>
 import getJsonDataInfo from '../../utils/request';
 import { ref, watch, onMounted, nextTick } from "vue";
 import dataBase from "@/data/dataBase";
@@ -104,7 +104,6 @@ const nodeNumber = ref(window.localStorage.getItem('labelNumber'))
 const TypeNumber = ref(window.localStorage.getItem('TypeNumber'))
 watch(store.state.list, async () => {
   await getJsonDataInfo()
-
   labelList.value = JSON.parse(window.localStorage.getItem('labelList'))
   typeList.value = JSON.parse(window.localStorage.getItem('typeList'))
   nodeNumber.value = window.localStorage.getItem('labelNumber')
@@ -437,7 +436,7 @@ const relationClick = (e) => {
 
 onMounted(() => {
   nextTick(() => {
-    getJsonDataInfo() //vue3 created事件是哪个
+    getJsonDataInfo() 
   })
 })
 
