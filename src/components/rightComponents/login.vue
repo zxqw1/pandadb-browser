@@ -47,7 +47,7 @@
             <template #prepend>
               <el-select v-model="select" placeholder="请选择" style="width: 115px">
                 <el-option label="http://" value="http://" />
-                <!-- <el-option label="bolt://" value="bolt://" /> -->
+                <el-option label="https://" value="https://" />
               </el-select>
             </template>
           </el-input>
@@ -83,7 +83,7 @@ const username = ref("");
 const password = ref("");
 // const username = window.localStorage.getItem("username");
 const href = window.localStorage.getItem("address");
-const ipPortRegex = /^(\d{1,3}\.){3}\d{1,3}:\d{1,5}(\/[^\s]*)?$/;
+// const ipPortRegex = /^(\d{1,3}\.){3}\d{1,3}:\d{1,5}(\/[^\s]*)?$/;
 //url替换
 function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
   // 检查IP地址中是否包含'/'（除了最后一个字符可能是':'的情况）  
@@ -100,16 +100,19 @@ function replaceOrAddUrlPath(ipWithMaybePath, newPath) {
 //拿到输入内容
 const loginClick = async () => {
   //非空校验
-  if (input3.value === "" || username.value === "" || password.value === "") {
+  if ( username.value === "" || password.value === "") {
     ElMessageBox.alert("地址、用户名、密码为必填，不能为空", "提示", {
       confirmButtonText: "好的",
     });
   } else {
-    if (!ipPortRegex.test(input3.value)) {
-      ElMessageBox.alert("请输入有效的IP地址和端口号", "提示", {
-        confirmButtonText: "好的",
-      });
-    } else {
+    // if (!ipPortRegex.test(input3.value)) {
+      // ElMessageBox.alert("请输入有效的IP地址和端口号", "提示", {
+      //   confirmButtonText: "好的",
+      // });
+    // } else {
+    if(input3.value === ""){
+      input3.value = window.location.href.replace(/^https?:\/\//, '') + 'query'
+    }
       const loginUrl = replaceOrAddUrlPath(select.value + input3.value, '/login')
       const loginQuery = {
         "userName": username.value,
@@ -124,7 +127,7 @@ const loginClick = async () => {
       window.location.reload();
       }
       
-    }
+    // }
   }
 };
 
